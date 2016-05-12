@@ -2,6 +2,8 @@
 ####
 # simple wrapper to automate the steps from
 #   https://wiki.archlinux.org/index.php/ZFS#Installation
+#   and
+#   https://wiki.archlinux.org/index.php/Archiso#Installing_packages
 #
 # @author stev leibelt <artodeto@bazzline.net>
 # @since 2016-05-09
@@ -30,36 +32,66 @@ fi
 
 # begin of check if archiso is installed
 
-if [[ ! -d $LOCAL_PATH_TO_THE_PROFILE ]];
+if [[ ! -d $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY ]];
 then
     echo "no archiso package installed so far, we are going to install it now."
-    #@todo
-    $LOCAL_PREFIX_FOR_EXECUTING_COMMAND"pacman -Syu archiso"
+    $LOCAL_PREFIX_FOR_EXECUTING_COMMAND pacman -Syu archiso
 fi
 
 # end of check if archiso is installed
 
-# begin of build directory is empty
+# begin of build directory exists
 
 if [[ -d $LOCAL_PATH_TO_THE_BUILD_DIRECTORY ]];
 then
     LOCAL_DIRECTORY_IS_NOT_EMPTY="$(ls -A $LOCAL_PATH_TO_THE_BUILD_DIRECTORY)"
-    #@todo
-    echo $LOCAL_PATH_TO_THE_BUILD_DIRECTORY
+
+    if [[ $LOCAL_DIRECTORY_IS_NOT_EMPTY ]];
+    then
+        echo "we need to cleanup the directory: $LOCAL_PATH_TO_THE_BUILD_DIRECTORY"
+        $LOCAL_PREFIX_FOR_EXECUTING_COMMAND rm -fr $LOCAL_PATH_TO_THE_BUILD_DIRECTORY/*
+    fi
+else
+    mkdir -p $LOCAL_PATH_TO_THE_BUILD_DIRECTORY
 fi
 
-# end of build directory is empty
+# end of build directory exists
 
-# check if we need to clean the build directory
+# begin of creating the output directory
 
-# store current working directory
-# cd into build directory
-# cp -r /usr/share/archiso/configs/profile/* ~/archlive
-# add
+mkdir -p $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY
 
-#echo "[archzfs]\nServer = http://archzfs.com/$repo/x86_64" > archlive/pacman.conf
+# end of creating the output directory
 
-# mkdir out
-# ./build.sh -v
+# begin of copying needed profile
 
+cp -r $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY/* $LOCAL_PATH_TO_THE_BUILD_DIRECTORY
+
+# end of copying needed profile
+
+# begin of adding archzfs repository and package
+
+echo "[archzfs]" >> $LOCAL_PATH_TO_THE_BUILD_DIRECTORY/pacman.conf
+echo "Server = http://archzfs.com/\$repo/x86_64" >> $LOCAL_PATH_TO_THE_BUILD_DIRECTORY/pacman.conf
+echo "archzfs-linux" >> $LOCAL_PATH_TO_THE_BUILD_DIRECTORY/packages.x86_64
+
+# end of adding archzfs repository and package
+
+# begin of building
+
+cd $LOCAL_PATH_TO_THE_BUILD_DIRECTORY
+
+$LOCAL_PREFIX_FOR_EXECUTING_COMMAND ./build.sh -v
+
+# end of building
+
+# @todo
 # ask if we should dd this to a sdx device
+
+echo "iso created in:"
+echo "    $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY"
+echo "--------"
+
+ls -halt $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY
+
+cd $LOCAL_CURRENT_WORKING_DIRECTORY
