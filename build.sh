@@ -14,8 +14,8 @@
 LOCAL_CURRENT_WORKING_DIRECTORY=$(pwd)
 LOCAL_PREFIX_FOR_EXECUTING_COMMAND="sudo "
 LOCAL_PATH_OF_THIS_FILE=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
-LOCAL_PATH_TO_THE_BUILD_DIRECTORY="$LOCAL_PATH_OF_THIS_FILE/build"
-LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY="$LOCAL_PATH_TO_THE_BUILD_DIRECTORY/out"
+LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="$LOCAL_PATH_OF_THIS_FILE/dynamic_data"
+LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY="$LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/out"
 LOCAL_PATH_TO_THE_PROFILE_DIRECTORY="/usr/share/archiso/configs/releng"
 LOCAL_WHO_AM_I=$(whoami)
 
@@ -40,22 +40,22 @@ fi
 
 # end of check if archiso is installed
 
-# begin of build directory exists
+# begin of dynamic data directory exists
 
-if [[ -d $LOCAL_PATH_TO_THE_BUILD_DIRECTORY ]];
+if [[ -d $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY ]];
 then
-    LOCAL_DIRECTORY_IS_NOT_EMPTY="$(ls -A $LOCAL_PATH_TO_THE_BUILD_DIRECTORY)"
+    LOCAL_DIRECTORY_IS_NOT_EMPTY="$(ls -A $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY)"
 
     if [[ $LOCAL_DIRECTORY_IS_NOT_EMPTY ]];
     then
-        echo "we need to cleanup the directory: $LOCAL_PATH_TO_THE_BUILD_DIRECTORY"
-        $LOCAL_PREFIX_FOR_EXECUTING_COMMAND rm -fr $LOCAL_PATH_TO_THE_BUILD_DIRECTORY/*
+        echo "we need to cleanup the directory: $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY"
+        $LOCAL_PREFIX_FOR_EXECUTING_COMMAND rm -fr $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/*
     fi
 else
-    mkdir -p $LOCAL_PATH_TO_THE_BUILD_DIRECTORY
+    mkdir -p $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
 fi
 
-# end of build directory exists
+# end of dynamic data directory exists
 
 # begin of creating the output directory
 
@@ -65,21 +65,21 @@ mkdir -p $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY
 
 # begin of copying needed profile
 
-cp -r $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY/* $LOCAL_PATH_TO_THE_BUILD_DIRECTORY
+cp -r $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY/* $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
 
 # end of copying needed profile
 
 # begin of adding archzfs repository and package
 
-echo "[archzfs]" >> $LOCAL_PATH_TO_THE_BUILD_DIRECTORY/pacman.conf
-echo "Server = http://archzfs.com/\$repo/x86_64" >> $LOCAL_PATH_TO_THE_BUILD_DIRECTORY/pacman.conf
-echo "archzfs-linux" >> $LOCAL_PATH_TO_THE_BUILD_DIRECTORY/packages.x86_64
+echo "[archzfs]" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/pacman.conf
+echo "Server = http://archzfs.com/\$repo/x86_64" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/pacman.conf
+echo "archzfs-linux" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
 
 # end of adding archzfs repository and package
 
 # begin of building
 
-cd $LOCAL_PATH_TO_THE_BUILD_DIRECTORY
+cd $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
 
 $LOCAL_PREFIX_FOR_EXECUTING_COMMAND ./build.sh -v
 
