@@ -9,7 +9,7 @@
 # @since 2016-05-09
 ####
 
-# begin of variables declaration
+#begin of variables declaration
 
 LOCAL_CURRENT_WORKING_DIRECTORY=$(pwd)
 LOCAL_PREFIX_FOR_EXECUTING_COMMAND="sudo "
@@ -19,18 +19,18 @@ LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY="$LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/ou
 LOCAL_PATH_TO_THE_PROFILE_DIRECTORY="/usr/share/archiso/configs/releng"
 LOCAL_WHO_AM_I=$(whoami)
 
-# end of variables declaration
+#end of variables declaration
 
-# begin of check if we are root
+#begin of check if we are root
 
 if [[ $LOCAL_WHO_AM_I = "root" ]];
 then
     PREFIX_FOR_EXECUTING_COMMAND=""
 fi
 
-# end of check if we are root
+#end of check if we are root
 
-# begin of check if archiso is installed
+#begin of check if archiso is installed
 
 if [[ ! -d $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY ]];
 then
@@ -38,9 +38,9 @@ then
     $LOCAL_PREFIX_FOR_EXECUTING_COMMAND pacman -Syu archiso
 fi
 
-# end of check if archiso is installed
+#end of check if archiso is installed
 
-# begin of dynamic data directory exists
+#begin of dynamic data directory exists
 
 if [[ -d $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY ]];
 then
@@ -55,38 +55,45 @@ else
     mkdir -p $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
 fi
 
-# end of dynamic data directory exists
+#end of dynamic data directory exists
 
-# begin of creating the output directory
+#begin of creating the output directory
 
 mkdir -p $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY
 
-# end of creating the output directory
+#end of creating the output directory
 
-# begin of copying needed profile
+#begin of copying needed profile
 
 cp -r $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY/* $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
 
-# end of copying needed profile
+#end of copying needed profile
 
-# begin of adding archzfs repository and package
+#begin of adding archzfs repository and package
 
 echo "[archzfs]" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/pacman.conf
 echo "Server = http://archzfs.com/\$repo/x86_64" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/pacman.conf
 echo "archzfs-linux" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
 
-# end of adding archzfs repository and package
+#end of adding archzfs repository and package
 
-# begin of building
+#begin of building
 
 cd $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
 
 $LOCAL_PREFIX_FOR_EXECUTING_COMMAND ./build.sh -v
 
-# end of building
+#end of building
 
-# @todo
-# ask if we should dd this to a sdx device
+#begin of renaming and hash generation
+cd $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY
+mv archlinux*.iso archlinux.iso
+sha1sum archlinux.iso > archlinux.iso.sha1sum
+md5sum archlinux.iso > archlinux.iso.md5sum
+#end of renaming and hash generation
+
+#@todo
+#ask if we should dd this to a sdx device
 
 echo "iso created in:"
 echo "    $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY"
