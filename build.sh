@@ -74,6 +74,11 @@ cp -r $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY/* $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIR
 echo "[archzfs]" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/pacman.conf
 echo "Server = http://archzfs.com/\$repo/x86_64" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/pacman.conf
 echo "archzfs-linux" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
+#@todo begin of support for lts
+#@idea (uname -r | grep lts)?
+#echo "linux-lts" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.both
+#echo "archzfs-linux-lts" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
+#@todo end of support for lts
 
 #end of adding archzfs repository and package
 
