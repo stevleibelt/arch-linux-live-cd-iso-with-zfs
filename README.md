@@ -18,6 +18,7 @@ At the end, you only need to dd the iso to your favorit usb drive or burn it on 
         * add option to dd it to a sdX device
         * support archzfs-linux-lts
         * add flag to not ask for fitting archzfs-linux repository
+    * fixed wrong number when selecting archzfs repository
 * [1.3.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.3.0) - released at 23.08.2016
     * implemented user input to select fitting archzfs-linux repository
 * [1.2.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.2.0) - released at 06.07.2016

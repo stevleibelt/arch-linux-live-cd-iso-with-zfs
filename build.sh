@@ -74,7 +74,7 @@ cp -r $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY/* $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIR
 #   archzfs-linux (default)
 #   archzfs-linux-git
 #   archzfs-linux-lts
-echo ":: There are 3 archzfs repositories available:"
+echo ":: There are 2 archzfs repositories available:"
 echo ":: Repositories"
 #echo "   1) archzfs-linux  2) archzfs-linux-git  3) archzfs-linux-lts"
 echo "   1) archzfs-linux  2) archzfs-linux-git"
