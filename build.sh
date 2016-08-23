@@ -25,7 +25,7 @@ LOCAL_WHO_AM_I=$(whoami)
 
 if [[ $LOCAL_WHO_AM_I = "root" ]];
 then
-    PREFIX_FOR_EXECUTING_COMMAND=""
+    LOCAL_PREFIX_FOR_EXECUTING_COMMAND=""
 fi
 
 #end of check if we are root
