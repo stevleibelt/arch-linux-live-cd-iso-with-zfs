@@ -34,7 +34,8 @@ fi
 
 if [[ ! -d $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY ]];
 then
-    echo "no archiso package installed so far, we are going to install it now."
+    echo ":: No archiso package installed."
+    echo ":: We are going to install it now..."
     $LOCAL_PREFIX_FOR_EXECUTING_COMMAND pacman -Syu archiso
 fi
 
@@ -48,7 +49,8 @@ then
 
     if [[ $LOCAL_DIRECTORY_IS_NOT_EMPTY ]];
     then
-        echo "we need to cleanup the directory: $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY"
+        echo ":: Previous build data detected."
+        echo ":: Cleaning up now..."
         $LOCAL_PREFIX_FOR_EXECUTING_COMMAND rm -fr $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/*
     fi
 else
@@ -113,6 +115,16 @@ cd $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
 
 $LOCAL_PREFIX_FOR_EXECUTING_COMMAND ./build.sh -v
 
+LOCAL_LAST_EXIT_CODE="$?"
+
+if [[ $LOCAL_LAST_EXIT_CODE -gt 0 ]];
+then
+    echo ":: Build failed!"
+    echo ":: Cleaning up now..."
+    $LOCAL_PREFIX_FOR_EXECUTING_COMMAND rm -fr $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/*
+    exit $LOCAL_LAST_EXIT_CODE
+fi
+
 #end of building
 
 #begin of renaming and hash generation
@@ -125,9 +137,10 @@ md5sum archlinux.iso > archlinux.iso.md5sum
 #@todo
 #ask if we should dd this to a sdx device
 
-echo "iso created in:"
-echo "    $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY"
-echo "--------"
+echo ":: Iso created in:"
+echo "   $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY"
+echo ":: --------"
+echo ":: Listing directory content..."
 
 ls -halt $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY
 
