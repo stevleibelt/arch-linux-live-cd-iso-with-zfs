@@ -18,6 +18,7 @@ At the end, you only need to dd the iso to your favorit usb drive or burn it on 
         * add option to dd it to a sdX device
         * support archzfs-linux-lts
         * add flag to not ask for fitting archzfs-linux repository
+        * move the existing iso to $somewhere and keep it for the case that the build is not successful
     * aligned output
     * fixed wrong number when selecting archzfs repository
     * added output if iso building is not successful
