@@ -69,16 +69,41 @@ cp -r $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY/* $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIR
 
 #end of copying needed profile
 
+#begin of user interaction
+#@todo ask what kind of archzfs the user wants to use:
+#   archzfs-linux (default)
+#   archzfs-linux-git
+#   archzfs-linux-lts
+echo ":: There are 3 archzfs repositories available:"
+echo ":: Repositories"
+#echo "   1) archzfs-linux  2) archzfs-linux-git  3) archzfs-linux-lts"
+echo "   1) archzfs-linux  2) archzfs-linux-git"
+echo ""
+read -p "   Enter a selection (default=1): " LOCAL_SELECTED_ARCHZFS_REPOSITORY
+#end of user interaction
+
 #begin of adding archzfs repository and package
 
 echo "[archzfs]" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/pacman.conf
 echo "Server = http://archzfs.com/\$repo/x86_64" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/pacman.conf
-echo "archzfs-linux" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
+case $LOCAL_SELECTED_ARCHZFS_REPOSITORY in
+    2 )
+        echo "archzfs-linux-git" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
+        ;;
+    3 )
 #@todo begin of support for lts
 #@idea (uname -r | grep lts)?
-#echo "linux-lts" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.both
-#echo "archzfs-linux-lts" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
+#@see:
+#   https://wiki.archlinux.org/index.php/Pacman -> IgnorePkg
+#   https://blog.chendry.org/2015/02/06/automating-arch-linux-installation.html
+        echo "linux-lts" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.both
+        echo "archzfs-linux-lts" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
+        ;;
 #@todo end of support for lts
+    *)
+        echo "archzfs-linux" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
+        ;;
+esac
 
 #end of adding archzfs repository and package
 
