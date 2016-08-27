@@ -16,12 +16,13 @@ At the end, you only need to dd the iso to your favorit usb drive or burn it on 
     * @todo
         * beautify the output
         * add option to dd it to a sdX device
-        * support archzfs-linux-lts
         * add flag to not ask for fitting archzfs-linux repository
-        * move the existing iso to $somewhere and keep it for the case that the build is not successful
+        * support archzfs-linux-lts
+    * added output if iso building is not successful
     * aligned output
     * fixed wrong number when selecting archzfs repository
-    * added output if iso building is not successful
+    * moveing the existing iso to $somewhere
+    * named the output of each build fitting to the selected archzfs package
 * [1.3.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.3.0) - released at 23.08.2016
     * implemented user input to select fitting archzfs-linux repository
 * [1.2.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.2.0) - released at 06.07.2016

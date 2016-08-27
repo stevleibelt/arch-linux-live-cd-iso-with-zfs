@@ -11,63 +11,68 @@
 
 #begin of variables declaration
 
-LOCAL_CURRENT_WORKING_DIRECTORY=$(pwd)
-LOCAL_PREFIX_FOR_EXECUTING_COMMAND="sudo "
-LOCAL_PATH_OF_THIS_FILE=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
-LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="$LOCAL_PATH_OF_THIS_FILE/dynamic_data"
-LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY="$LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/out"
-LOCAL_PATH_TO_THE_PROFILE_DIRECTORY="/usr/share/archiso/configs/releng"
-LOCAL_WHO_AM_I=$(whoami)
+CURRENT_WORKING_DIRECTORY=$(pwd)
+declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git" "archzfs-linux-lts")
+LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING=""
+PREFIX_FOR_EXECUTING_COMMAND="sudo "
+PATH_OF_THIS_FILE=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_OF_THIS_FILE}/dynamic_data"
+PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
+PATH_TO_THE_PROFILE_DIRECTORY="/usr/share/archiso/configs/releng"
+WHO_AM_I=$(whoami)
 
 #end of variables declaration
 
 #begin of check if we are root
 
-if [[ $LOCAL_WHO_AM_I = "root" ]];
+if [[ ${WHO_AM_I} = "root" ]];
 then
-    LOCAL_PREFIX_FOR_EXECUTING_COMMAND=""
+    PREFIX_FOR_EXECUTING_COMMAND=""
 fi
 
 #end of check if we are root
 
 #begin of check if archiso is installed
 
-if [[ ! -d $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY ]];
+if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
 then
     echo ":: No archiso package installed."
     echo ":: We are going to install it now..."
-    $LOCAL_PREFIX_FOR_EXECUTING_COMMAND pacman -Syu archiso
+    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Syu archiso
 fi
 
 #end of check if archiso is installed
 
 #begin of dynamic data directory exists
 
-if [[ -d $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY ]];
+if [[ -d ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY} ]];
 then
-    LOCAL_DIRECTORY_IS_NOT_EMPTY="$(ls -A $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY)"
+    DIRECTORY_IS_NOT_EMPTY="$(ls -A ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY})"
 
-    if [[ $LOCAL_DIRECTORY_IS_NOT_EMPTY ]];
+    if [[ ${DIRECTORY_IS_NOT_EMPTY} ]];
     then
         echo ":: Previous build data detected."
         echo ":: Cleaning up now..."
-        $LOCAL_PREFIX_FOR_EXECUTING_COMMAND rm -fr $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/*
+        for FILESYSTEM_ITEM_NAME in $(ls ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/ | grep -v out);
+        do
+            ${PREFIX_FOR_EXECUTING_COMMAND} rm -fr ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
+        done
     fi
 else
-    mkdir -p $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
+    mkdir -p ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
 fi
 
 #end of dynamic data directory exists
 
 #begin of creating the output directory
 
-mkdir -p $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY
+mkdir -p ${PATH_TO_THE_OUTPUT_DIRECTORY}
 
 #end of creating the output directory
 
 #begin of copying needed profile
 
-cp -r $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY/* $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
+cp -r ${PATH_TO_THE_PROFILE_DIRECTORY}/* ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
 
 #end of copying needed profile
 
@@ -76,34 +81,43 @@ cp -r $LOCAL_PATH_TO_THE_PROFILE_DIRECTORY/* $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIR
 #   archzfs-linux (default)
 #   archzfs-linux-git
 #   archzfs-linux-lts
-echo ":: There are 2 archzfs repositories available:"
+for INDEX_KEY in "${!LIST_OF_AVAILABLE_ZFS_PACKAGES[@]}";
+do
+    LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING+="   ${INDEX_KEY}) ${LIST_OF_AVAILABLE_ZFS_PACKAGES[${INDEX_KEY}]}"
+done;
+
+echo ":: There are ${#LIST_OF_AVAILABLE_ZFS_PACKAGES[@]} archzfs repositories available:"
 echo ":: Repositories"
-#echo "   1) archzfs-linux  2) archzfs-linux-git  3) archzfs-linux-lts"
-echo "   1) archzfs-linux  2) archzfs-linux-git"
+echo "${LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING}"
 echo ""
-read -p "   Enter a selection (default=1): " LOCAL_SELECTED_ARCHZFS_REPOSITORY
+read -p "   Enter a selection (default=0): " SELECTED_ARCHZFS_REPOSITORY_INDEX
 #end of user interaction
 
 #begin of adding archzfs repository and package
 
-echo "[archzfs]" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/pacman.conf
-echo "Server = http://archzfs.com/\$repo/x86_64" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/pacman.conf
-case $LOCAL_SELECTED_ARCHZFS_REPOSITORY in
-    2 )
-        echo "archzfs-linux-git" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
+#@todo pretty shitty, we are defining the list above but this switch case needs a lot of maintenance
+SELECTED_ARCHZFS_REPOSITORY_NAME=${LIST_OF_AVAILABLE_ZFS_PACKAGES[${SELECTED_ARCHZFS_REPOSITORY_INDEX}]}
+
+echo ":: Building with archzfs repository ${SELECTED_ARCHZFS_REPOSITORY_NAME}"
+
+echo "[archzfs]" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
+echo "Server = http://archzfs.com/\$repo/x86_64" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
+case ${SELECTED_ARCHZFS_REPOSITORY_NAME} in
+    "archzfs-linux-git" )
+        echo "archzfs-linux-git" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         ;;
-    3 )
+    "archzfs-linux-lts" )
 #@todo begin of support for lts
 #@idea (uname -r | grep lts)?
 #@see:
 #   https://wiki.archlinux.org/index.php/Pacman -> IgnorePkg
 #   https://blog.chendry.org/2015/02/06/automating-arch-linux-installation.html
-        echo "linux-lts" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.both
-        echo "archzfs-linux-lts" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
+        echo "linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.both
+        echo "archzfs-linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         ;;
 #@todo end of support for lts
     *)
-        echo "archzfs-linux" >> $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/packages.x86_64
+        echo "archzfs-linux" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         ;;
 esac
 
@@ -111,37 +125,68 @@ esac
 
 #begin of building
 
-cd $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
+cd ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
 
-$LOCAL_PREFIX_FOR_EXECUTING_COMMAND ./build.sh -v
+${PREFIX_FOR_EXECUTING_COMMAND} ./build.sh -v
 
-LOCAL_LAST_EXIT_CODE="$?"
+LAST_EXIT_CODE="$?"
 
-if [[ $LOCAL_LAST_EXIT_CODE -gt 0 ]];
+if [[ ${LAST_EXIT_CODE} -gt 0 ]];
 then
+    echo ""
     echo ":: Build failed!"
     echo ":: Cleaning up now..."
-    $LOCAL_PREFIX_FOR_EXECUTING_COMMAND rm -fr $LOCAL_PATH_TO_THE_DYNAMIC_DATA_DIRECTORY/*
-    exit $LOCAL_LAST_EXIT_CODE
+    for FILESYSTEM_ITEM_NAME in $(ls ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/ | grep -v out);
+    do
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm -fr ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
+    done
+    exit ${LAST_EXIT_CODE}
 fi
 
 #end of building
 
 #begin of renaming and hash generation
-cd $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY
-mv archlinux*.iso archlinux.iso
-sha1sum archlinux.iso > archlinux.iso.sha1sum
-md5sum archlinux.iso > archlinux.iso.md5sum
+cd ${PATH_TO_THE_OUTPUT_DIRECTORY}
+
+BUILD_FILE_NAME="archlinux-${SELECTED_ARCHZFS_REPOSITORY_NAME}"
+ISO_FILE_NAME="${BUILD_FILE_NAME}.iso"
+MD5_FILE_NAME="${ISO_FILE_NAME}.md5sum"
+SHA1_FILE_NAME="${ISO_FILE_NAME}.sha1sum"
+
+if [[ -f ${ISO_FILE_NAME} ]];
+then
+    echo ":: Older build detected"
+    read -p  ":: Do you want to move the files somewhere? [y|n] (n means overwriting, n is default) " MOVE_EXISTING_BUILD_FILES
+
+    if [[ ${MOVE_EXISTING_BUILD_FILES} == "y" ]];
+    then
+        read -p ":: Please input the path where you want to move the files (if the path does not exist, it will be created): " PATH_TO_MOVE_THE_EXISTING_BUILD_FILES
+
+        if [[ ! -d ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES} ]];
+        then
+            echo ":: Creating directory in path: ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
+            mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
+        fi
+
+        echo ":: Moving files ..."
+        mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
+    fi
+fi
+
+mv archlinux-[0-9]*.iso ${ISO_FILE_NAME}
+sha1sum ${ISO_FILE_NAME} > ${SHA1_FILE_NAME}
+md5sum ${ISO_FILE_NAME} > ${MD5_FILE_NAME}
 #end of renaming and hash generation
 
 #@todo
 #ask if we should dd this to a sdx device
 
+echo ""
 echo ":: Iso created in:"
-echo "   $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY"
+echo "   ${PATH_TO_THE_OUTPUT_DIRECTORY}"
 echo ":: --------"
-echo ":: Listing directory content..."
+echo ":: Listing directory content, filterd by ${SELECTED_ARCHZFS_REPOSITORY_NAME}..."
 
-ls -halt $LOCAL_PATH_TO_THE_OUTPUT_DIRECTORY
+ls -halt ${PATH_TO_THE_OUTPUT_DIRECTORY} | grep ${SELECTED_ARCHZFS_REPOSITORY_NAME}
 
-cd $LOCAL_CURRENT_WORKING_DIRECTORY
+cd ${CURRENT_WORKING_DIRECTORY}
