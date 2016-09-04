@@ -90,7 +90,7 @@ echo ":: There are ${#LIST_OF_AVAILABLE_ZFS_PACKAGES[@]} archzfs repositories av
 echo ":: Repositories"
 echo "${LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING}"
 echo ""
-read -p "   Enter a selection (default=0): " SELECTED_ARCHZFS_REPOSITORY_INDEX
+read -p "Enter a selection (default=0): " SELECTED_ARCHZFS_REPOSITORY_INDEX
 #end of user interaction
 
 #begin of adding archzfs repository and package
@@ -156,11 +156,13 @@ SHA1_FILE_NAME="${ISO_FILE_NAME}.sha1sum"
 if [[ -f ${ISO_FILE_NAME} ]];
 then
     echo ":: Older build detected"
-    read -p  ":: Do you want to move the files somewhere? [y|n] (n means overwriting, n is default) " MOVE_EXISTING_BUILD_FILES
+    echo ":: Do you want to move the files somewhere? [y|n] (n means overwriting, n is default)"
+    read -p  MOVE_EXISTING_BUILD_FILES
 
     if [[ ${MOVE_EXISTING_BUILD_FILES} == "y" ]];
     then
-        read -p ":: Please input the path where you want to move the files (if the path does not exist, it will be created): " PATH_TO_MOVE_THE_EXISTING_BUILD_FILES
+        echo ":: Please input the path where you want to move the files (if the path does not exist, it will be created):"
+        read -p PATH_TO_MOVE_THE_EXISTING_BUILD_FILES
 
         if [[ ! -d ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES} ]];
         then
