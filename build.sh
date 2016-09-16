@@ -38,7 +38,7 @@ if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
 then
     echo ":: No archiso package installed."
     echo ":: We are going to install it now..."
-    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Syu archiso
+    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Ssyu archiso
 fi
 
 #end of check if archiso is installed
@@ -112,7 +112,8 @@ case ${SELECTED_ARCHZFS_REPOSITORY_NAME} in
 #@see:
 #   https://wiki.archlinux.org/index.php/Pacman -> IgnorePkg
 #   https://blog.chendry.org/2015/02/06/automating-arch-linux-installation.html
-        echo "linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.both
+#        echo "linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.both
+#        echo "linux-lts-headers" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.both
         echo "archzfs-linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         ;;
 #@todo end of support for lts
