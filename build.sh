@@ -12,7 +12,8 @@
 #begin of variables declaration
 
 CURRENT_WORKING_DIRECTORY=$(pwd)
-declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git" "archzfs-linux-lts")
+#declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git" "archzfs-linux-lts")
+declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git")
 LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING=""
 PREFIX_FOR_EXECUTING_COMMAND="sudo "
 PATH_OF_THIS_FILE=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
