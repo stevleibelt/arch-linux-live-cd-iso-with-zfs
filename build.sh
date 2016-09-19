@@ -154,6 +154,7 @@ BUILD_FILE_NAME="archlinux-${SELECTED_ARCHZFS_REPOSITORY_NAME}"
 ISO_FILE_NAME="${BUILD_FILE_NAME}.iso"
 MD5_FILE_NAME="${ISO_FILE_NAME}.md5sum"
 SHA1_FILE_NAME="${ISO_FILE_NAME}.sha1sum"
+SHA512_FILE_NAME="${ISO_FILE_NAME}.sha512sum"
 
 if [[ -f ${ISO_FILE_NAME} ]];
 then
@@ -172,12 +173,19 @@ then
 
         echo ":: Moving files ..."
         mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
+    else
+        #following lines prevent us from getting asked from mv to override the existing file
+        rm ${ISO_FILE_NAME}
+        rm ${MD5_FILE_NAME}
+        rm ${SHA1_FILE_NAME}
+        rm ${SHA512_FILE_NAME}
     fi
 fi
 
 mv archlinux-[0-9]*.iso ${ISO_FILE_NAME}
 sha1sum ${ISO_FILE_NAME} > ${SHA1_FILE_NAME}
 md5sum ${ISO_FILE_NAME} > ${MD5_FILE_NAME}
+sha512sum ${ISO_FILE_NAME} > ${SHA512_FILE_NAME}
 #end of renaming and hash generation
 
 #@todo
