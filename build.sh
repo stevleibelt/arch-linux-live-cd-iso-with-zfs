@@ -12,7 +12,8 @@
 #begin of variables declaration
 
 CURRENT_WORKING_DIRECTORY=$(pwd)
-declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git" "archzfs-linux-lts")
+#declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git" "archzfs-linux-lts")
+declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git")
 LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING=""
 PREFIX_FOR_EXECUTING_COMMAND="sudo "
 PATH_OF_THIS_FILE=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
@@ -38,7 +39,7 @@ if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
 then
     echo ":: No archiso package installed."
     echo ":: We are going to install it now..."
-    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Syu archiso
+    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Ssyu archiso
 fi
 
 #end of check if archiso is installed
@@ -112,7 +113,8 @@ case ${SELECTED_ARCHZFS_REPOSITORY_NAME} in
 #@see:
 #   https://wiki.archlinux.org/index.php/Pacman -> IgnorePkg
 #   https://blog.chendry.org/2015/02/06/automating-arch-linux-installation.html
-        echo "linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.both
+#        echo "linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.both
+#        echo "linux-lts-headers" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.both
         echo "archzfs-linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         ;;
 #@todo end of support for lts
@@ -152,6 +154,7 @@ BUILD_FILE_NAME="archlinux-${SELECTED_ARCHZFS_REPOSITORY_NAME}"
 ISO_FILE_NAME="${BUILD_FILE_NAME}.iso"
 MD5_FILE_NAME="${ISO_FILE_NAME}.md5sum"
 SHA1_FILE_NAME="${ISO_FILE_NAME}.sha1sum"
+SHA512_FILE_NAME="${ISO_FILE_NAME}.sha512sum"
 
 if [[ -f ${ISO_FILE_NAME} ]];
 then
@@ -172,12 +175,19 @@ then
 
         echo ":: Moving files ..."
         mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
+    else
+        #following lines prevent us from getting asked from mv to override the existing file
+        rm ${ISO_FILE_NAME}
+        rm ${MD5_FILE_NAME}
+        rm ${SHA1_FILE_NAME}
+        rm ${SHA512_FILE_NAME}
     fi
 fi
 
 mv archlinux-[0-9]*.iso ${ISO_FILE_NAME}
 sha1sum ${ISO_FILE_NAME} > ${SHA1_FILE_NAME}
 md5sum ${ISO_FILE_NAME} > ${MD5_FILE_NAME}
+sha512sum ${ISO_FILE_NAME} > ${SHA512_FILE_NAME}
 #end of renaming and hash generation
 
 #@todo
