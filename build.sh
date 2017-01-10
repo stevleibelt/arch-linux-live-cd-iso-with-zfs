@@ -160,12 +160,12 @@ if [[ -f ${ISO_FILE_NAME} ]];
 then
     echo ":: Older build detected"
     echo ":: Do you want to move the files somewhere? [y|n] (n means overwriting, n is default)"
-    read -p  MOVE_EXISTING_BUILD_FILES
+    read MOVE_EXISTING_BUILD_FILES
 
     if [[ ${MOVE_EXISTING_BUILD_FILES} == "y" ]];
     then
         echo ":: Please input the path where you want to move the files (if the path does not exist, it will be created):"
-        read -p PATH_TO_MOVE_THE_EXISTING_BUILD_FILES
+        read PATH_TO_MOVE_THE_EXISTING_BUILD_FILES
 
         if [[ ! -d ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES} ]];
         then
@@ -195,7 +195,7 @@ sha512sum ${ISO_FILE_NAME} > ${SHA512_FILE_NAME}
 
 echo ""
 echo ":: Iso created in:"
-echo "   ${PATH_TO_THE_OUTPUT_DIRECTORY}"
+echo " ${PATH_TO_THE_OUTPUT_DIRECTORY}"
 echo ":: --------"
 echo ":: Listing directory content, filterd by ${SELECTED_ARCHZFS_REPOSITORY_NAME}..."
 
