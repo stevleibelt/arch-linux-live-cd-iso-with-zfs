@@ -185,6 +185,7 @@ then
 fi
 
 mv archlinux-[0-9]*.iso ${ISO_FILE_NAME}
+sudo chown ${WHO_AM_I} ${ISO_FILE_NAME}
 sha1sum ${ISO_FILE_NAME} > ${SHA1_FILE_NAME}
 md5sum ${ISO_FILE_NAME} > ${MD5_FILE_NAME}
 sha512sum ${ISO_FILE_NAME} > ${SHA512_FILE_NAME}
