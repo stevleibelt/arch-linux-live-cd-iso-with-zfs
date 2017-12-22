@@ -170,25 +170,25 @@ then
         if [[ ! -d ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES} ]];
         then
             echo ":: Creating directory in path: ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
-            mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
+            ${PREFIX_FOR_EXECUTING_COMMAND} mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
         fi
 
         echo ":: Moving files ..."
-        mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
+        ${PREFIX_FOR_EXECUTING_COMMAND} mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
     else
         #following lines prevent us from getting asked from mv to override the existing file
-        rm ${ISO_FILE_NAME}
-        rm ${MD5_FILE_NAME}
-        rm ${SHA1_FILE_NAME}
-        rm ${SHA512_FILE_NAME}
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${ISO_FILE_NAME}
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${MD5_FILE_NAME}
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${SHA1_FILE_NAME}
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${SHA512_FILE_NAME}
     fi
 fi
 
-mv archlinux-[0-9]*.iso ${ISO_FILE_NAME}
-sudo chown ${WHO_AM_I} ${ISO_FILE_NAME}
-sha1sum ${ISO_FILE_NAME} > ${SHA1_FILE_NAME}
-md5sum ${ISO_FILE_NAME} > ${MD5_FILE_NAME}
-sha512sum ${ISO_FILE_NAME} > ${SHA512_FILE_NAME}
+${PREFIX_FOR_EXECUTING_COMMAND} mv archlinux-[0-9]*.iso ${ISO_FILE_NAME}
+${PREFIX_FOR_EXECUTING_COMMAND} chown ${WHO_AM_I} ${ISO_FILE_NAME}
+${PREFIX_FOR_EXECUTING_COMMAND} sha1sum ${ISO_FILE_NAME} > ${SHA1_FILE_NAME}
+${PREFIX_FOR_EXECUTING_COMMAND} md5sum ${ISO_FILE_NAME} > ${MD5_FILE_NAME}
+${PREFIX_FOR_EXECUTING_COMMAND} sha512sum ${ISO_FILE_NAME} > ${SHA512_FILE_NAME}
 #end of renaming and hash generation
 
 #@todo
