@@ -195,8 +195,8 @@ sha512sum ${ISO_FILE_NAME} > ${SHA512_FILE_NAME}
 #ask if we should dd this to a sdx device
 
 echo ""
-echo ":: Iso created in:"
-echo " ${PATH_TO_THE_OUTPUT_DIRECTORY}"
+echo ":: Iso created in path:"
+echo "   ${PATH_TO_THE_OUTPUT_DIRECTORY}"
 echo ":: --------"
 echo ":: Listing directory content, filterd by ${SELECTED_ARCHZFS_REPOSITORY_NAME}..."
 
