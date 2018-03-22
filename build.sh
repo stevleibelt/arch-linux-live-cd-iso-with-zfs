@@ -21,6 +21,7 @@ PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_OF_THIS_FILE}/dynamic_data"
 PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
 PATH_TO_THE_PROFILE_DIRECTORY="/usr/share/archiso/configs/releng"
 WHO_AM_I=$(whoami)
+ARCHZFSKEY="0EE7A126"
 
 #end of variables declaration
 
@@ -95,6 +96,10 @@ read -p "Enter a selection (default=0): " SELECTED_ARCHZFS_REPOSITORY_INDEX
 #end of user interaction
 
 #begin of adding archzfs repository and package
+
+# Adding key for the archzfs repository
+${PREFIX_FOR_EXECUTING_COMMAND} pacman-key -r ${ARCHZFSKEY}
+${PREFIX_FOR_EXECUTING_COMMAND} pacman-key --lsign-key ${ARCHZFSKEY}
 
 #@todo pretty shitty, we are defining the list above but this switch case needs a lot of maintenance
 SELECTED_ARCHZFS_REPOSITORY_NAME=${LIST_OF_AVAILABLE_ZFS_PACKAGES[${SELECTED_ARCHZFS_REPOSITORY_INDEX}]}
