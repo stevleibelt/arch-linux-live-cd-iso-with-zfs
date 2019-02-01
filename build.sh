@@ -34,7 +34,7 @@ if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
 then
     echo ":: No archiso package installed."
     echo ":: We are going to install it now..."
-    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Ssyu archiso
+    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Syyu archiso
 fi
 #end of check if archiso is installed
 
