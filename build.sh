@@ -34,7 +34,7 @@ if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
 then
     echo ":: No archiso package installed."
     echo ":: We are going to install it now..."
-    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Ssyu archiso
+    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Syyu archiso
 fi
 #end of check if archiso is installed
 
@@ -92,7 +92,8 @@ echo "[archzfs]" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
 echo "Server = http://archzfs.com/\$repo/x86_64" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
 case ${SELECTED_ARCHZFS_REPOSITORY_NAME} in
     "archzfs-linux-git" )
-        echo "archzfs-linux-git" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-linux-git" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-utils-git" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         ;;
     "archzfs-linux-lts" )
 #@todo begin of support for lts
@@ -102,13 +103,15 @@ case ${SELECTED_ARCHZFS_REPOSITORY_NAME} in
 #   https://blog.chendry.org/2015/02/06/automating-arch-linux-installation.html
 #        echo "linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.both
 #        echo "linux-lts-headers" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.both
-        echo "archzfs-linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-utils-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         echo "linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         echo "linux-lts-headers" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         ;;
 #@todo end of support for lts
     *)
-        echo "archzfs-linux" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-linux" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-utils" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         ;;
 esac
 #end of adding archzfs repository and package
