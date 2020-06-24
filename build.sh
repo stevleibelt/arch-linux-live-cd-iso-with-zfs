@@ -89,7 +89,9 @@ SELECTED_ARCHZFS_REPOSITORY_NAME=${LIST_OF_AVAILABLE_ZFS_PACKAGES[${SELECTED_ARC
 echo ":: Building with archzfs repository ${SELECTED_ARCHZFS_REPOSITORY_NAME}"
 
 echo "[archzfs]" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
-echo "Server = http://archzfs.com/\$repo/x86_64" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
+echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
+echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
+echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
 case ${SELECTED_ARCHZFS_REPOSITORY_NAME} in
     "archzfs-linux-git" )
         echo "zfs-linux-git" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
@@ -138,6 +140,8 @@ fi
 
 #begin of renaming and hash generation
 cd ${PATH_TO_THE_OUTPUT_DIRECTORY}
+
+${PREFIX_FOR_EXECUTING_COMMAND} chmod -R 765 *
 
 BUILD_FILE_NAME="archlinux-${SELECTED_ARCHZFS_REPOSITORY_NAME}"
 ISO_FILE_NAME="${BUILD_FILE_NAME}.iso"
