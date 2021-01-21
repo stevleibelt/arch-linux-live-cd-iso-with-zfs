@@ -118,10 +118,44 @@ case ${SELECTED_ARCHZFS_REPOSITORY_NAME} in
 esac
 #end of adding archzfs repository and package
 
-#begin of building
-cd ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
+#begin of cleanup
+#cd ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
+BUILD_FILE_NAME="archlinux-${SELECTED_ARCHZFS_REPOSITORY_NAME}"
+ISO_FILE_PATH="${PATH_TO_THE_OUTPUT_DIRECTORY}/${BUILD_FILE_NAME}.iso"
+MD5_FILE_PATH="${ISO_FILE_PATH}.md5sum"
+SHA1_FILE_PATH="${ISO_FILE_PATH}.sha1sum"
+SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
 
-#${PREFIX_FOR_EXECUTING_COMMAND} ./build.sh -v
+if [[ -f ${ISO_FILE_PATH} ]];
+then
+    echo ":: Older build detected"
+    echo ":: Do you want to move the files somewhere? [y|N] (n means overwriting, n is default)"
+    read MOVE_EXISTING_BUILD_FILES
+
+    if [[ ${MOVE_EXISTING_BUILD_FILES} == "y" ]];
+    then
+        echo ":: Please input the path where you want to move the files (if the path does not exist, it will be created):"
+        read PATH_TO_MOVE_THE_EXISTING_BUILD_FILES
+
+        if [[ ! -d ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES} ]];
+        then
+            echo ":: Creating directory in path: ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
+            ${PREFIX_FOR_EXECUTING_COMMAND} mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
+        fi
+
+        echo ":: Moving files ..."
+        ${PREFIX_FOR_EXECUTING_COMMAND} mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
+    else
+        #following lines prevent us from getting asked from mv to override the existing file
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${ISO_FILE_PATH}
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${MD5_FILE_PATH}
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${SHA1_FILE_PATH}
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${SHA512_FILE_PATH}
+    fi
+fi
+#end of cleanup
+
+#begin of building
 ${PREFIX_FOR_EXECUTING_COMMAND} mkarchiso -v -w ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
 
 LAST_EXIT_CODE="$?"
@@ -144,45 +178,10 @@ cd ${PATH_TO_THE_OUTPUT_DIRECTORY}
 
 ${PREFIX_FOR_EXECUTING_COMMAND} chmod -R 765 *
 
-BUILD_FILE_NAME="archlinux-${SELECTED_ARCHZFS_REPOSITORY_NAME}"
-ISO_FILE_NAME="${BUILD_FILE_NAME}.iso"
-MD5_FILE_NAME="${ISO_FILE_NAME}.md5sum"
-SHA1_FILE_NAME="${ISO_FILE_NAME}.sha1sum"
-SHA512_FILE_NAME="${ISO_FILE_NAME}.sha512sum"
-
-if [[ -f ${ISO_FILE_NAME} ]];
-then
-    echo ":: Older build detected"
-    echo ":: Do you want to move the files somewhere? [y|n] (n means overwriting, n is default)"
-    read MOVE_EXISTING_BUILD_FILES
-
-    if [[ ${MOVE_EXISTING_BUILD_FILES} == "y" ]];
-    then
-        echo ":: Please input the path where you want to move the files (if the path does not exist, it will be created):"
-        read PATH_TO_MOVE_THE_EXISTING_BUILD_FILES
-
-        if [[ ! -d ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES} ]];
-        then
-            echo ":: Creating directory in path: ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
-            ${PREFIX_FOR_EXECUTING_COMMAND} mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
-        fi
-
-        echo ":: Moving files ..."
-        ${PREFIX_FOR_EXECUTING_COMMAND} mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
-    else
-        #following lines prevent us from getting asked from mv to override the existing file
-        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${ISO_FILE_NAME}
-        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${MD5_FILE_NAME}
-        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${SHA1_FILE_NAME}
-        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${SHA512_FILE_NAME}
-    fi
-fi
-
-${PREFIX_FOR_EXECUTING_COMMAND} mv archlinux-[0-9]*.iso ${ISO_FILE_NAME}
-${PREFIX_FOR_EXECUTING_COMMAND} chown ${WHO_AM_I} ${ISO_FILE_NAME}
-${PREFIX_FOR_EXECUTING_COMMAND} sha1sum ${ISO_FILE_NAME} > ${SHA1_FILE_NAME}
-${PREFIX_FOR_EXECUTING_COMMAND} md5sum ${ISO_FILE_NAME} > ${MD5_FILE_NAME}
-${PREFIX_FOR_EXECUTING_COMMAND} sha512sum ${ISO_FILE_NAME} > ${SHA512_FILE_NAME}
+${PREFIX_FOR_EXECUTING_COMMAND} chown ${WHO_AM_I} ${ISO_FILE_PATH}
+${PREFIX_FOR_EXECUTING_COMMAND} sha1sum ${ISO_FILE_PATH} > ${SHA1_FILE_PATH}
+${PREFIX_FOR_EXECUTING_COMMAND} md5sum ${ISO_FILE_PATH} > ${MD5_FILE_PATH}
+${PREFIX_FOR_EXECUTING_COMMAND} sha512sum ${ISO_FILE_PATH} > ${SHA512_FILE_PATH}
 #end of renaming and hash generation
 
 #@todo
