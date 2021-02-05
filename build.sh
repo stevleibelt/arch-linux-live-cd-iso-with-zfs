@@ -10,6 +10,7 @@
 ####
 
 #begin of variables declaration
+ARCHZFSKEY="0EE7A126"
 CURRENT_WORKING_DIRECTORY=$(pwd)
 #declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git" "archzfs-linux-lts")
 declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git")
@@ -83,6 +84,11 @@ read -p "Enter a selection (default=0): " SELECTED_ARCHZFS_REPOSITORY_INDEX
 #end of user interaction
 
 #begin of adding archzfs repository and package
+
+# Adding key for the archzfs repository
+${PREFIX_FOR_EXECUTING_COMMAND} pacman-key -r ${ARCHZFSKEY}
+${PREFIX_FOR_EXECUTING_COMMAND} pacman-key --lsign-key ${ARCHZFSKEY}
+
 #@todo pretty shitty, we are defining the list above but this switch case needs a lot of maintenance
 SELECTED_ARCHZFS_REPOSITORY_NAME=${LIST_OF_AVAILABLE_ZFS_PACKAGES[${SELECTED_ARCHZFS_REPOSITORY_INDEX}]}
 
