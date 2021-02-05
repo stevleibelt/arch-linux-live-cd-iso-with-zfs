@@ -10,7 +10,7 @@
 ####
 
 #begin of variables declaration
-
+ARCHZFSKEY="0EE7A126"
 CURRENT_WORKING_DIRECTORY=$(pwd)
 #declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git" "archzfs-linux-lts")
 declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git")
@@ -21,32 +21,25 @@ PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_OF_THIS_FILE}/dynamic_data"
 PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
 PATH_TO_THE_PROFILE_DIRECTORY="/usr/share/archiso/configs/releng"
 WHO_AM_I=$(whoami)
-ARCHZFSKEY="0EE7A126"
-
 #end of variables declaration
 
 #begin of check if we are root
-
 if [[ ${WHO_AM_I} = "root" ]];
 then
     PREFIX_FOR_EXECUTING_COMMAND=""
 fi
-
 #end of check if we are root
 
 #begin of check if archiso is installed
-
 if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
 then
     echo ":: No archiso package installed."
     echo ":: We are going to install it now..."
-    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Ssyu archiso
+    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Syyu archiso
 fi
-
 #end of check if archiso is installed
 
 #begin of dynamic data directory exists
-
 if [[ -d ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY} ]];
 then
     DIRECTORY_IS_NOT_EMPTY="$(ls -A ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY})"
@@ -63,19 +56,14 @@ then
 else
     mkdir -p ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
 fi
-
 #end of dynamic data directory exists
 
 #begin of creating the output directory
-
 mkdir -p ${PATH_TO_THE_OUTPUT_DIRECTORY}
-
 #end of creating the output directory
 
 #begin of copying needed profile
-
 cp -r ${PATH_TO_THE_PROFILE_DIRECTORY}/* ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
-
 #end of copying needed profile
 
 #begin of user interaction
@@ -107,10 +95,13 @@ SELECTED_ARCHZFS_REPOSITORY_NAME=${LIST_OF_AVAILABLE_ZFS_PACKAGES[${SELECTED_ARC
 echo ":: Building with archzfs repository ${SELECTED_ARCHZFS_REPOSITORY_NAME}"
 
 echo "[archzfs]" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
-echo "Server = http://archzfs.com/\$repo/x86_64" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
+echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
+echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
+echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
 case ${SELECTED_ARCHZFS_REPOSITORY_NAME} in
     "archzfs-linux-git" )
-        echo "archzfs-linux-git" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-linux-git" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-utils-git" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         ;;
     "archzfs-linux-lts" )
 #@todo begin of support for lts
@@ -120,21 +111,58 @@ case ${SELECTED_ARCHZFS_REPOSITORY_NAME} in
 #   https://blog.chendry.org/2015/02/06/automating-arch-linux-installation.html
 #        echo "linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.both
 #        echo "linux-lts-headers" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.both
-        echo "archzfs-linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-utils-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "linux-lts" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "linux-lts-headers" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         ;;
 #@todo end of support for lts
     *)
-        echo "archzfs-linux" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-linux" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+        echo "zfs-utils" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
         ;;
 esac
-
 #end of adding archzfs repository and package
 
+#begin of cleanup
+#cd ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
+BUILD_FILE_NAME="archlinux-${SELECTED_ARCHZFS_REPOSITORY_NAME}"
+ISO_FILE_PATH="${PATH_TO_THE_OUTPUT_DIRECTORY}/${BUILD_FILE_NAME}.iso"
+MD5_FILE_PATH="${ISO_FILE_PATH}.md5sum"
+SHA1_FILE_PATH="${ISO_FILE_PATH}.sha1sum"
+SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
+
+if [[ -f ${ISO_FILE_PATH} ]];
+then
+    echo ":: Older build detected"
+    echo ":: Do you want to move the files somewhere? [y|N] (n means overwriting, n is default)"
+    read MOVE_EXISTING_BUILD_FILES
+
+    if [[ ${MOVE_EXISTING_BUILD_FILES} == "y" ]];
+    then
+        echo ":: Please input the path where you want to move the files (if the path does not exist, it will be created):"
+        read PATH_TO_MOVE_THE_EXISTING_BUILD_FILES
+
+        if [[ ! -d ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES} ]];
+        then
+            echo ":: Creating directory in path: ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
+            ${PREFIX_FOR_EXECUTING_COMMAND} mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
+        fi
+
+        echo ":: Moving files ..."
+        ${PREFIX_FOR_EXECUTING_COMMAND} mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
+    else
+        #following lines prevent us from getting asked from mv to override the existing file
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${ISO_FILE_PATH}
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${MD5_FILE_PATH}
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${SHA1_FILE_PATH}
+        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${SHA512_FILE_PATH}
+    fi
+fi
+#end of cleanup
+
 #begin of building
-
-cd ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
-
-${PREFIX_FOR_EXECUTING_COMMAND} ./build.sh -v
+${PREFIX_FOR_EXECUTING_COMMAND} mkarchiso -v -w ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
 
 LAST_EXIT_CODE="$?"
 
@@ -149,59 +177,26 @@ then
     done
     exit ${LAST_EXIT_CODE}
 fi
-
 #end of building
 
 #begin of renaming and hash generation
 cd ${PATH_TO_THE_OUTPUT_DIRECTORY}
 
-BUILD_FILE_NAME="archlinux-${SELECTED_ARCHZFS_REPOSITORY_NAME}"
-ISO_FILE_NAME="${BUILD_FILE_NAME}.iso"
-MD5_FILE_NAME="${ISO_FILE_NAME}.md5sum"
-SHA1_FILE_NAME="${ISO_FILE_NAME}.sha1sum"
-SHA512_FILE_NAME="${ISO_FILE_NAME}.sha512sum"
+${PREFIX_FOR_EXECUTING_COMMAND} chmod -R 765 *
 
-if [[ -f ${ISO_FILE_NAME} ]];
-then
-    echo ":: Older build detected"
-    echo ":: Do you want to move the files somewhere? [y|n] (n means overwriting, n is default)"
-    read MOVE_EXISTING_BUILD_FILES
-
-    if [[ ${MOVE_EXISTING_BUILD_FILES} == "y" ]];
-    then
-        echo ":: Please input the path where you want to move the files (if the path does not exist, it will be created):"
-        read PATH_TO_MOVE_THE_EXISTING_BUILD_FILES
-
-        if [[ ! -d ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES} ]];
-        then
-            echo ":: Creating directory in path: ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
-            mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
-        fi
-
-        echo ":: Moving files ..."
-        mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
-    else
-        #following lines prevent us from getting asked from mv to override the existing file
-        rm ${ISO_FILE_NAME}
-        rm ${MD5_FILE_NAME}
-        rm ${SHA1_FILE_NAME}
-        rm ${SHA512_FILE_NAME}
-    fi
-fi
-
-mv archlinux-[0-9]*.iso ${ISO_FILE_NAME}
-sudo chown ${WHO_AM_I} ${ISO_FILE_NAME}
-sha1sum ${ISO_FILE_NAME} > ${SHA1_FILE_NAME}
-md5sum ${ISO_FILE_NAME} > ${MD5_FILE_NAME}
-sha512sum ${ISO_FILE_NAME} > ${SHA512_FILE_NAME}
+${PREFIX_FOR_EXECUTING_COMMAND} mv archlinux-*.iso ${ISO_FILE_PATH}
+${PREFIX_FOR_EXECUTING_COMMAND} chown ${WHO_AM_I} ${ISO_FILE_PATH}
+${PREFIX_FOR_EXECUTING_COMMAND} sha1sum ${ISO_FILE_PATH} > ${SHA1_FILE_PATH}
+${PREFIX_FOR_EXECUTING_COMMAND} md5sum ${ISO_FILE_PATH} > ${MD5_FILE_PATH}
+${PREFIX_FOR_EXECUTING_COMMAND} sha512sum ${ISO_FILE_PATH} > ${SHA512_FILE_PATH}
 #end of renaming and hash generation
 
 #@todo
 #ask if we should dd this to a sdx device
 
 echo ""
-echo ":: Iso created in:"
-echo " ${PATH_TO_THE_OUTPUT_DIRECTORY}"
+echo ":: Iso created in path:"
+echo "   ${PATH_TO_THE_OUTPUT_DIRECTORY}"
 echo ":: --------"
 echo ":: Listing directory content, filterd by ${SELECTED_ARCHZFS_REPOSITORY_NAME}..."
 
