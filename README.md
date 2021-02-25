@@ -28,6 +28,8 @@ At the end, you only need to dd the iso to your favorit usb drive or burn it on 
 
 * upcomming
     * @todo
+        * just put all in functions
+        * create a CHANGELOG.md
         * beautify the output
         * add option to dd it to a sdX device
         * add flag to not ask for fitting archzfs-linux repository

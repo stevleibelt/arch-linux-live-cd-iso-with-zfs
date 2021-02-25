@@ -13,7 +13,8 @@
 ARCHZFSKEY="0EE7A126"
 CURRENT_WORKING_DIRECTORY=$(pwd)
 #declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git" "archzfs-linux-lts")
-declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git")
+#declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git")
+declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux")
 LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING=""
 PREFIX_FOR_EXECUTING_COMMAND="sudo "
 PATH_OF_THIS_FILE=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
@@ -67,20 +68,25 @@ cp -r ${PATH_TO_THE_PROFILE_DIRECTORY}/* ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
 #end of copying needed profile
 
 #begin of user interaction
-#@todo ask what kind of archzfs the user wants to use:
-#   archzfs-linux (default)
-#   archzfs-linux-git
-#   archzfs-linux-lts
-for INDEX_KEY in "${!LIST_OF_AVAILABLE_ZFS_PACKAGES[@]}";
-do
-    LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING+="   ${INDEX_KEY}) ${LIST_OF_AVAILABLE_ZFS_PACKAGES[${INDEX_KEY}]}"
-done;
+if [[ ${#LIST_OF_AVAILABLE_ZFS_PACKAGES[*]} -gt 1 ]];
+then
+    #@todo ask what kind of archzfs the user wants to use:
+    #   archzfs-linux (default)
+    #   archzfs-linux-git
+    #   archzfs-linux-lts
+    for INDEX_KEY in "${!LIST_OF_AVAILABLE_ZFS_PACKAGES[@]}";
+    do
+        LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING+="   ${INDEX_KEY}) ${LIST_OF_AVAILABLE_ZFS_PACKAGES[${INDEX_KEY}]}"
+    done;
 
-echo ":: There are ${#LIST_OF_AVAILABLE_ZFS_PACKAGES[@]} archzfs repositories available:"
-echo ":: Repositories"
-echo "${LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING}"
-echo ""
-read -p "Enter a selection (default=0): " SELECTED_ARCHZFS_REPOSITORY_INDEX
+    echo ":: There are ${#LIST_OF_AVAILABLE_ZFS_PACKAGES[@]} archzfs repositories available:"
+    echo ":: Repositories"
+    echo "${LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING}"
+    echo ""
+    read -p "Enter a selection (default=0): " SELECTED_ARCHZFS_REPOSITORY_INDEX
+else
+    SELECTED_ARCHZFS_REPOSITORY_INDEX=0
+fi
 #end of user interaction
 
 #begin of adding archzfs repository and package
