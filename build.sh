@@ -16,7 +16,6 @@ CURRENT_WORKING_DIRECTORY=$(pwd)
 #declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git")
 declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux")
 LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING=""
-PREFIX_FOR_EXECUTING_COMMAND="sudo "
 PATH_OF_THIS_FILE=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
 PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_OF_THIS_FILE}/dynamic_data"
 PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
@@ -25,9 +24,11 @@ WHO_AM_I=$(whoami)
 #end of variables declaration
 
 #begin of check if we are root
-if [[ ${WHO_AM_I} = "root" ]];
+if [[ ${WHO_AM_I} != "root" ]];
 then
-    PREFIX_FOR_EXECUTING_COMMAND=""
+    echo ":: Script needs to be executed as root."
+
+    exit 1
 fi
 #end of check if we are root
 
@@ -36,7 +37,7 @@ if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
 then
     echo ":: No archiso package installed."
     echo ":: We are going to install it now..."
-    ${PREFIX_FOR_EXECUTING_COMMAND} pacman -Syyu archiso
+    pacman -Syyu archiso
 fi
 #end of check if archiso is installed
 
@@ -51,7 +52,7 @@ then
         echo ":: Cleaning up now..."
         for FILESYSTEM_ITEM_NAME in $(ls ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/ | grep -v out);
         do
-            ${PREFIX_FOR_EXECUTING_COMMAND} rm -fr ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
+            rm -fr ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
         done
     fi
 else
@@ -92,8 +93,8 @@ fi
 #begin of adding archzfs repository and package
 
 # Adding key for the archzfs repository
-${PREFIX_FOR_EXECUTING_COMMAND} pacman-key -r ${ARCHZFSKEY}
-${PREFIX_FOR_EXECUTING_COMMAND} pacman-key --lsign-key ${ARCHZFSKEY}
+pacman-key -r ${ARCHZFSKEY}
+pacman-key --lsign-key ${ARCHZFSKEY}
 
 #@todo pretty shitty, we are defining the list above but this switch case needs a lot of maintenance
 SELECTED_ARCHZFS_REPOSITORY_NAME=${LIST_OF_AVAILABLE_ZFS_PACKAGES[${SELECTED_ARCHZFS_REPOSITORY_INDEX}]}
@@ -152,23 +153,23 @@ then
         if [[ ! -d ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES} ]];
         then
             echo ":: Creating directory in path: ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
-            ${PREFIX_FOR_EXECUTING_COMMAND} mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
+            mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
         fi
 
         echo ":: Moving files ..."
-        ${PREFIX_FOR_EXECUTING_COMMAND} mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
+        mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
     else
         #following lines prevent us from getting asked from mv to override the existing file
-        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${ISO_FILE_PATH}
-        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${MD5_FILE_PATH}
-        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${SHA1_FILE_PATH}
-        ${PREFIX_FOR_EXECUTING_COMMAND} rm ${SHA512_FILE_PATH}
+        rm ${ISO_FILE_PATH}
+        rm ${MD5_FILE_PATH}
+        rm ${SHA1_FILE_PATH}
+        rm ${SHA512_FILE_PATH}
     fi
 fi
 #end of cleanup
 
 #begin of building
-${PREFIX_FOR_EXECUTING_COMMAND} mkarchiso -v -w ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
+mkarchiso -v -w ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
 
 LAST_EXIT_CODE="$?"
 
@@ -179,7 +180,7 @@ then
     echo ":: Cleaning up now..."
     for FILESYSTEM_ITEM_NAME in $(ls ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/ | grep -v out);
     do
-        ${PREFIX_FOR_EXECUTING_COMMAND} rm -fr ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
+        rm -fr ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
     done
     exit ${LAST_EXIT_CODE}
 fi
@@ -188,13 +189,13 @@ fi
 #begin of renaming and hash generation
 cd ${PATH_TO_THE_OUTPUT_DIRECTORY}
 
-${PREFIX_FOR_EXECUTING_COMMAND} chmod -R 765 *
+chmod -R 765 *
 
-${PREFIX_FOR_EXECUTING_COMMAND} mv archlinux-*.iso ${ISO_FILE_PATH}
-${PREFIX_FOR_EXECUTING_COMMAND} chown ${WHO_AM_I} ${ISO_FILE_PATH}
-${PREFIX_FOR_EXECUTING_COMMAND} sha1sum ${ISO_FILE_PATH} > ${SHA1_FILE_PATH}
-${PREFIX_FOR_EXECUTING_COMMAND} md5sum ${ISO_FILE_PATH} > ${MD5_FILE_PATH}
-${PREFIX_FOR_EXECUTING_COMMAND} sha512sum ${ISO_FILE_PATH} > ${SHA512_FILE_PATH}
+mv archlinux-*.iso ${ISO_FILE_PATH}
+chown ${WHO_AM_I} ${ISO_FILE_PATH}
+sha1sum ${ISO_FILE_PATH} > ${SHA1_FILE_PATH}
+md5sum ${ISO_FILE_PATH} > ${MD5_FILE_PATH}
+sha512sum ${ISO_FILE_PATH} > ${SHA512_FILE_PATH}
 #end of renaming and hash generation
 
 #@todo
