@@ -10,7 +10,7 @@
 ####
 
 #begin of variables declaration
-ARCHZFSKEY="0EE7A126"
+ARCHZFSKEY="DDF7DB817396A49B2A2723F7403BD972F75D9D76"
 CURRENT_WORKING_DIRECTORY=$(pwd)
 #declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git" "archzfs-linux-lts")
 #declare -a LIST_OF_AVAILABLE_ZFS_PACKAGES=("archzfs-linux" "archzfs-linux-git")
