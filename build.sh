@@ -20,6 +20,7 @@ PATH_OF_THIS_FILE=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
 PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_OF_THIS_FILE}/dynamic_data"
 PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
 PATH_TO_THE_PROFILE_DIRECTORY="/usr/share/archiso/configs/releng"
+PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_OF_THIS_FILE}/source"
 WHO_AM_I=$(whoami)
 #end of variables declaration
 
@@ -65,8 +66,41 @@ mkdir -p ${PATH_TO_THE_OUTPUT_DIRECTORY}
 #end of creating the output directory
 
 #begin of copying needed profile
-cp -r ${PATH_TO_THE_PROFILE_DIRECTORY}/* ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
+cp -r ${PATH_TO_THE_PROFILE_DIRECTORY}/ ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
 #end of copying needed profile
+
+#begin of check if pacman-init.service file is still the same
+FILE_PATH_TO_KEEP_THE_DIFF=$(mktemp)
+FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE="/usr/share/archiso/configs/releng/airootfs/etc/systemd/system/pacman-init.service"
+FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE="${PATH_TO_THE_SOURCE_DATA_DIRECTORY}/pacman-init.service"
+FILE_PATH_TO_PACMAN_INIT_SERVICE_EXPECTED_DIFF="${PATH_TO_THE_SOURCE_DATA_DIRECTORY}/pacman-init.service.expected_diff"
+
+diff ${FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE} "${FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE}" > ${FILE_PATH_TO_KEEP_THE_DIFF}
+
+NUMBER_OF_LINES_BETWEEN_THE_TWO_DIFF_FILES=$(diff ${FILE_PATH_TO_KEEP_THE_DIFF} "${FILE_PATH_TO_PACMAN_INIT_SERVICE_EXPECTED_DIFF}" | wc -l)
+
+if [[ ${NUMBER_OF_LINES_BETWEEN_THE_TWO_DIFF_FILES} -gt 0 ]];
+then
+    echo ":: Unexpected runtime environment."
+    echo "   The diff between the files >>${FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE}<< and >>${FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE}<< results in an unexpected output."
+    echo "   Dumping expected diff:"
+    echo "${FILE_PATH_TO_PACMAN_INIT_SERVICE_EXPECTED_DIFF}"
+    echo ""
+    echo "   Dumping current diff:"
+    echo "${FILE_PATH_TO_KEEP_THE_DIFF}"
+    echo ""
+    echo ":: Please create an issue in >>https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues<<."
+    echo ""
+    echo ":: Will stop now."
+    echo ""
+
+    return 1;
+else
+    echo ":: Updating pacman-init.service"
+
+    cp "${FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE}" "${PATH_TO_THE_OUTPUT_DIRECTORY}/airootfs/etc/systemd/system/pacman-init.service"
+fi
+#end of check if pacman-init.service file is still the same
 
 #begin of user interaction
 if [[ ${#LIST_OF_AVAILABLE_ZFS_PACKAGES[*]} -gt 1 ]];
@@ -93,8 +127,9 @@ fi
 #begin of adding archzfs repository and package
 
 # Adding key for the archzfs repository
-pacman-key -r ${ARCHZFSKEY}
-pacman-key --lsign-key ${ARCHZFSKEY}
+#pacman-key -r ${ARCHZFSKEY}
+#pacman-key --lsign-key ${ARCHZFSKEY}
+
 
 #@todo pretty shitty, we are defining the list above but this switch case needs a lot of maintenance
 SELECTED_ARCHZFS_REPOSITORY_NAME=${LIST_OF_AVAILABLE_ZFS_PACKAGES[${SELECTED_ARCHZFS_REPOSITORY_INDEX}]}
