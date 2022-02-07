@@ -233,6 +233,7 @@ function _main ()
 {
     #@todo:
     #   * add support for dynamic user input
+    #       -a|--add-script (add a script like a one we can maintain to easeup setup/installation of "our" archlinux)
     #       -f|--force (overwrite existing data)
     #       -l|--log-output 2>&1 | tee build.log
     #       -p|--package (archzfs-linux or what ever)
