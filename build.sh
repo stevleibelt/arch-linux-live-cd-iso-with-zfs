@@ -11,18 +11,18 @@
 
 function add_packages_and_repository ()
 {
-    #begin of adding archzfs repository and package
-    # Adding key for the archzfs repository
-    #pacman-key -r ${ARCHZFSKEY}
-    echo ":: Building with archiso with package >>archzfs-linux<<."
+    echo ":: Adding repository and package >>archzfs-linux<<."
 
-    echo "[archzfs]" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
-    echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
-    echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
-    echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
+    #bo: adding repository
+    echo "[archzfs]" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/relang/pacman.conf
+    echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/relang/pacman.conf
+    echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/relang/pacman.conf
+    echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/relang/pacman.conf
+    #eo: adding repository
 
+    #bo: adding package
     echo "archzfs-linux" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
-    #end of adding archzfs repository and package
+    #eo: adding package
 }
 
 function build_archiso ()
