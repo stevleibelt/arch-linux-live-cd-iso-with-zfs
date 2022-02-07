@@ -262,7 +262,7 @@ function _main ()
     add_packages_and_repository
     cleanup_build_path
     build_archiso
-    run_iso_if_wanted
+    run_iso_if_wanted ${ISO_FILE_PATH}
 
     cd ${CURRENT_WORKING_DIRECTORY}
 }
