@@ -151,45 +151,6 @@ function exit_if_not_called_from_root ()
     #end of check if we are root
 }
 
-function run_iso_if_wanted ()
-{
-    local PATH_TO_THE_ISO=${1:-""}
-
-    if [[ -f "${PATH_TO_THE_ISO}" ]];
-    then
-        echo ":: Do you want to run the iso for testing? [y|N]"
-        read RUN_ISO
-
-        if [[ ${RUN_ISO} == "y" ]];
-        then
-            if [[ ! -d "/usr/share/qemu" ]];
-            then
-                echo ":: qemu package is missing, installing it ..."
-                pacman -S qemu
-            fi
-
-            if [[ ! -d "/usr/share/edk2-ovmf" ]];
-            then
-                echo ":: edk2-ovmf package is missing, installing it ..."
-                pacman -S edk2-ovmf
-            fi
-
-            echo ":: Do you want to run it as UEFI? [y|N]"
-            read RUN_AS_UEFI
-
-            if [[ ${RUN_AS_UEFI} == "y" ]];
-            then
-                run_archiso -u -i ${PATH_TO_THE_ISO}
-            else
-                run_archiso -i ${PATH_TO_THE_ISO}
-            fi
-        fi
-    else
-        echo ":: Invalid path provided."
-        echo "   >>${PATH_TO_THE_ISO}<< is not a valid file."
-    fi
-}
-
 function setup_environment ()
 {
     #begin of check if archiso is installed
@@ -243,11 +204,11 @@ function _main ()
     local ARCHZFSKEY="DDF7DB817396A49B2A2723F7403BD972F75D9D76"
     local CURRENT_WORKING_DIRECTORY=$(pwd)
     local LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING=""
-    local PATH_OF_THIS_FILE=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
-    local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_OF_THIS_FILE}/dynamic_data"
+    local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+    local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
     local PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
     local PATH_TO_THE_PROFILE_DIRECTORY="/usr/share/archiso/configs/releng"
-    local PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_OF_THIS_FILE}/source"
+    local PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
     local WHO_AM_I=$(whoami)
 
     local BUILD_FILE_NAME="archlinux-archzfs-linux"
@@ -257,15 +218,21 @@ function _main ()
     local SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
     #end of variables declaration
 
+    cd "${PATH_TO_THIS_SCRIPT}"
+
     exit_if_not_called_from_root
     setup_environment
     evaluate_environment
     add_packages_and_repository
     cleanup_build_path
     build_archiso
-    run_iso_if_wanted ${ISO_FILE_PATH}
 
-    cd ${CURRENT_WORKING_DIRECTORY}
+    if [[ -f run_iso.sh ]];
+    then
+        bash run_iso.sh ${ISO_FILE_PATH}
+    fi
+
+    cd "${CURRENT_WORKING_DIRECTORY}"
 }
 
 _main $#
