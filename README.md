@@ -1,5 +1,10 @@
 # Arch Linux Archiso builder with zfs support
 
+Attention!
+
+With the rework of the archiso, this build script is currently (date of writing: 07.02.2022) not working. I am trying to fix it but it will take some time.   
+My current problem is the fact that I need to add a local repository with the zfs packages inside.
+
 This repository contains a simple, free as in freedom, wrapper to automate the steps mentioned in the [arch linux wiki](https://wiki.archlinux.org) for the [zfs installation](https://wiki.archlinux.org/index.php/ZFS#Installation) and the [archios package installation](https://wiki.archlinux.org/index.php/Archiso#Installing_packages).
 
 All you need to do is to execute the [build.sh](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/blob/master/build.sh) and follow the instructions.
