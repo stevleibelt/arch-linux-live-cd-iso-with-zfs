@@ -234,7 +234,7 @@ function _main ()
     #@todo:
     #   * add support for dynamic user input
     #       -f|--force (overwrite existing data)
-    #       -l|--log-output
+    #       -l|--log-output 2>&1 | tee build.log
     #       -p|--package (archzfs-linux or what ever)
     #       -v|--verbose (be verbose)
     #   * fix not working zfs embedding
