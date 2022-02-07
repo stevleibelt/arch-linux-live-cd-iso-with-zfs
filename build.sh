@@ -21,8 +21,7 @@ function add_packages_and_repository ()
     echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
     echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/pacman.conf
 
-    echo "zfs-linux" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
-    echo "zfs-utils" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+    echo "archzfs-linux" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
     #end of adding archzfs repository and package
 }
 
