@@ -14,6 +14,13 @@ function add_packages_and_repository ()
     echo ":: Starting adding packages and repository"
     local PATH_TO_THE_ARCHLIVE=${1:-""}
 
+    if [[ ! -d ${PATH_TO_THE_ARCHLIVE} ]];
+    then
+        echo "   Invalid path to the archlive provided >>${PATH_TO_THE_ARCHLIVE}<< is not a directory."
+
+        exit 1
+    fi
+
     local PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
     local PATH_TO_THE_PACMAN_CONF_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.conf"
 
@@ -51,8 +58,50 @@ function add_packages_and_repository ()
 function build_archiso ()
 {
     echo ":: Starting bulding archiso"
+
+    local ISO_FILE_PATH=${4:-""}
+    local PATH_TO_THE_PROFILE_DIRECTORY=${3:-""}
+    local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
+    local PATH_TO_THE_WORK_DIRECTORY=${1:-""}
+    local SHA512_FILE_PATH=${5:-""}
+
+    if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
+    then
+        echo "   Invalid path provided. >>${PATH_TO_THE_PROFILE_DIRECTORY}<< is not a directory."
+
+        exit 1
+    fi
+
+    if [[ ! -d ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
+    then
+        echo "   Invalid path provided. >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< is not a directory."
+
+        exit 2
+    fi
+
+    if [[ ! -d ${PATH_TO_THE_WORK_DIRECTORY} ]];
+    then
+        echo "   Invalid path provided. >>${PATH_TO_THE_WORK_DIRECTORY}<< is not a directory."
+
+        exit 3
+    fi
+
+    if [[ ${#ISO_FILE_PATH} -lt 1 ]];
+    then
+        echo "   Invalid file path provided. >>${ISO_FILE_PATH}<< is an empty string."
+
+        exit 4
+    fi
+
+    if [[ ${#SHA512_FILE_PATH} -lt 1 ]];
+    then
+        echo "   Invalid file path provided. >>${SHA512_FILE_PATH}<< is an empty string."
+
+        exit 5
+    fi
+
     #begin of building
-    mkarchiso -v -w ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
+    mkarchiso -v -w ${PATH_TO_THE_WORK_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
 
     LAST_EXIT_CODE="$?"
 
@@ -61,10 +110,11 @@ function build_archiso ()
         echo ""
         echo "   Build failed!"
         echo "   Cleaning up now..."
-        for FILESYSTEM_ITEM_NAME in $(ls ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/ | grep -v out);
+        for FILESYSTEM_ITEM_NAME in $(ls "${PATH_TO_THE_OUTPUT_DIRECTORY}/" );
         do
-            rm -fr ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
+            rm -fr ${PATH_TO_THE_OUTPUT_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
         done
+
         exit ${LAST_EXIT_CODE}
     fi
     #end of building
@@ -75,9 +125,7 @@ function build_archiso ()
     chmod -R 765 *
 
     mv archlinux-*.iso ${ISO_FILE_PATH}
-    chown ${WHO_AM_I} ${ISO_FILE_PATH}
-    sha1sum ${ISO_FILE_PATH} > ${SHA1_FILE_PATH}
-    md5sum ${ISO_FILE_PATH} > ${MD5_FILE_PATH}
+    #chown ${WHO_AM_I} ${ISO_FILE_PATH}
     sha512sum ${ISO_FILE_PATH} > ${SHA512_FILE_PATH}
     #end of renaming and hash generation
 
@@ -99,6 +147,10 @@ function build_archiso ()
 function cleanup_build_path ()
 {
     echo ":: Starting cleanup build path"
+
+    local ISO_FILE_PATH=${1:-""}
+    local SHA512_FILE_PATH=${2:-""}
+
     #begin of cleanup
     #cd ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
     if [[ -f ${ISO_FILE_PATH} ]];
@@ -119,13 +171,18 @@ function cleanup_build_path ()
             fi
 
             echo ":: Moving files ..."
-            mv -v ${BUILD_FILE_NAME}* ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}/
+            mv -v ${ISO_FILE_PATH} ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
+
+            if [[ -f ${SHA512_FILE_PATH} ]];
+            then
+                mv -v ${SHA512_FILE_PATH} ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
+            fi
         else
             #following lines prevent us from getting asked from mv to override the existing file
-            rm ${ISO_FILE_PATH}
-            rm ${MD5_FILE_PATH}
-            rm ${SHA1_FILE_PATH}
-            rm ${SHA512_FILE_PATH}
+            if [[ -f ${SHA512_FILE_PATH} ]];
+            then
+                rm ${SHA512_FILE_PATH}
+            fi
         fi
     fi
     #end of cleanup
@@ -135,11 +192,29 @@ function cleanup_build_path ()
 function evaluate_environment ()
 {
     echo ":: Starting evaluating environment"
+
+    local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
+    local PATH_TO_THE_SOURCE_DATA_DIRECTORY=${1:-""}
+
+    if [[ ! -d ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
+    then
+        echo "   Invalid path provided. >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< is not a directory."
+
+        exit 1
+    fi
+
+    if [[ ! -d ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ]];
+    then
+        echo "   Invalid path provided. >>${PATH_TO_THE_SOURCE_DATA_DIRECTORY}<< is not a directory."
+
+        exit 2
+    fi
+
     #begin of check if pacman-init.service file is still the same
-    FILE_PATH_TO_KEEP_THE_DIFF=$(mktemp)
-    FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE="/usr/share/archiso/configs/releng/airootfs/etc/systemd/system/pacman-init.service"
-    FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE="${PATH_TO_THE_SOURCE_DATA_DIRECTORY}/pacman-init.service"
-    FILE_PATH_TO_PACMAN_INIT_SERVICE_EXPECTED_DIFF="${PATH_TO_THE_SOURCE_DATA_DIRECTORY}/pacman-init.service.expected_diff"
+    local FILE_PATH_TO_KEEP_THE_DIFF=$(mktemp)
+    local FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE="/usr/share/archiso/configs/releng/airootfs/etc/systemd/system/pacman-init.service"
+    local FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE="${PATH_TO_THE_SOURCE_DATA_DIRECTORY}/pacman-init.service"
+    local FILE_PATH_TO_PACMAN_INIT_SERVICE_EXPECTED_DIFF="${PATH_TO_THE_SOURCE_DATA_DIRECTORY}/pacman-init.service.expected_diff"
 
     diff ${FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE} "${FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE}" > ${FILE_PATH_TO_KEEP_THE_DIFF}
 
@@ -185,8 +260,36 @@ function exit_if_not_called_from_root ()
 function setup_environment ()
 {
     echo ":: Starting setup environment"
+
+    local PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY=${2:-""}
+    local PATH_TO_THE_SOURCE_PROFILE_DIRECTORY=${1:-""}
+    local PATH_TO_THE_OUTPUT_DIRECTORY=${3:-""}
+
+    #bo: user input validation
+    if [[ ${#PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY} -lt 1 ]];
+    then
+        echo "   Invalid destination path for the profile provided >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<<."
+
+        exit 1
+    fi
+
+    if [[ ${#PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} -lt 1 ]];
+    then
+        echo "   Invalid source path for the profile provided >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<."
+ 
+        exit 2
+    fi
+
+    if [[ ${#PATH_TO_THE_OUTPUT_DIRECTORY} -lt 1 ]];
+    then
+        echo "   Invalid output path provided >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
+
+        exit 3
+    fi
+    #eo: user input validation
+
     #begin of check if archiso is installed
-    if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
+    if [[ ! -d ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} ]];
     then
         echo "   No archiso package installed."
         echo "   We are going to install it now ..."
@@ -195,32 +298,36 @@ function setup_environment ()
     #end of check if archiso is installed
 
     #begin of dynamic data directory exists
-    if [[ -d ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY} ]];
+    if [[ -d ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY} ]];
     then
-        DIRECTORY_IS_NOT_EMPTY="$(ls -A ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY})"
+        DIRECTORY_IS_NOT_EMPTY="$(ls -A ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY})"
 
         if [[ ${DIRECTORY_IS_NOT_EMPTY} ]];
         then
             echo "   Previous build data detected."
             echo "   Cleaning up now ..."
-            for FILESYSTEM_ITEM_NAME in $(ls ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/ | grep -v out);
+            for FILESYSTEM_ITEM_NAME in $(ls ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}/ | grep -v out);
             do
-                rm -fr ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
+                rm -fr ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
             done
         fi
     else
-        mkdir -p ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
+        echo "   Creating >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<<."
+        mkdir -p ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}
     fi
     #end of dynamic data directory exists
 
     #begin of creating the output directory
-    echo "   Creating >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
-    mkdir -p ${PATH_TO_THE_OUTPUT_DIRECTORY}
+    if [[ ! -p ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
+    then
+        echo "   Creating >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
+        mkdir -p ${PATH_TO_THE_OUTPUT_DIRECTORY}
+    fi
     #end of creating the output directory
 
     #begin of copying needed profile
-    echo "   Copying content off >>${PATH_TO_THE_PROFILE_DIRECTORY}<< to >>${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}<<."
-    cp -r ${PATH_TO_THE_PROFILE_DIRECTORY}/ ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
+    echo "   Copying content off >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<< to >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<<."
+    cp -r "${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}/" ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}
     #end of copying needed profile
     echo ":: Finished setup environment"
 }
@@ -236,31 +343,30 @@ function _main ()
     #       -v|--verbose (be verbose)
     #   * fix not working zfs embedding
     #begin of variables declaration
-    local ARCHZFSKEY="DDF7DB817396A49B2A2723F7403BD972F75D9D76"
+    local BUILD_FILE_NAME="archlinux-archzfs-linux"
     local CURRENT_WORKING_DIRECTORY=$(pwd)
-    local LIST_OF_AVAILABLE_ZFS_PACKAGES_AS_STRING=""
-    local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
-    local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
-    local PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
     local PATH_TO_THE_PROFILE_DIRECTORY="/usr/share/archiso/configs/releng"
-    local PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
+    local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
     local WHO_AM_I=$(whoami)
 
-    local BUILD_FILE_NAME="archlinux-archzfs-linux"
+    local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
+    local PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
+
+    local PATH_TO_THE_PROFILE_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/releng"
+    local PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
     local ISO_FILE_PATH="${PATH_TO_THE_OUTPUT_DIRECTORY}/${BUILD_FILE_NAME}.iso"
-    local MD5_FILE_PATH="${ISO_FILE_PATH}.md5sum"
-    local SHA1_FILE_PATH="${ISO_FILE_PATH}.sha1sum"
+
     local SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
     #end of variables declaration
 
     cd "${PATH_TO_THIS_SCRIPT}"
 
     exit_if_not_called_from_root
-    setup_environment
-    evaluate_environment
-    add_packages_and_repository "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/releng"
-    cleanup_build_path
-    build_archiso
+    setup_environment ${PATH_TO_THE_PROFILE_DIRECTORY} ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY} ${PATH_TO_THE_OUTPUT_DIRECTORY}
+    evaluate_environment ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ${PATH_TO_THE_OUTPUT_DIRECTORY}
+    add_packages_and_repository ${PATH_TO_THE_PROFILE_DIRECTORY}
+    cleanup_build_path ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
+    build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY} ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
 
     if [[ -f "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ]];
     then
