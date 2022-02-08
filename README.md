@@ -34,6 +34,7 @@ At the end, you only need to dd the iso to your favorit usb drive or burn it on 
         * create a CHANGELOG.md
         * beautify the output
         * add option to dd it to a sdX device
+        * validate if we can implement the "use older kernel" feature from [here](https://github.com/eoli3n/archiso-zfs/blob/master/init) to prevent failing builds when the archzfs package is not up to date to the latest linux kernel
 * [2.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.0.0) - released at 07.02.2022
     * major rework of internal code - adapted to archiso changes
         * all code is now running into dedicated functions
