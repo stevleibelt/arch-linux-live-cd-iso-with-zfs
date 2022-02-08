@@ -255,4 +255,4 @@ function _main ()
     cd "${CURRENT_WORKING_DIRECTORY}"
 }
 
-_main $?
+_main $@
