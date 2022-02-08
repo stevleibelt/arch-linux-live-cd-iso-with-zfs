@@ -261,18 +261,10 @@ function setup_environment ()
 {
     echo ":: Starting setup environment"
 
-    local PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY=${2:-""}
     local PATH_TO_THE_SOURCE_PROFILE_DIRECTORY=${1:-""}
-    local PATH_TO_THE_OUTPUT_DIRECTORY=${3:-""}
+    local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
 
     #bo: user input validation
-    if [[ ${#PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY} -lt 1 ]];
-    then
-        echo "   Invalid destination path for the profile provided >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<<."
-
-        exit 1
-    fi
-
     if [[ ${#PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} -lt 1 ]];
     then
         echo "   Invalid source path for the profile provided >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<."
@@ -300,22 +292,15 @@ function setup_environment ()
     #end of check if archiso is installed
 
     #begin of dynamic data directory exists
+    local PROFILE_NAME=$(basename ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY})
+    local PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY="${PATH_TO_THE_OUTPUT_DIRECTORY}/${PROFILE_NAME}"
+
     if [[ -d ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY} ]];
     then
-        DIRECTORY_IS_NOT_EMPTY="$(ls -A ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY})"
+        echo "   Previous profile data detected."
+        echo "   Cleaning up now ..."
 
-        if [[ ${DIRECTORY_IS_NOT_EMPTY} ]];
-        then
-            echo "   Previous build data detected."
-            echo "   Cleaning up now ..."
-            for FILESYSTEM_ITEM_NAME in $(ls ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}/ | grep -v out);
-            do
-                rm -fr ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
-            done
-        fi
-    else
-        echo "   Creating >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<<."
-        mkdir -p ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}
+        rm -fr "${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}"
     fi
     #end of dynamic data directory exists
 
@@ -328,9 +313,10 @@ function setup_environment ()
     #end of creating the output directory
 
     #begin of copying needed profile
-    echo "   Copying content off >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<< to >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<<."
-    cp -r "${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}/*" ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}
+    echo "   Copying content off >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<< to >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
+    cp -r ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} "${PATH_TO_THE_OUTPUT_DIRECTORY}/"
     #end of copying needed profile
+
     echo ":: Finished setup environment"
 }
 
