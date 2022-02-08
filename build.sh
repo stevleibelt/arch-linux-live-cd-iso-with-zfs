@@ -351,7 +351,7 @@ function _main ()
     cd "${PATH_TO_THIS_SCRIPT}"
 
     exit_if_not_called_from_root
-    setup_environment "/usr/share/archiso/configs/releng" ${PATH_TO_THE_PROFILE_DIRECTORY} ${PATH_TO_THE_OUTPUT_DIRECTORY}
+    setup_environment "/usr/share/archiso/configs/releng" ${PATH_TO_THE_OUTPUT_DIRECTORY}
     evaluate_environment ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
     add_packages_and_repository ${PATH_TO_THE_PROFILE_DIRECTORY}
     cleanup_build_path ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
