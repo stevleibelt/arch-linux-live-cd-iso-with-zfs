@@ -266,14 +266,14 @@ function setup_environment ()
     local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
 
     #bo: user input validation
-    if [[ ! -d ${#PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} ]];
+    if [[ ! -d ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} ]];
     then
         echo "   Invalid source path for the profile provided >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<."
  
         exit 1
     fi
 
-    if [[ ! -d ${#PATH_TO_THE_OUTPUT_DIRECTORY} ]];
+    if [[ ! -d ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
     then
         echo "   Invalid output path provided >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
 
