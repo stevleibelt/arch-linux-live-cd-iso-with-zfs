@@ -193,12 +193,12 @@ function evaluate_environment ()
 {
     echo ":: Starting evaluating environment"
 
-    local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
+    local PATH_TO_THE_PROFILE_DIRECTORY=${2:-""}
     local PATH_TO_THE_SOURCE_DATA_DIRECTORY=${1:-""}
 
-    if [[ ! -d ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
+    if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
     then
-        echo "   Invalid path provided. >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< is not a directory."
+        echo "   Invalid path provided. >>${PATH_TO_THE_PROFILE_DIRECTORY}<< is not a directory."
 
         exit 1
     fi
@@ -239,7 +239,7 @@ function evaluate_environment ()
     else
         echo "   Updating pacman-init.service"
 
-        cp "${FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE}" "${PATH_TO_THE_OUTPUT_DIRECTORY}/airootfs/etc/systemd/system/pacman-init.service"
+        cp "${FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE}" "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/etc/systemd/system/pacman-init.service"
     fi
     #end of check if pacman-init.service file is still the same
     echo ":: Finished evaluating environment"
@@ -329,7 +329,7 @@ function setup_environment ()
 
     #begin of copying needed profile
     echo "   Copying content off >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<< to >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<<."
-    cp -r "${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}/" ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}
+    cp -r "${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}/*" ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}
     #end of copying needed profile
     echo ":: Finished setup environment"
 }
@@ -364,7 +364,7 @@ function _main ()
 
     exit_if_not_called_from_root
     setup_environment "/usr/share/archiso/configs/releng" ${PATH_TO_THE_PROFILE_DIRECTORY} ${PATH_TO_THE_OUTPUT_DIRECTORY}
-    evaluate_environment ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ${PATH_TO_THE_OUTPUT_DIRECTORY}
+    evaluate_environment ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
     add_packages_and_repository ${PATH_TO_THE_PROFILE_DIRECTORY}
     cleanup_build_path ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY} ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
