@@ -50,7 +50,8 @@ function add_packages_and_repository ()
     #eo: adding repository
 
     #bo: adding package
-    echo "archzfs-linux" >> ${PATH_TO_THE_PACKAGES_FILE}
+    echo "zfs-linux" >> ${PATH_TO_THE_PACKAGES_FILE}
+    echo "zfs-utils" >> ${PATH_TO_THE_PACKAGES_FILE}
     #eo: adding package
     echo ":: Finished adding packages and repository"
 }
