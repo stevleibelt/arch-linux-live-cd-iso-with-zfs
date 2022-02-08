@@ -79,9 +79,9 @@ function build_archiso ()
         exit 2
     fi
 
-    if [[ ! -d ${PATH_TO_THE_WORK_DIRECTORY} ]];
+    if [[ ${#PATH_TO_THE_WORK_DIRECTORY} -lt 1 ]];
     then
-        echo "   Invalid path provided. >>${PATH_TO_THE_WORK_DIRECTORY}<< is not a directory."
+        echo "   Invalid path provided. >>${PATH_TO_THE_WORK_DIRECTORY}<< is an empty string."
 
         exit 3
     fi
