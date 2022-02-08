@@ -299,9 +299,10 @@ function setup_environment ()
     if [[ -d ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY} ]];
     then
         echo "   Previous profile data detected."
+        echo "   >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<< exists."
         echo "   Cleaning up now ..."
 
-        rm -fr "${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}"
+        rm -fr ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}
     fi
     #end of dynamic data directory exists
 

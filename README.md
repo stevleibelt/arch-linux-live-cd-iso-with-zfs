@@ -1,10 +1,5 @@
 # Arch Linux Archiso builder with zfs support
 
-Attention!
-
-With the rework of the archiso, this build script is currently (date of writing: 07.02.2022) not working. I am trying to fix it but it will take some time.   
-My current problem is the fact that I need to add a local repository with the zfs packages inside.
-
 This repository contains a simple, free as in freedom, wrapper to automate the steps mentioned in the [arch linux wiki](https://wiki.archlinux.org) for the [zfs installation](https://wiki.archlinux.org/index.php/ZFS#Installation) and the [archios package installation](https://wiki.archlinux.org/index.php/Archiso#Installing_packages).
 
 All you need to do is to execute the [build.sh](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/blob/master/build.sh) and follow the instructions.
@@ -33,20 +28,17 @@ At the end, you only need to dd the iso to your favorit usb drive or burn it on 
 
 * upcomming
     * @todo
-        * just put all in functions
         * create a CHANGELOG.md
         * beautify the output
         * add option to dd it to a sdX device
-        * add flag to not ask for fitting archzfs-linux repository
-        * support archzfs-linux-lts
-    * updated pacman keys
+* [2.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.0.0) - released at 07.02.2022
+    * major rework of internal code - adapted to archiso changes
+        * all code is now running into dedicated functions
+    * added support to run an existing iso
     * added usage of pacman-init.service including check of expected content
-    * added output if iso building is not successful
     * aligned output
-    * fixed wrong number when selecting archzfs repository
     * moveing the existing iso to $somewhere
-    * named the output of each build fitting to the selected archzfs package
-* [1.3.1](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.3.1) - released at xx.12.2017
+    * added output if iso building is not successful
     * fixed issue with not enough access when generating the checksum files
 * [1.3.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.3.0) - released at 23.08.2016
     * implemented user input to select fitting archzfs-linux repository
