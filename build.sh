@@ -11,17 +11,37 @@
 
 function add_packages_and_repository ()
 {
+    local PATH_TO_THE_ARCHLIVE=${1:-""}
+
+    local PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
+    local PATH_TO_THE_PACMAN_CONF_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.conf"
+
     echo ":: Adding repository and package >>archzfs-linux<<."
+    echo "   Using following path to the archlive >>${PATH_TO_THE_ARCHLIVE}<<."
+
+    if [[ ! -f "${PATH_TO_THE_PACKAGES_FILE}" ]]:
+    then
+        echo "   Required file >>${PATH_TO_THE_PACKAGES_FILE}<< was not found."
+
+        exit 5
+    fi
+
+    if [[ ! -f "${PATH_TO_THE_PACMAN_CONF_FILE}" ]]:
+    then
+        echo "   Required file >>${PATH_TO_THE_PACMAN_CONF_FILE}<< was not found."
+
+        exit 5
+    fi
 
     #bo: adding repository
-    echo "[archzfs]" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/relang/pacman.conf
-    echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/relang/pacman.conf
-    echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/relang/pacman.conf
-    echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/relang/pacman.conf
+    echo "[archzfs]" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
+    echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
+    echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
+    echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
     #eo: adding repository
 
     #bo: adding package
-    echo "archzfs-linux" >> ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/packages.x86_64
+    echo "archzfs-linux" >> ${PATH_TO_THE_PACKAGES_FILE}
     #eo: adding package
 }
 
@@ -260,7 +280,7 @@ function _main ()
     exit_if_not_called_from_root
     setup_environment
     evaluate_environment
-    add_packages_and_repository
+    add_packages_and_repository "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/releng"
     cleanup_build_path
     build_archiso
     run_iso_if_wanted ${ISO_FILE_PATH}
