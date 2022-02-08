@@ -2,19 +2,22 @@
 
 This repository contains a simple, free as in freedom, wrapper to automate the steps mentioned in the [arch linux wiki](https://wiki.archlinux.org) for the [zfs installation](https://wiki.archlinux.org/index.php/ZFS#Installation) and the [archios package installation](https://wiki.archlinux.org/index.php/Archiso#Installing_packages).
 
-All you need to do is to execute the [build.sh](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/blob/master/build.sh) and follow the instructions.
+All you need to do is to execute the [build.sh](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/blob/master/build.sh).
 
-You can run this script either as root or as normal user. If you are working as normal user, you need to be able to execute things with the sudo command.
+You have to run the build script as root.
 
-All needed packages where installed automatically. At the end, this script will outputs the path to the created iso file.
+All needed packages where installed automatically. The build script will output the path to the created iso file.
 
 At the end, you only need to dd the iso to your favorit usb drive or burn it on an optical disk.
 
 # Howto
 
 ```
-#follow the steps
+#build an iso
 ./build.sh
+
+#test run an existing iso
+./run_iso.sh <string: path to the iso>
 ```
 
 # Links
