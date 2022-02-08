@@ -266,18 +266,18 @@ function setup_environment ()
     local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
 
     #bo: user input validation
-    if [[ ${#PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} -lt 1 ]];
+    if [[ ! -d ${#PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} ]];
     then
         echo "   Invalid source path for the profile provided >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<."
  
-        exit 2
+        exit 1
     fi
 
-    if [[ ${#PATH_TO_THE_OUTPUT_DIRECTORY} -lt 1 ]];
+    if [[ ! -d ${#PATH_TO_THE_OUTPUT_DIRECTORY} ]];
     then
         echo "   Invalid output path provided >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
 
-        exit 3
+        exit 1
     fi
     #eo: user input validation
 
@@ -351,7 +351,7 @@ function _main ()
     cd "${PATH_TO_THIS_SCRIPT}"
 
     exit_if_not_called_from_root
-    setup_environment "/usr/share/archiso/configs/releng" ${PATH_TO_THE_OUTPUT_DIRECTORY}
+    setup_environment "/usr/share/archiso/configs/releng" ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
     evaluate_environment ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
     add_packages_and_repository ${PATH_TO_THE_PROFILE_DIRECTORY}
     cleanup_build_path ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
