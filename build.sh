@@ -11,6 +11,7 @@
 
 function add_packages_and_repository ()
 {
+    echo ":: Starting adding packages and repository"
     local PATH_TO_THE_ARCHLIVE=${1:-""}
 
     local PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
@@ -34,6 +35,7 @@ function add_packages_and_repository ()
     fi
 
     #bo: adding repository
+    echo "" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
     echo "[archzfs]" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
     echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
     echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
@@ -43,10 +45,12 @@ function add_packages_and_repository ()
     #bo: adding package
     echo "archzfs-linux" >> ${PATH_TO_THE_PACKAGES_FILE}
     #eo: adding package
+    echo ":: Finished adding packages and repository"
 }
 
 function build_archiso ()
 {
+    echo ":: Starting bulding archiso"
     #begin of building
     mkarchiso -v -w ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
 
@@ -55,8 +59,8 @@ function build_archiso ()
     if [[ ${LAST_EXIT_CODE} -gt 0 ]];
     then
         echo ""
-        echo ":: Build failed!"
-        echo ":: Cleaning up now..."
+        echo "   Build failed!"
+        echo "   Cleaning up now..."
         for FILESYSTEM_ITEM_NAME in $(ls ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/ | grep -v out);
         do
             rm -fr ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
@@ -81,16 +85,20 @@ function build_archiso ()
     #ask if we should dd this to a sdx device
 
     echo ""
-    echo ":: Iso created in path:"
-    echo "   ${PATH_TO_THE_OUTPUT_DIRECTORY}"
-    echo ":: --------"
-    echo ":: Listing directory content, filterd by ${SELECTED_ARCHZFS_REPOSITORY_NAME}..."
+    echo "   Iso created in path:"
+    echo "   >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"
 
-    ls -halt ${PATH_TO_THE_OUTPUT_DIRECTORY} | grep ${SELECTED_ARCHZFS_REPOSITORY_NAME}
+    echo "   --------"
+    echo "   Listing directory content, filterd by >>archzfs<<..."
+    ls -halt ${PATH_TO_THE_OUTPUT_DIRECTORY} | grep archzfs
+
+    echo "   --------"
+    echo ":: Finished bulding archiso"
 }
 
 function cleanup_build_path ()
 {
+    echo ":: Starting cleanup build path"
     #begin of cleanup
     #cd ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
     if [[ -f ${ISO_FILE_PATH} ]];
@@ -121,10 +129,12 @@ function cleanup_build_path ()
         fi
     fi
     #end of cleanup
+    echo ":: Finished cleanup build path"
 }
 
 function evaluate_environment ()
 {
+    echo ":: Starting evaluating environment"
     #begin of check if pacman-init.service file is still the same
     FILE_PATH_TO_KEEP_THE_DIFF=$(mktemp)
     FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE="/usr/share/archiso/configs/releng/airootfs/etc/systemd/system/pacman-init.service"
@@ -137,7 +147,7 @@ function evaluate_environment ()
 
     if [[ ${NUMBER_OF_LINES_BETWEEN_THE_TWO_DIFF_FILES} -gt 0 ]];
     then
-        echo ":: Unexpected runtime environment."
+        echo "   Unexpected runtime environment."
         echo "   The diff between the files >>${FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE}<< and >>${FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE}<< results in an unexpected output."
         echo "   Dumping expected diff:"
         echo "${FILE_PATH_TO_PACMAN_INIT_SERVICE_EXPECTED_DIFF}"
@@ -145,18 +155,19 @@ function evaluate_environment ()
         echo "   Dumping current diff:"
         echo "${FILE_PATH_TO_KEEP_THE_DIFF}"
         echo ""
-        echo ":: Please create an issue in >>https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues<<."
+        echo "   Please create an issue in >>https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues<<."
         echo ""
-        echo ":: Will stop now."
+        echo "   Will stop now."
         echo ""
 
         exit 2
     else
-        echo ":: Updating pacman-init.service"
+        echo "   Updating pacman-init.service"
 
         cp "${FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE}" "${PATH_TO_THE_OUTPUT_DIRECTORY}/airootfs/etc/systemd/system/pacman-init.service"
     fi
     #end of check if pacman-init.service file is still the same
+    echo ":: Finished evaluating environment"
 }
 
 function exit_if_not_called_from_root ()
@@ -173,11 +184,12 @@ function exit_if_not_called_from_root ()
 
 function setup_environment ()
 {
+    echo ":: Starting setup environment"
     #begin of check if archiso is installed
     if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
     then
-        echo ":: No archiso package installed."
-        echo ":: We are going to install it now..."
+        echo "   No archiso package installed."
+        echo "   We are going to install it now ..."
         pacman -Syyu archiso
     fi
     #end of check if archiso is installed
@@ -189,8 +201,8 @@ function setup_environment ()
 
         if [[ ${DIRECTORY_IS_NOT_EMPTY} ]];
         then
-            echo ":: Previous build data detected."
-            echo ":: Cleaning up now..."
+            echo "   Previous build data detected."
+            echo "   Cleaning up now ..."
             for FILESYSTEM_ITEM_NAME in $(ls ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/ | grep -v out);
             do
                 rm -fr ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
@@ -202,12 +214,15 @@ function setup_environment ()
     #end of dynamic data directory exists
 
     #begin of creating the output directory
+    echo "   Creating >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
     mkdir -p ${PATH_TO_THE_OUTPUT_DIRECTORY}
     #end of creating the output directory
 
     #begin of copying needed profile
+    echo "   Copying content off >>${PATH_TO_THE_PROFILE_DIRECTORY}<< to >>${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}<<."
     cp -r ${PATH_TO_THE_PROFILE_DIRECTORY}/ ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
     #end of copying needed profile
+    echo ":: Finished setup environment"
 }
 
 function _main ()
@@ -247,9 +262,17 @@ function _main ()
     cleanup_build_path
     build_archiso
 
-    if [[ -f run_iso.sh ]];
+    if [[ -f "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ]];
     then
-        bash run_iso.sh ${ISO_FILE_PATH}
+        echo ":: Do you want to run the iso for testing? [y|N]"
+        read RUN_ISO
+
+        if [[ ${RUN_ISO} == "y" ]];
+        then
+            bash "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ${ISO_FILE_PATH}
+        fi
+    else
+        echo ":: Expected script is not available in path >>${PATH_TO_THIS_SCRIPT}/run_iso.sh<<."
     fi
 
     cd "${CURRENT_WORKING_DIRECTORY}"
