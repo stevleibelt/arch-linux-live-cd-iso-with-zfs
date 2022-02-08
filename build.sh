@@ -19,14 +19,14 @@ function add_packages_and_repository ()
     echo ":: Adding repository and package >>archzfs-linux<<."
     echo "   Using following path to the archlive >>${PATH_TO_THE_ARCHLIVE}<<."
 
-    if [[ ! -f "${PATH_TO_THE_PACKAGES_FILE}" ]]:
+    if [[ ! -f "${PATH_TO_THE_PACKAGES_FILE}" ]];
     then
         echo "   Required file >>${PATH_TO_THE_PACKAGES_FILE}<< was not found."
 
         exit 5
     fi
 
-    if [[ ! -f "${PATH_TO_THE_PACMAN_CONF_FILE}" ]]:
+    if [[ ! -f "${PATH_TO_THE_PACMAN_CONF_FILE}" ]];
     then
         echo "   Required file >>${PATH_TO_THE_PACMAN_CONF_FILE}<< was not found."
 
