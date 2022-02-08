@@ -347,7 +347,6 @@ function _main ()
     #begin of variables declaration
     local BUILD_FILE_NAME="archlinux-archzfs-linux"
     local CURRENT_WORKING_DIRECTORY=$(pwd)
-    local PATH_TO_THE_PROFILE_DIRECTORY="/usr/share/archiso/configs/releng"
     local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
     local WHO_AM_I=$(whoami)
 
@@ -364,7 +363,7 @@ function _main ()
     cd "${PATH_TO_THIS_SCRIPT}"
 
     exit_if_not_called_from_root
-    setup_environment ${PATH_TO_THE_PROFILE_DIRECTORY} ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY} ${PATH_TO_THE_OUTPUT_DIRECTORY}
+    setup_environment "/usr/share/archiso/configs/releng" ${PATH_TO_THE_PROFILE_DIRECTORY} ${PATH_TO_THE_OUTPUT_DIRECTORY}
     evaluate_environment ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ${PATH_TO_THE_OUTPUT_DIRECTORY}
     add_packages_and_repository ${PATH_TO_THE_PROFILE_DIRECTORY}
     cleanup_build_path ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
