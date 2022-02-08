@@ -292,7 +292,9 @@ function setup_environment ()
     if [[ ! -d ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} ]];
     then
         echo "   No archiso package installed."
+        echo "   Provided path is not a directory >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<."
         echo "   We are going to install it now ..."
+
         pacman -Syyu archiso
     fi
     #end of check if archiso is installed
