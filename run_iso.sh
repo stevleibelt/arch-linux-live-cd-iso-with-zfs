@@ -11,18 +11,27 @@ function _main ()
 {
     local PATH_TO_THE_ISO=${1:-""}
 
+    #begin of check if we are root
+    if [[ ${WHO_AM_I} != "root" ]];
+    then
+        local PREFIX_FOR_ROOT_COMMAND="sudo "
+    else
+        local PREFIX_FOR_ROOT_COMMAND=""
+    fi
+    #begin of check if we are root
+
     if [[ -f "${PATH_TO_THE_ISO}" ]];
     then
         if [[ ! -d "/usr/share/qemu" ]];
         then
             echo ":: qemu package is missing, installing it ..."
-            pacman -S qemu
+            ${PREFIX_FOR_ROOT_COMMAND} pacman -S qemu
         fi
 
         if [[ ! -d "/usr/share/edk2-ovmf" ]];
         then
             echo ":: edk2-ovmf package is missing, installing it ..."
-            pacman -S edk2-ovmf
+            ${PREFIX_FOR_ROOT_COMMAND} pacman -S edk2-ovmf
         fi
 
         echo ":: Do you want to run it as UEFI? [y|N]"
