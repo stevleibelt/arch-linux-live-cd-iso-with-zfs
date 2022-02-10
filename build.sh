@@ -75,30 +75,30 @@ function build_archiso ()
 
     if [[ ! -d ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
     then
-        echo "   Invalid path provided. >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< is not a directory."
+        echo "   Directory >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does not exist. Creating it ..."
 
-        exit 2
+        /usr/bin/mkdir -p "${PATH_TO_THE_OUTPUT_DIRECTORY}"
     fi
 
     if [[ ${#PATH_TO_THE_WORK_DIRECTORY} -lt 1 ]];
     then
-        echo "   Invalid path provided. >>${PATH_TO_THE_WORK_DIRECTORY}<< is an empty string."
+        echo "   Directory >>${PATH_TO_THE_WORK_DIRECTORY}<< does not exist. Creating it ..."
 
-        exit 3
+        /usr/bin/mkdir -p "${PATH_TO_THE_WORK_DIRECTORY}"
     fi
 
     if [[ ${#ISO_FILE_PATH} -lt 1 ]];
     then
         echo "   Invalid file path provided. >>${ISO_FILE_PATH}<< is an empty string."
 
-        exit 4
+        exit 2
     fi
 
     if [[ ${#SHA512_FILE_PATH} -lt 1 ]];
     then
         echo "   Invalid file path provided. >>${SHA512_FILE_PATH}<< is an empty string."
 
-        exit 5
+        exit 3
     fi
 
     #begin of building
