@@ -351,10 +351,10 @@ function _main ()
     cd "${PATH_TO_THIS_SCRIPT}"
 
     exit_if_not_called_from_root
+    cleanup_build_path ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
     setup_environment "/usr/share/archiso/configs/releng" ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
     evaluate_environment ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
     add_packages_and_repository ${PATH_TO_THE_PROFILE_DIRECTORY}
-    cleanup_build_path ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY} ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
 
     if [[ -f "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ]];
