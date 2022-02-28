@@ -1,0 +1,15 @@
+[Unit]
+Description=Initializes Pacman keyring
+Requires=etc-pacman.d-gnupg.mount
+After=etc-pacman.d-gnupg.mount
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/pacman-key --init
+ExecStart=/usr/bin/pacman-key --populate
+ExecStart=/usr/bin/pacman-key -r "DDF7DB817396A49B2A2723F7403BD972F75D9D76"
+ExecStart=/usr/bin/pacman-key --lsign-key "DDF7DB817396A49B2A2723F7403BD972F75D9D76"
+
+[Install]
+WantedBy=multi-user.target
