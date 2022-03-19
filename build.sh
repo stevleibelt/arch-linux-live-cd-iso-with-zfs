@@ -251,9 +251,10 @@ function auto_elevate_if_not_called_from_root ()
     #begin of check if we are root
     if [[ ${WHO_AM_I} != "root" ]];
     then
-	sudo "$0" "$@"
+        #call this script (${0}) again with sudo with all provided arguments (${@})
+	    sudo "${0}" "${@}"
 
-        exit $?
+        exit ${?}
     fi
     #end of check if we are root
 }
