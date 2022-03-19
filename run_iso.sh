@@ -7,18 +7,24 @@
 # @since 2022-02-07
 ####
 
+function auto_elevate_if_not_called_from_root ()
+{
+    #begin of check if we are root
+    if [[ ${WHO_AM_I} != "root" ]];
+    then
+        #call this script (${0}) again with sudo with all provided arguments (${@})
+	    sudo "${0}" "${@}"
+
+        exit ${?}
+    fi
+    #end of check if we are root
+}
+
 function _main ()
 {
     local PATH_TO_THE_ISO=${1:-""}
 
-    #begin of check if we are root
-    if [[ ${WHO_AM_I} != "root" ]];
-    then
-        local PREFIX_FOR_ROOT_COMMAND="sudo "
-    else
-        local PREFIX_FOR_ROOT_COMMAND=""
-    fi
-    #begin of check if we are root
+    auto_elevate_if_not_called_from_root
 
     if [[ -f "${PATH_TO_THE_ISO}" ]];
     then

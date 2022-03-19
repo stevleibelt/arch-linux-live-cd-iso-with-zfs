@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### To Add
 
+* add a shell script to upload the iso
+    * if build is successful
+    * create the file "last_build_date.txt" containting the build date
+    * uses a local configuration file that contains the
+        * path to the key file to use (e.g. `~/.ssh/foo`)
+        * upload path (e.g. `foo@bar.ru:/srv/http/foo/public/`)
+
 ### To Change
 
 * add option to dd it to a sdX device
@@ -18,6 +25,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+
+* added the `auto_elevate_if_not_called_from_root` from [build.sh](build.sh) in [run_iso.sh](run_iso.sh)
+
+### Changed
 
 ## [2.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.0.0) - released at 07.02.2022
 
