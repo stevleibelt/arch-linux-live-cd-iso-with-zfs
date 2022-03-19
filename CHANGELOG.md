@@ -19,10 +19,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+## [2.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.0.0) - released at 07.02.2022
+
+### Added
+
 * added a [CHANGELOG.md](CHANGELOG.md)
 * added list of contributers
 
 ### Changed
+
+* replaced current handlig of "exit if not executed from root" with "restart script by using sudo if not executed from root" - thanks to [gardar](https://github.com/gardar)
 
 ## [2.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.0.0) - released at 07.02.2022
 
@@ -67,4 +73,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-* Initial commit
+* initial commit

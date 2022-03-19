@@ -33,5 +33,5 @@ At the end, you only need to dd the iso to your favorit usb drive or burn it on 
 
 In alphabetically order.
 
-* [garder](https://github.com/gardar)
+* [gardar](https://github.com/gardar)
 * [stevleibelt](https://github.com/stevleibelt)
