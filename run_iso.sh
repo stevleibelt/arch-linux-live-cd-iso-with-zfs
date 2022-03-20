@@ -31,13 +31,13 @@ function _main ()
         if [[ ! -d "/usr/share/qemu" ]];
         then
             echo ":: qemu package is missing, installing it ..."
-            ${PREFIX_FOR_ROOT_COMMAND} pacman -S qemu
+            pacman -S qemu
         fi
 
         if [[ ! -d "/usr/share/edk2-ovmf" ]];
         then
             echo ":: edk2-ovmf package is missing, installing it ..."
-            ${PREFIX_FOR_ROOT_COMMAND} pacman -S edk2-ovmf
+            pacman -S edk2-ovmf
         fi
 
         echo ":: Do you want to run it as UEFI? [y|N]"
