@@ -27,10 +27,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 * added the `auto_elevate_if_not_called_from_root` from [build.sh](build.sh) in [run_iso.sh](run_iso.sh)
+* added [upload_iso.sh](upload_iso.sh)
+    * if not available, it creates a local configuration file in [configuration](configuration)
 
 ### Changed
 
-## [2.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.0.0) - released at 07.02.2022
+* Aligned release date
+* Fixed link in release 2.1.0
+
+## [2.1.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.1.0) - released at 2022-03-19
 
 ### Added
 
@@ -41,7 +46,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * replaced current handlig of "exit if not executed from root" with "restart script by using sudo if not executed from root" - thanks to [gardar](https://github.com/gardar)
 
-## [2.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.0.0) - released at 07.02.2022
+## [2.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.0.0) - released at 2022-02-07
 
 ### Added
 
@@ -57,20 +62,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * moveing the existing iso to $somewhere
 * fixed issue with not enough access when generating the checksum files
 
-## [1.3.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.3.0) - released at 23.08.2016
+## [1.3.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.3.0) - released at 2016-08-23
 
 ### Changed
 
 * implemented user input to select fitting archzfs-linux repository
 
-## [1.2.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.2.0) - released at 06.07.2016
+## [1.2.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.2.0) - released at 2016-07-06
 
 ### Added
 
 * added automatically renaming each created iso file to archlinux.iso
 * added automatically md5sum and sha1sum file creation of created archlinux.iso
 
-## [1.1.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.1.0) - released at 14.05.2016
+## [1.1.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.1.0) - released at 2016-05-14
 
 ### Added
 
@@ -80,7 +85,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * renamed "build" directory to "dynamic_data" to ease up execution of "build.sh"
 
-## [1.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.0.0) - released at 12.05.2016
+## [1.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/1.0.0) - released at 2016-05-12
 
 ### Added
 
