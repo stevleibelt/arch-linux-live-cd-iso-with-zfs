@@ -30,10 +30,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+### Changed
+
+## [2.2.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.2.0) - released at 2022-03-20
+
+### Added
+
 * added the `auto_elevate_if_not_called_from_root` from [build.sh](build.sh) in [run_iso.sh](run_iso.sh)
 * added [upload_iso.sh](upload_iso.sh)
     * if not available, it creates a local configuration file in [configuration](configuration)
     * if user says yes, this is executed after a successful [build.sh](build.sh)
+* created [archzfs.stevleibelt.de](https://archzfs.leibelt.de/)
 
 ### Changed
 

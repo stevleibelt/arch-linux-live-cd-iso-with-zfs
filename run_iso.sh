@@ -22,7 +22,8 @@ function auto_elevate_if_not_called_from_root ()
 
 function _main ()
 {
-    local PATH_TO_THE_ISO=${1:-""}
+    local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+    local PATH_TO_THE_ISO="${1:-${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso}"
 
     auto_elevate_if_not_called_from_root
 

@@ -6,11 +6,11 @@ The current change log can be found [here](CHANGELOG.md).
 
 All you need to do is to execute the [build.sh](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/blob/master/build.sh).
 
-You have to run the build script as root.
+You can download a build iso to use [here](https://archzfs.leibelt.de/).
 
 All needed packages where installed automatically. The build script will output the path to the created iso file.
 
-At the end, you only need to dd the iso to your favorit usb drive or burn it on an optical disk.
+At the end, you only need to dd the iso to your favorit usb drive, use [venotoy](https://www.ventoy.net) or burn it on an optical disk.
 
 # Howto
 
@@ -19,7 +19,10 @@ At the end, you only need to dd the iso to your favorit usb drive or burn it on 
 ./build.sh
 
 #test run an existing iso
-./run_iso.sh <string: path to the iso>
+./run_iso.sh [<string: path to the iso>]
+
+#upload the iso
+./upload_iso.sh [<string: path to the iso>]
 ```
 
 # Links
