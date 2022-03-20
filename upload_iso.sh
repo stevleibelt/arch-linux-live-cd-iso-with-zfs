@@ -59,7 +59,7 @@ function _main ()
     local PATH_TO_THE_ISO=${1:-""}
     local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
 
-    local PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/dynamic_out/last_build_date.txt"
+    local PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/last_build_date.txt"
     local PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso"
     local PATH_TO_THE_ISO_SHA512="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso.sha512sum"
     local PATH_TO_THE_LOCAL_CONFIGURATION="${PATH_TO_THIS_SCRIPT}/configuration/upload_iso.sh"
@@ -85,8 +85,7 @@ function _main ()
 
     if [[ ! -f "${PATH_TO_THE_ISO_SHA512}" ]];
     then
-        echo ":: ERROR - File does not exist!"
-        echo "   File path >>${PATH_TO_THE_ISO_SHA512}<< is invalid."
+        sha512sum "${PATH_TO_THE_ISO}" >> "${PATH_TO_THE_ISO_SHA512}"
     fi
     #eo: environment check
 
