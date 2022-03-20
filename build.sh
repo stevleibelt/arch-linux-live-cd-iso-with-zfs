@@ -371,6 +371,19 @@ function _main ()
         echo ":: Expected script is not available in path >>${PATH_TO_THIS_SCRIPT}/run_iso.sh<<."
     fi
 
+    if [[ -f "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" ]];
+    then
+        echo ":: Do you want to upload the iso for testing? [y|N]"
+        read RUN_ISO
+
+        if [[ ${RUN_ISO} == "y" ]];
+        then
+            bash "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" ${ISO_FILE_PATH}
+        fi
+    else
+        echo ":: Expected script is not available in path >>${PATH_TO_THIS_SCRIPT}/upload_iso.sh<<."
+    fi
+
     cd "${CURRENT_WORKING_DIRECTORY}"
 }
 

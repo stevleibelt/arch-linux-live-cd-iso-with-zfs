@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * added the `auto_elevate_if_not_called_from_root` from [build.sh](build.sh) in [run_iso.sh](run_iso.sh)
 * added [upload_iso.sh](upload_iso.sh)
     * if not available, it creates a local configuration file in [configuration](configuration)
+    * if user says yes, this is executed after a successful [build.sh](build.sh)
 
 ### Changed
 
