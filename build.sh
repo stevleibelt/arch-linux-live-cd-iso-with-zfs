@@ -40,7 +40,11 @@ function add_packages_and_repository ()
 
         exit 5
     fi
-
+    
+    # archzfs repo often lags behind core a week or so, causing zfs kmod/kernel version mismatch and build failure
+    # Adding in last week's core archive repo before the official repo as a workaround
+    sed -i -e 's/\[core\]/\[core\]\nServer = https:\/\/archive.archlinux.org\/repos\/week\/\$repo\/os\/\$arch\//g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
+    
     #bo: adding repository
     echo "" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
     echo "[archzfs]" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
