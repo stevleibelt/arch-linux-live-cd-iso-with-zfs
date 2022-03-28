@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+* Added flag `-h`
+* Added flag `-f`
+* Added flag `-v`
+
 ### Changed
 
 ## [2.2.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.2.0) - released at 2022-03-20

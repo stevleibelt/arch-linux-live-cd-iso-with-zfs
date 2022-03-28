@@ -190,6 +190,17 @@ function cleanup_build_path ()
     echo ":: Finished cleanup build path"
 }
 
+####
+# @param <string: output>
+####
+function echo_if_be_verbose ()
+{
+    if [[ ${BE_VERBOSE} -eq 1 ]];
+    then
+        echo "${1}"
+    fi
+}
+
 function evaluate_environment ()
 {
     echo ":: Starting evaluating environment"
@@ -349,6 +360,42 @@ function _main ()
     local SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
     #end of variables declaration
 
+    #bo: user input
+    local BE_VERBOSE=0
+    local IS_FORCED=0
+    local SHOW_HELP=0
+
+    while true;
+    do
+        case "${1}" in
+            "-f" | "--force" )
+                IS_FORCED=1
+                shift 1
+                ;;
+            "-h" | "--help" )
+                SHOW_HELP=1
+                shift 1
+                ;;
+            "-v" | "--verbose" )
+                BE_VERBOSE=1
+                shift 1
+                ;;
+            * )
+                break
+                ;;
+        esac
+    done
+    #eo: user input
+
+    #bo: code
+    if [[ ${SHOW_HELP} -eq 1 ]];
+    then
+        echo ":: Usage"
+        echo "   ${0} [-f|--force] [-h|--help] [-v|--verbose]"
+
+        exit 0
+    fi
+
     cd "${PATH_TO_THIS_SCRIPT}"
 
     auto_elevate_if_not_called_from_root
@@ -385,6 +432,7 @@ function _main ()
     fi
 
     cd "${CURRENT_WORKING_DIRECTORY}"
+    #eo: code
 }
 
 _main $@
