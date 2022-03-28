@@ -157,10 +157,15 @@ function cleanup_build_path ()
     #cd ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
     if [[ -f ${ISO_FILE_PATH} ]];
     then
-        echo ":: Older build detected"
-        echo ":: Do you want to move the files somewhere? [y|N] (n means overwriting, n is default)"
+        if [[ ${IS_FORCED} -eq 1 ]];
+        then
+            MOVE_EXISTING_BUILD_FILES="n"
+        else
+            echo ":: Older build detected"
+            echo ":: Do you want to move the files somewhere? [y|N] (n means overwriting, n is default)"
 
-        read MOVE_EXISTING_BUILD_FILES
+            read MOVE_EXISTING_BUILD_FILES
+        fi
 
         if [[ ${MOVE_EXISTING_BUILD_FILES} == "y" ]];
         then
@@ -184,6 +189,8 @@ function cleanup_build_path ()
                 mv -v ${SHA512_FILE_PATH} ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
             fi
         else
+            rm ${ISO_FILE_PATH}
+
             #following lines prevent us from getting asked from mv to override the existing file
             if [[ -f ${SHA512_FILE_PATH} ]];
             then
