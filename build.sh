@@ -11,7 +11,7 @@
 
 function add_packages_and_repository ()
 {
-    echo ":: Starting adding packages and repository"
+    echo_if_be_verbose ":: Starting adding packages and repository"
     local PATH_TO_THE_ARCHLIVE=${1:-""}
 
     if [[ ! -d ${PATH_TO_THE_ARCHLIVE} ]];
@@ -24,8 +24,8 @@ function add_packages_and_repository ()
     local PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
     local PATH_TO_THE_PACMAN_CONF_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.conf"
 
-    echo ":: Adding repository and package >>archzfs-linux<<."
-    echo "   Using following path to the archlive >>${PATH_TO_THE_ARCHLIVE}<<."
+    echo_if_be_verbose ":: Adding repository and package >>archzfs-linux<<."
+    echo_if_be_verbose "   Using following path to the archlive >>${PATH_TO_THE_ARCHLIVE}<<."
 
     if [[ ! -f "${PATH_TO_THE_PACKAGES_FILE}" ]];
     then
@@ -58,7 +58,7 @@ function add_packages_and_repository ()
 
 function build_archiso ()
 {
-    echo ":: Starting bulding archiso"
+    echo_if_be_verbose ":: Starting bulding archiso"
 
     local ISO_FILE_PATH=${4:-""}
     local PATH_TO_THE_PROFILE_DIRECTORY=${3:-""}
@@ -111,6 +111,7 @@ function build_archiso ()
         echo ""
         echo "   Build failed!"
         echo "   Cleaning up now..."
+
         for FILESYSTEM_ITEM_NAME in $(ls "${PATH_TO_THE_OUTPUT_DIRECTORY}/" );
         do
             rm -fr ${PATH_TO_THE_OUTPUT_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
@@ -133,21 +134,21 @@ function build_archiso ()
     #@todo
     #ask if we should dd this to a sdx device
 
-    echo ""
-    echo "   Iso created in path:"
-    echo "   >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"
+    echo_if_be_verbose ""
+    echo_if_be_verbose "   Iso created in path:"
+    echo_if_be_verbose "   >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"
 
-    echo "   --------"
-    echo "   Listing directory content, filterd by >>archzfs<<..."
+    echo_if_be_verbose "   --------"
+    echo_if_be_verbose "   Listing directory content, filterd by >>archzfs<<..."
     ls -halt ${PATH_TO_THE_OUTPUT_DIRECTORY} | grep archzfs
 
-    echo "   --------"
-    echo ":: Finished bulding archiso"
+    echo_if_be_verbose "   --------"
+    echo_if_be_verbose ":: Finished bulding archiso"
 }
 
 function cleanup_build_path ()
 {
-    echo ":: Starting cleanup build path"
+    echo_if_be_verbose ":: Starting cleanup build path"
 
     local ISO_FILE_PATH=${1:-""}
     local SHA512_FILE_PATH=${2:-""}
@@ -158,20 +159,24 @@ function cleanup_build_path ()
     then
         echo ":: Older build detected"
         echo ":: Do you want to move the files somewhere? [y|N] (n means overwriting, n is default)"
+
         read MOVE_EXISTING_BUILD_FILES
 
         if [[ ${MOVE_EXISTING_BUILD_FILES} == "y" ]];
         then
             echo ":: Please input the path where you want to move the files (if the path does not exist, it will be created):"
+
             read PATH_TO_MOVE_THE_EXISTING_BUILD_FILES
 
             if [[ ! -d ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES} ]];
             then
-                echo ":: Creating directory in path: ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
+                echo_if_be_verbose ":: Creating directory in path: ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
+
                 mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
             fi
 
-            echo ":: Moving files ..."
+            echo_if_be_verbose ":: Moving files ..."
+
             mv -v ${ISO_FILE_PATH} ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
 
             if [[ -f ${SHA512_FILE_PATH} ]];
@@ -187,7 +192,7 @@ function cleanup_build_path ()
         fi
     fi
     #end of cleanup
-    echo ":: Finished cleanup build path"
+    echo_if_be_verbose ":: Finished cleanup build path"
 }
 
 ####
@@ -203,7 +208,7 @@ function echo_if_be_verbose ()
 
 function evaluate_environment ()
 {
-    echo ":: Starting evaluating environment"
+    echo_if_be_verbose ":: Starting evaluating environment"
 
     local PATH_TO_THE_PROFILE_DIRECTORY=${2:-""}
     local PATH_TO_THE_SOURCE_DATA_DIRECTORY=${1:-""}
@@ -249,12 +254,12 @@ function evaluate_environment ()
 
         exit 2
     else
-        echo "   Updating pacman-init.service"
+        echo_if_be_verbose "   Updating pacman-init.service"
 
         cp "${FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE}" "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/etc/systemd/system/pacman-init.service"
     fi
     #end of check if pacman-init.service file is still the same
-    echo ":: Finished evaluating environment"
+    echo_if_be_verbose ":: Finished evaluating environment"
 }
 
 function auto_elevate_if_not_called_from_root ()
@@ -272,7 +277,7 @@ function auto_elevate_if_not_called_from_root ()
 
 function setup_environment ()
 {
-    echo ":: Starting setup environment"
+    echo_if_be_verbose ":: Starting setup environment"
 
     local PATH_TO_THE_SOURCE_PROFILE_DIRECTORY=${1:-""}
     local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
@@ -296,9 +301,9 @@ function setup_environment ()
     #begin of check if archiso is installed
     if [[ ! -d ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} ]];
     then
-        echo "   No archiso package installed."
-        echo "   Provided path is not a directory >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<."
-        echo "   We are going to install it now ..."
+        echo_if_be_verbose "   No archiso package installed."
+        echo_if_be_verbose "   Provided path is not a directory >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<."
+        echo_if_be_verbose "   We are going to install it now ..."
 
         pacman -Syyu archiso
     fi
@@ -310,9 +315,9 @@ function setup_environment ()
 
     if [[ -d ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY} ]];
     then
-        echo "   Previous profile data detected."
-        echo "   >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<< exists."
-        echo "   Cleaning up now ..."
+        echo_if_be_verbose "   Previous profile data detected."
+        echo_if_be_verbose "   >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<< exists."
+        echo_if_be_verbose "   Cleaning up now ..."
 
         rm -fr ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}
     fi
@@ -321,17 +326,19 @@ function setup_environment ()
     #begin of creating the output directory
     if [[ ! -p ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
     then
-        echo "   Creating >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
+        echo_if_be_verbose "   Creating >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
+
         mkdir -p ${PATH_TO_THE_OUTPUT_DIRECTORY}
     fi
     #end of creating the output directory
 
     #begin of copying needed profile
-    echo "   Copying content off >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<< to >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
+    echo_if_be_verbose "   Copying content off >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<< to >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
+
     cp -r ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} "${PATH_TO_THE_OUTPUT_DIRECTORY}/"
     #end of copying needed profile
 
-    echo ":: Finished setup environment"
+    echo_if_be_verbose ":: Finished setup environment"
 }
 
 function _main ()
@@ -408,6 +415,7 @@ function _main ()
     if [[ -f "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ]];
     then
         echo ":: Do you want to run the iso for testing? [y|N]"
+
         read RUN_ISO
 
         if [[ ${RUN_ISO} == "y" ]];
@@ -421,6 +429,7 @@ function _main ()
     if [[ -f "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" ]];
     then
         echo ":: Do you want to upload the iso for testing? [y|N]"
+
         read RUN_ISO
 
         if [[ ${RUN_ISO} == "y" ]];
