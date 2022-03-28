@@ -9,19 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### To Add
 
-* add a shell script to upload the iso
-    * if build is successful
-    * create the file "last_build_date.txt" containting the build date
-    * uses a local configuration file that contains the
-        * path to the key file to use (e.g. `~/.ssh/foo`)
-        * upload path (e.g. `foo@bar.ru:/srv/http/foo/public/`)
-
 ### To Change
 
 * add if [[ ${?} -ne 0 ]]; for each fitting command call
 * add flags for `build.sh`
     * `-c` - cleanup
-* add option to dd it to a sdX device
 * implement more logging (output user input)
 * beautify the output
 * validate if we can implement the "use older kernel" feature from [here](https://github.com/eoli3n/archiso-zfs/blob/master/init) to prevent failing builds when the archzfs package is not up to date to the latest linux kernel
@@ -29,6 +21,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+
+* Added [dump_iso.sh](dump_iso.sh) to dd a created iso
+* Added check if build was successful
+    * The next steps where only executed if build was successful
 
 ### Changed
 

@@ -419,32 +419,51 @@ function _main ()
     add_packages_and_repository ${PATH_TO_THE_PROFILE_DIRECTORY}
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY} ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
 
-    if [[ -f "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ]];
+    local BUILD_WAS_SUCCESSFUL="${?}"
+
+    if [[ ${BUILD_WAS_SUCCESSFUL} -eq 0 ]];
     then
-        echo ":: Do you want to run the iso for testing? [y|N]"
-
-        read RUN_ISO
-
-        if [[ ${RUN_ISO} == "y" ]];
+        if [[ -f "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ]];
         then
-            bash "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ${ISO_FILE_PATH}
+            echo ":: Do you want to run the iso for testing? [y|N]"
+
+            read RUN_ISO
+
+            if [[ ${RUN_ISO} == "y" ]];
+            then
+                bash "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ${ISO_FILE_PATH}
+            fi
+        else
+            echo ":: Expected script is not available in path >>${PATH_TO_THIS_SCRIPT}/run_iso.sh<<."
         fi
-    else
-        echo ":: Expected script is not available in path >>${PATH_TO_THIS_SCRIPT}/run_iso.sh<<."
-    fi
 
-    if [[ -f "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" ]];
-    then
-        echo ":: Do you want to upload the iso for testing? [y|N]"
-
-        read RUN_ISO
-
-        if [[ ${RUN_ISO} == "y" ]];
+        if [[ -f "${PATH_TO_THIS_SCRIPT}/dump_iso.sh" ]];
         then
-            bash "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" ${ISO_FILE_PATH}
+            echo ":: Do you want to dump the iso on a device? [y|N]"
+
+            read DUMP_ISO
+
+            if [[ ${DUMP_ISO} == "y" ]];
+            then
+                bash "${PATH_TO_THIS_SCRIPT}/dump_iso.sh" ${ISO_FILE_PATH}
+            fi
+        else
+            echo ":: Expected script is not available in path >>${PATH_TO_THIS_SCRIPT}/dump_iso.sh<<."
         fi
-    else
-        echo ":: Expected script is not available in path >>${PATH_TO_THIS_SCRIPT}/upload_iso.sh<<."
+
+        if [[ -f "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" ]];
+        then
+            echo ":: Do you want to upload the iso for testing? [y|N]"
+
+            read RUN_ISO
+
+            if [[ ${RUN_ISO} == "y" ]];
+            then
+                bash "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" ${ISO_FILE_PATH}
+            fi
+        else
+            echo ":: Expected script is not available in path >>${PATH_TO_THIS_SCRIPT}/upload_iso.sh<<."
+        fi
     fi
 
     cd "${CURRENT_WORKING_DIRECTORY}"
