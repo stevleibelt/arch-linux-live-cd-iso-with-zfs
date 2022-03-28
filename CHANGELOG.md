@@ -18,11 +18,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### To Change
 
+* add if [[ ${?} -ne 0 ]]; for each fitting command call
 * add flags for `build.sh`
-    * `-h` - help
     * `-c` - cleanup
-    * `-v` - verbose
 * add option to dd it to a sdX device
+* implement more logging (output user input)
 * beautify the output
 * validate if we can implement the "use older kernel" feature from [here](https://github.com/eoli3n/archiso-zfs/blob/master/init) to prevent failing builds when the archzfs package is not up to date to the latest linux kernel
 
