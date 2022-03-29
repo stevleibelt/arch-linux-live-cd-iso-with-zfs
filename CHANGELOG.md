@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Added check if build was successful
     * The next steps where only executed if build was successful
 * Added output of flags when verbosity is enabled
+* Added way more output if run in verbose mode
 
 ### Changed
 

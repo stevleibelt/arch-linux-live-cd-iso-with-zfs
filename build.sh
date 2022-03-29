@@ -19,6 +19,8 @@ function add_packages_and_repository ()
         echo "   Invalid path to the archlive provided >>${PATH_TO_THE_ARCHLIVE}<< is not a directory."
 
         exit 1
+    else
+        echo_if_be_verbose "   PATH_TO_THE_ARCHLIVE >>${PATH_TO_THE_ARCHLIVE}<<."
     fi
 
     local PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
@@ -32,6 +34,8 @@ function add_packages_and_repository ()
         echo "   Required file >>${PATH_TO_THE_PACKAGES_FILE}<< was not found."
 
         exit 5
+    else
+        echo_if_be_verbose "   PATH_TO_THE_PACKAGES_FILE >>${PATH_TO_THE_PACKAGES_FILE}<<."
     fi
 
     if [[ ! -f "${PATH_TO_THE_PACMAN_CONF_FILE}" ]];
@@ -39,6 +43,8 @@ function add_packages_and_repository ()
         echo "   Required file >>${PATH_TO_THE_PACMAN_CONF_FILE}<< was not found."
 
         exit 5
+    else
+        echo_if_be_verbose "   PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
     fi
 
     #bo: adding repository
@@ -71,13 +77,17 @@ function build_archiso ()
         echo "   Invalid path provided. >>${PATH_TO_THE_PROFILE_DIRECTORY}<< is not a directory."
 
         exit 1
+    else
+        echo_if_be_verbose "   PATH_TO_THE_PROFILE_DIRECTORY >>${PATH_TO_THE_PROFILE_DIRECTORY}<<."
     fi
 
     if [[ ! -d ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
     then
-        echo "   Directory >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does not exist. Creating it ..."
+        echo_if_be_verbose "   Directory >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does not exist. Creating it ..."
 
         /usr/bin/mkdir -p "${PATH_TO_THE_OUTPUT_DIRECTORY}"
+    else
+        echo_if_be_verbose "   Directory >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does exist."
     fi
 
     if [[ ${#PATH_TO_THE_WORK_DIRECTORY} -lt 1 ]];
@@ -85,6 +95,8 @@ function build_archiso ()
         echo "   Directory >>${PATH_TO_THE_WORK_DIRECTORY}<< does not exist. Creating it ..."
 
         /usr/bin/mkdir -p "${PATH_TO_THE_WORK_DIRECTORY}"
+    else
+        echo "   Directory >>${PATH_TO_THE_WORK_DIRECTORY}<< does exist."
     fi
 
     if [[ ${#ISO_FILE_PATH} -lt 1 ]];
@@ -92,6 +104,8 @@ function build_archiso ()
         echo "   Invalid file path provided. >>${ISO_FILE_PATH}<< is an empty string."
 
         exit 2
+    else
+        echo_if_be_verbose "   Valid file path provided. >>${ISO_FILE_PATH}<< has a string length of >>${#ISO_FILE_PATH}<<."
     fi
 
     if [[ ${#SHA512_FILE_PATH} -lt 1 ]];
@@ -99,6 +113,8 @@ function build_archiso ()
         echo "   Invalid file path provided. >>${SHA512_FILE_PATH}<< is an empty string."
 
         exit 3
+    else
+        echo "   Valid file path provided. >>${SHA512_FILE_PATH}<< has a string length of >>${SHA512_FILE_PATH}<<."
     fi
 
     #begin of building
@@ -126,20 +142,18 @@ function build_archiso ()
 
     chmod -R 765 *
 
+    echo_if_be_verbose " Moving >>archlinux-*.iso<< to >>${ISO_FILE_PATH}<<."
+
     mv archlinux-*.iso ${ISO_FILE_PATH}
-    #chown ${WHO_AM_I} ${ISO_FILE_PATH}
     sha512sum ${ISO_FILE_PATH} > ${SHA512_FILE_PATH}
     #end of renaming and hash generation
-
-    #@todo
-    #ask if we should dd this to a sdx device
 
     echo_if_be_verbose ""
     echo_if_be_verbose "   Iso created in path:"
     echo_if_be_verbose "   >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"
 
     echo_if_be_verbose "   --------"
-    echo_if_be_verbose "   Listing directory content, filterd by >>archzfs<<..."
+    echo "   Listing directory content, filterd by >>archzfs<<..."
     ls -halt ${PATH_TO_THE_OUTPUT_DIRECTORY} | grep archzfs
 
     echo_if_be_verbose "   --------"
@@ -153,12 +167,16 @@ function cleanup_build_path ()
     local ISO_FILE_PATH=${1:-""}
     local SHA512_FILE_PATH=${2:-""}
 
+    echo_if_be_verbose "   ISO_FILE_PATH >>${ISO_FILE_PATH}<<"
+    echo_if_be_verbose "   SHA512_FILE_PATH >>${SHA512_FILE_PATH}<<"
+
     #begin of cleanup
     #cd ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
     if [[ -f ${ISO_FILE_PATH} ]];
     then
         if [[ ${IS_FORCED} -eq 1 ]];
         then
+            echo_if_be_verbose "   Build is forced, existing build files will be removed automatically."
             MOVE_EXISTING_BUILD_FILES="n"
         else
             echo ":: Older build detected"
@@ -178,25 +196,35 @@ function cleanup_build_path ()
                 echo_if_be_verbose ":: Creating directory in path: ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
 
                 mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
+            else
+                echo_if_be_verbose "   >>${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}<< exists."
             fi
 
             echo_if_be_verbose ":: Moving files ..."
 
+            echo_if_be_verbose "   Moving >>${ISO_FILE_PATH}<< to >>${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}<<."
             mv -v ${ISO_FILE_PATH} ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
 
             if [[ -f ${SHA512_FILE_PATH} ]];
             then
+                echo_if_be_verbose "   Moving >>${SHA512_FILE_PATH}<< to >>${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}<<."
                 mv -v ${SHA512_FILE_PATH} ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
+            else
+                echo_if_be_verbose "   Moving skipped, >>${SHA512_FILE_PATH}<< does exist."
             fi
         else
+            echo_if_be_verbose "   Removing >>${ISO_FILE_PATH}<<."
             rm ${ISO_FILE_PATH}
 
             #following lines prevent us from getting asked from mv to override the existing file
             if [[ -f ${SHA512_FILE_PATH} ]];
             then
+                echo_if_be_verbose "   Removing >>${SHA512_FILE_PATH}<<."
                 rm ${SHA512_FILE_PATH}
             fi
         fi
+    else
+        echo_if_be_verbose "   >>${ISO_FILE_PATH}<< does not exist."
     fi
     #end of cleanup
     echo_if_be_verbose ":: Finished cleanup build path"
@@ -220,11 +248,16 @@ function evaluate_environment ()
     local PATH_TO_THE_PROFILE_DIRECTORY=${2:-""}
     local PATH_TO_THE_SOURCE_DATA_DIRECTORY=${1:-""}
 
+    echo_if_be_verbose "   PATH_TO_THE_PROFILE_DIRECTORY >>${PATH_TO_THE_PROFILE_DIRECTORY}<<"
+    echo_if_be_verbose "   PATH_TO_THE_SOURCE_DATA_DIRECTORY >>${PATH_TO_THE_SOURCE_DATA_DIRECTORY}<<"
+
     if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
     then
         echo "   Invalid path provided. >>${PATH_TO_THE_PROFILE_DIRECTORY}<< is not a directory."
 
         exit 1
+    else
+        echo_if_be_verbose "   >>${PATH_TO_THE_PROFILE_DIRECTORY}<< exists."
     fi
 
     if [[ ! -d ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ]];
@@ -232,6 +265,8 @@ function evaluate_environment ()
         echo "   Invalid path provided. >>${PATH_TO_THE_SOURCE_DATA_DIRECTORY}<< is not a directory."
 
         exit 2
+    else
+        echo_if_be_verbose "   >>${PATH_TO_THE_SOURCE_DATA_DIRECTORY}<< exists."
     fi
 
     #begin of check if pacman-init.service file is still the same
@@ -289,12 +324,17 @@ function setup_environment ()
     local PATH_TO_THE_SOURCE_PROFILE_DIRECTORY=${1:-""}
     local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
 
+    echo_if_be_verbose "   PATH_TO_THE_SOURCE_PROFILE_DIRECTORY >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<"
+    echo_if_be_verbose "   PATH_TO_THE_OUTPUT_DIRECTORY >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"
+
     #bo: user input validation
     if [[ ! -d ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} ]];
     then
         echo "   Invalid source path for the profile provided >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<."
  
         exit 1
+    else
+        echo_if_be_verbose "   >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<< exists."
     fi
 
     if [[ ! -d ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
@@ -302,6 +342,8 @@ function setup_environment ()
         echo "   Invalid output path provided >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
 
         exit 1
+    else
+        echo_if_be_verbose "   >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< exists."
     fi
     #eo: user input validation
 
@@ -313,6 +355,8 @@ function setup_environment ()
         echo_if_be_verbose "   We are going to install it now ..."
 
         pacman -Syyu archiso
+    else
+        echo_if_be_verbose "   >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<< exists."
     fi
     #end of check if archiso is installed
 
@@ -327,6 +371,8 @@ function setup_environment ()
         echo_if_be_verbose "   Cleaning up now ..."
 
         rm -fr ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}
+    else
+        echo_if_be_verbose "   >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<< does not exist, no cleanup needed."
     fi
     #end of dynamic data directory exists
 
@@ -336,6 +382,8 @@ function setup_environment ()
         echo_if_be_verbose "   Creating >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
 
         mkdir -p ${PATH_TO_THE_OUTPUT_DIRECTORY}
+    else
+        echo_if_be_verbose "   >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< exists."
     fi
     #end of creating the output directory
 
