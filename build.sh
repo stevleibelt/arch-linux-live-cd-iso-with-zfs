@@ -306,6 +306,8 @@ function evaluate_environment ()
 
 function auto_elevate_if_not_called_from_root ()
 {
+    local WHO_AM_I=$(whoami)
+
     #begin of check if we are root
     if [[ ${WHO_AM_I} != "root" ]];
     then
@@ -401,16 +403,13 @@ function _main ()
     #@todo:
     #   * add support for dynamic user input
     #       -a|--add-script (add a script like a one we can maintain to easeup setup/installation of "our" archlinux)
-    #       -f|--force (overwrite existing data)
     #       -l|--log-output 2>&1 | tee build.log
     #       -p|--package (archzfs-linux or what ever)
-    #       -v|--verbose (be verbose)
     #   * fix not working zfs embedding
     #begin of variables declaration
     local BUILD_FILE_NAME="archlinux-archzfs-linux"
     local CURRENT_WORKING_DIRECTORY=$(pwd)
     local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
-    local WHO_AM_I=$(whoami)
 
     local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
     local PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
@@ -423,9 +422,11 @@ function _main ()
     #end of variables declaration
 
     #bo: user input
-    BE_VERBOSE=0
-    IS_FORCED=0
-    SHOW_HELP=0
+    #we are storing all arguments for the case if the script needs to be re-executed as root/system user
+    local ALL_ARGUMENTS_TO_PASS="${@}"
+    local BE_VERBOSE=0
+    local IS_FORCED=0
+    local SHOW_HELP=0
 
     while true;
     do
@@ -458,6 +459,9 @@ function _main ()
         exit 0
     fi
 
+    #we are calling this here to display the help as soon as possible without the need to call sudo
+    auto_elevate_if_not_called_from_root "${ALL_ARGUMENTS_TO_PASS}"
+
     if [[ ${BE_VERBOSE} -eq 1 ]];
     then
         echo ":: Outputting status of the flags."
@@ -469,7 +473,6 @@ function _main ()
 
     cd "${PATH_TO_THIS_SCRIPT}"
 
-    auto_elevate_if_not_called_from_root
     cleanup_build_path ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
     setup_environment "/usr/share/archiso/configs/releng" ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
     evaluate_environment ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
