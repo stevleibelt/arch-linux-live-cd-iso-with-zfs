@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+* Fixed an issue if script is not calld as root
+    * Previous to this fix, all arguments where lost (like `-f`)
+
 ## [2.3.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.3.0) - released at 20220328
 
 ### Added

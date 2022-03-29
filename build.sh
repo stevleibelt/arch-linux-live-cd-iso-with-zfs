@@ -225,6 +225,13 @@ function cleanup_build_path ()
         fi
     else
         echo_if_be_verbose "   >>${ISO_FILE_PATH}<< does not exist."
+
+        #it can happen that the iso file does not exist but the sha512 file exists
+        if [[ -f ${SHA512_FILE_PATH} ]];
+        then
+            echo_if_be_verbose "   Removing >>${SHA512_FILE_PATH}<<."
+            rm ${SHA512_FILE_PATH}
+        fi
     fi
     #end of cleanup
     echo_if_be_verbose ":: Finished cleanup build path"
