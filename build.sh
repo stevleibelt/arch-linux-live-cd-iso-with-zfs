@@ -375,9 +375,9 @@ function _main ()
     #end of variables declaration
 
     #bo: user input
-    local BE_VERBOSE=0
-    local IS_FORCED=0
-    local SHOW_HELP=0
+    BE_VERBOSE=0
+    IS_FORCED=0
+    SHOW_HELP=0
 
     while true;
     do
