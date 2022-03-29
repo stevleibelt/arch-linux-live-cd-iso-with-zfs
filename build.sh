@@ -410,6 +410,15 @@ function _main ()
         exit 0
     fi
 
+    if [[ ${BE_VERBOSE} -eq 1 ]];
+    then
+        echo ":: Outputting status of the flags."
+        echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
+        echo "   IS_FORCED >>${IS_FORCED}<<."
+        echo "   SHOW_HELP >>${SHOW_HELP}<<."
+        echo ""
+    fi
+
     cd "${PATH_TO_THIS_SCRIPT}"
 
     auto_elevate_if_not_called_from_root

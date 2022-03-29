@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Added [dump_iso.sh](dump_iso.sh) to dd a created iso
 * Added check if build was successful
     * The next steps where only executed if build was successful
+* Added output of flags when verbosity is enabled
 
 ### Changed
 
@@ -32,9 +33,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-* Added flag `-h`
-* Added flag `-f`
-* Added flag `-v`
+* Added flag `-h | --help`
+* Added flag `-f | --force`
+* Added flag `-v | --verbose`
 
 ## [2.2.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.2.0) - released at 20220320
 
