@@ -9,6 +9,9 @@
 # @since 2016-05-09
 ####
 
+####
+# @param <string: PATH_TO_THE_ARCHLIVE>
+####
 function add_packages_and_repository ()
 {
     echo_if_be_verbose ":: Starting adding packages and repository"
@@ -62,6 +65,13 @@ function add_packages_and_repository ()
     echo ":: Finished adding packages and repository"
 }
 
+####
+# @param <string: PATH_TO_THE_WORK_DIRECTORY>
+# @param <string: PATH_TO_THE_OUTPUT_DIRECTORY>
+# @param <string: PATH_TO_THE_PROFILE_DIRECTORY>
+# @param <string: ISO_FILE_PATH>
+# @param <string: SHA512_FILE_PATH>
+####
 function build_archiso ()
 {
     echo_if_be_verbose ":: Starting bulding archiso"
@@ -71,6 +81,11 @@ function build_archiso ()
     local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
     local PATH_TO_THE_WORK_DIRECTORY=${1:-""}
     local SHA512_FILE_PATH=${5:-""}
+
+    #bo: argument validation
+    #@todo
+    #if [[ ${#PATH_TO_THE_WORK_DIRECTORY} -lt 1 ]];
+    #eo: argument validation
 
     if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
     then
@@ -90,14 +105,14 @@ function build_archiso ()
         echo_if_be_verbose "   Directory >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does exist."
     fi
 
-    if [[ ${#PATH_TO_THE_WORK_DIRECTORY} -lt 1 ]];
+    if [[ -d "${PATH_TO_THE_WORK_DIRECTORY}" ]];
     then
-        echo "   Directory >>${PATH_TO_THE_WORK_DIRECTORY}<< does not exist. Creating it ..."
+        echo "   Directory >>${PATH_TO_THE_WORK_DIRECTORY}<< does exist. Removing it ..."
 
-        /usr/bin/mkdir -p "${PATH_TO_THE_WORK_DIRECTORY}"
-    else
-        echo "   Directory >>${PATH_TO_THE_WORK_DIRECTORY}<< does exist."
+        rm -fr "${PATH_TO_THE_WORK_DIRECTORY}"
     fi
+
+    /usr/bin/mkdir -p "${PATH_TO_THE_WORK_DIRECTORY}"
 
     if [[ ${#ISO_FILE_PATH} -lt 1 ]];
     then
@@ -171,6 +186,10 @@ function build_archiso ()
     fi
 }
 
+####
+# @param <string: ISO_FILE_PATH>
+# @param <string: SHA512_FILE_PATH>
+####
 function cleanup_build_path ()
 {
     echo_if_be_verbose ":: Starting cleanup build path"
@@ -259,6 +278,10 @@ function echo_if_be_verbose ()
     fi
 }
 
+####
+# @param <string: PATH_TO_THE_SOURCE_DATA_DIRECTORY>
+# @param <string: PATH_TO_THE_PROFILE_DIRECTORY>
+####
 function evaluate_environment ()
 {
     echo_if_be_verbose ":: Starting evaluating environment"
@@ -322,6 +345,9 @@ function evaluate_environment ()
     echo_if_be_verbose ":: Finished evaluating environment"
 }
 
+####
+# @param <string: "${@}">
+####
 function auto_elevate_if_not_called_from_root ()
 {
     local WHO_AM_I=$(whoami)
@@ -337,6 +363,10 @@ function auto_elevate_if_not_called_from_root ()
     #end of check if we are root
 }
 
+####
+# @param <string: PATH_TO_THE_SOURCE_PROFILE_DIRECTORY>
+# @param <string: PATH_TO_THE_OUTPUT_DIRECTORY>
+####
 function setup_environment ()
 {
     echo_if_be_verbose ":: Starting setup environment"
@@ -416,6 +446,9 @@ function setup_environment ()
     echo_if_be_verbose ":: Finished setup environment"
 }
 
+#####
+# @param <string: "${@}">
+#####
 function _main ()
 {
     #@todo:
@@ -548,4 +581,4 @@ function _main ()
     #eo: code
 }
 
-_main $@
+_main "${@}"
