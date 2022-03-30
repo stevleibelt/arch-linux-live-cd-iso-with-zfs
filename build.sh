@@ -128,7 +128,7 @@ function build_archiso ()
         echo "   Build failed!"
         echo "   Cleaning up now..."
 
-        for FILESYSTEM_ITEM_NAME in $(ls "${PATH_TO_THE_OUTPUT_DIRECTORY}/" );
+        for local FILESYSTEM_ITEM_NAME in $(ls "${PATH_TO_THE_OUTPUT_DIRECTORY}/" );
         do
             rm -fr ${PATH_TO_THE_OUTPUT_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
         done
@@ -140,24 +140,35 @@ function build_archiso ()
     #begin of renaming and hash generation
     cd ${PATH_TO_THE_OUTPUT_DIRECTORY}
 
-    chmod -R 765 *
+    local NUMBER_OF_ISO_FILES_AVAILABLE=$(find -iname "*.iso" -type f | wc -l)
 
-    echo_if_be_verbose " Moving >>archlinux-*.iso<< to >>${ISO_FILE_PATH}<<."
+    if [[ ${NUMBER_OF_ISO_FILES_AVAILABLE} -gt 0 ]];
+    then
+        chmod -R 765 *
 
-    mv archlinux-*.iso ${ISO_FILE_PATH}
-    sha512sum ${ISO_FILE_PATH} > ${SHA512_FILE_PATH}
-    #end of renaming and hash generation
+        echo_if_be_verbose " Moving >>archlinux-*.iso<< to >>${ISO_FILE_PATH}<<."
 
-    echo_if_be_verbose ""
-    echo_if_be_verbose "   Iso created in path:"
-    echo_if_be_verbose "   >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"
+        mv archlinux-*.iso ${ISO_FILE_PATH}
+        sha512sum ${ISO_FILE_PATH} > ${SHA512_FILE_PATH}
+        #end of renaming and hash generation
 
-    echo_if_be_verbose "   --------"
-    echo "   Listing directory content, filterd by >>archzfs<<..."
-    ls -halt ${PATH_TO_THE_OUTPUT_DIRECTORY} | grep archzfs
+        echo_if_be_verbose ""
+        echo_if_be_verbose "   Iso created in path:"
+        echo_if_be_verbose "   >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"
 
-    echo_if_be_verbose "   --------"
-    echo_if_be_verbose ":: Finished bulding archiso"
+        echo_if_be_verbose "   --------"
+        echo "   Listing directory content, filterd by >>archzfs<<..."
+        ls -halt ${PATH_TO_THE_OUTPUT_DIRECTORY} | grep archzfs
+
+        echo_if_be_verbose "   --------"
+        echo_if_be_verbose ":: Finished bulding archiso"
+    else
+        echo ":: No iso file found. Something went wrong."
+        echo "   Current path >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
+        echo "   Number of found >>\*.iso<< files >>${NUMBER_OF_ISO_FILES_AVAILABLE}<<."
+
+        exit 3
+    fi
 }
 
 function cleanup_build_path ()

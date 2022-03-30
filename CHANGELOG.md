@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     * The next steps where only executed if build was successful
 * Added output of flags when verbosity is enabled
 * Added way more output if run in verbose mode
+* Added addtional check in the step after bulding the iso to validate that an iso was build
 
 ### Changed
 
