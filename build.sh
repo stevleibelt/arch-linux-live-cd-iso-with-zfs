@@ -114,7 +114,7 @@ function build_archiso ()
 
         exit 3
     else
-        echo "   Valid file path provided. >>${SHA512_FILE_PATH}<< has a string length of >>${SHA512_FILE_PATH}<<."
+        echo "   Valid file path provided. >>${SHA512_FILE_PATH}<< has a string length of >>${#SHA512_FILE_PATH}<<."
     fi
 
     #begin of building
