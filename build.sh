@@ -16,7 +16,12 @@ function add_packages_and_repository ()
 {
     echo_if_be_verbose ":: Starting adding packages and repository"
 
+    #bo: variable
     local PATH_TO_THE_ARCHLIVE=${1:-""}
+
+    local PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
+    local PATH_TO_THE_PACMAN_CONF_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.conf"
+    #eo: variable
 
     #bo: argument validation
     _exit_if_string_is_empty "PATH_TO_THE_ARCHLIVE" "${PATH_TO_THE_ARCHLIVE}"
@@ -30,9 +35,6 @@ function add_packages_and_repository ()
     else
         echo_if_be_verbose "   PATH_TO_THE_ARCHLIVE >>${PATH_TO_THE_ARCHLIVE}<<."
     fi
-
-    local PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
-    local PATH_TO_THE_PACMAN_CONF_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.conf"
 
     echo_if_be_verbose ":: Adding repository and package >>archzfs-linux<<."
     echo_if_be_verbose "   Using following path to the archlive >>${PATH_TO_THE_ARCHLIVE}<<."
@@ -81,11 +83,13 @@ function build_archiso ()
 {
     echo_if_be_verbose ":: Starting bulding archiso"
 
+    #bo: variable
     local ISO_FILE_PATH=${4:-""}
     local PATH_TO_THE_PROFILE_DIRECTORY=${3:-""}
     local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
     local PATH_TO_THE_WORK_DIRECTORY=${1:-""}
     local SHA512_FILE_PATH=${5:-""}
+    #eo: variable
 
     #bo: argument validation
     _exit_if_string_is_empty "PATH_TO_THE_WORK_DIRECTORY" "${PATH_TO_THE_WORK_DIRECTORY}"
@@ -99,38 +103,33 @@ function build_archiso ()
     #bo: environment setup
     if [[ ! -d ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
     then
-        echo_if_be_verbose "   Directory >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does not exist. Creating it ..."
+        echo_if_be_verbose "   Directory >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does not exist."
 
-        /usr/bin/mkdir -p "${PATH_TO_THE_OUTPUT_DIRECTORY}"
+        _create_directory_or_exit "${PATH_TO_THE_OUTPUT_DIRECTORY}"
     else
         echo_if_be_verbose "   Directory >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does exist."
     fi
 
     if [[ -d "${PATH_TO_THE_WORK_DIRECTORY}" ]];
     then
-        echo_if_be_verbose "   Directory >>${PATH_TO_THE_WORK_DIRECTORY}<< does exist. Removing it ..."
+        echo_if_be_verbose "   Directory >>${PATH_TO_THE_WORK_DIRECTORY}<< does exist."
 
-        rm -fr "${PATH_TO_THE_WORK_DIRECTORY}"
+        _remove_path_or_exit "${PATH_TO_THE_WORK_DIRECTORY}"
     fi
 
-    /usr/bin/mkdir -p "${PATH_TO_THE_WORK_DIRECTORY}"
+    _create_directory_or_exit "${PATH_TO_THE_WORK_DIRECTORY}"
     #bo: environment setup
 
     #begin of building
     mkarchiso -v -w ${PATH_TO_THE_WORK_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
 
-    LAST_EXIT_CODE="$?"
+    LAST_EXIT_CODE="${?}"
 
     if [[ ${LAST_EXIT_CODE} -gt 0 ]];
     then
         echo ""
         echo "   Build failed!"
-        echo "   Cleaning up now..."
-
-        for FILESYSTEM_ITEM_NAME in $(ls "${PATH_TO_THE_OUTPUT_DIRECTORY}/" );
-        do
-            rm -fr ${PATH_TO_THE_OUTPUT_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
-        done
+        echo "   Exit code of mkarchios >>${LAST_EXIT_CODE}<<."
 
         exit ${LAST_EXIT_CODE}
     fi
@@ -192,6 +191,7 @@ function cleanup_build_path ()
         if [[ ${IS_FORCED} -eq 1 ]];
         then
             echo_if_be_verbose "   Build is forced, existing build files will be removed automatically."
+
             MOVE_EXISTING_BUILD_FILES="n"
         else
             echo ":: Older build detected"
@@ -208,9 +208,7 @@ function cleanup_build_path ()
 
             if [[ ! -d ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES} ]];
             then
-                echo_if_be_verbose ":: Creating directory in path: ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
-
-                mkdir -p ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
+                _create_directory_or_exit "${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
             else
                 echo_if_be_verbose "   >>${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}<< exists."
             fi
@@ -218,24 +216,24 @@ function cleanup_build_path ()
             echo_if_be_verbose ":: Moving files ..."
 
             echo_if_be_verbose "   Moving >>${ISO_FILE_PATH}<< to >>${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}<<."
+
             mv -v ${ISO_FILE_PATH} ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
 
             if [[ -f ${SHA512_FILE_PATH} ]];
             then
                 echo_if_be_verbose "   Moving >>${SHA512_FILE_PATH}<< to >>${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}<<."
+
                 mv -v ${SHA512_FILE_PATH} ${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}
             else
                 echo_if_be_verbose "   Moving skipped, >>${SHA512_FILE_PATH}<< does exist."
             fi
         else
-            echo_if_be_verbose "   Removing >>${ISO_FILE_PATH}<<."
-            rm ${ISO_FILE_PATH}
+            _remove_path_or_exit "${ISO_FILE_PATH}"
 
             #following lines prevent us from getting asked from mv to override the existing file
             if [[ -f ${SHA512_FILE_PATH} ]];
             then
-                echo_if_be_verbose "   Removing >>${SHA512_FILE_PATH}<<."
-                rm ${SHA512_FILE_PATH}
+                _remove_path_or_exit "${SHA512_FILE_PATH}"
             fi
         fi
     else
@@ -244,8 +242,7 @@ function cleanup_build_path ()
         #it can happen that the iso file does not exist but the sha512 file exists
         if [[ -f ${SHA512_FILE_PATH} ]];
         then
-            echo_if_be_verbose "   Removing >>${SHA512_FILE_PATH}<<."
-            rm ${SHA512_FILE_PATH}
+            _remove_path_or_exit "${SHA512_FILE_PATH}"
         fi
     fi
     #end of cleanup
@@ -408,7 +405,7 @@ function setup_environment ()
         echo_if_be_verbose "   >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<< exists."
         echo_if_be_verbose "   Cleaning up now ..."
 
-        rm -fr ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}
+        _remove_path_or_exit "${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}"
     else
         echo_if_be_verbose "   >>${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY}<< does not exist, no cleanup needed."
     fi
@@ -417,9 +414,7 @@ function setup_environment ()
     #begin of creating the output directory
     if [[ ! -p ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
     then
-        echo_if_be_verbose "   Creating >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
-
-        mkdir -p ${PATH_TO_THE_OUTPUT_DIRECTORY}
+        _create_directory_or_exit "${PATH_TO_THE_OUTPUT_DIRECTORY}"
     else
         echo_if_be_verbose "   >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< exists."
     fi
@@ -432,6 +427,138 @@ function setup_environment ()
     #end of copying needed profile
 
     echo_if_be_verbose ":: Finished setup environment"
+}
+
+####
+# @param <string: path>
+####
+function _create_directory_or_exit ()
+{
+    local DIRECTORY_PATH="${1}"
+
+    echo_if_be_verbose "   Creating directory path >>${DIRECTORY_PATH}<<."
+
+    /usr/bin/mkdir -p ${DIRECTORY_PATH}
+
+    if [[ ${?} -ne 0 ]];
+    then
+        echo "   Could not create directory path >>${DIRECTORY_PATH}<<."
+
+        exit 1
+    fi
+}
+
+function _remove_path_or_exit ()
+{
+    local PATH_TO_REMOVE="${1}"
+
+    echo_if_be_verbose "   Removing path >>${DIRECTORY_PATH}<<."
+
+    /usr/bin/rm -fr ${PATH_TO_REMOVE}
+
+    if [[ ${?} -ne 0 ]];
+    then
+        echo "   Could not remove path >>${PATH_TO_REMOVE}<<."
+
+        exit 1
+    fi
+}
+
+####
+# @param <string: VARIABLE_NAME>
+# @param <string: VARIABLE_VALUE>
+####
+function _exit_if_string_is_empty ()
+{
+    local VARIABLE_NAME="${1}"
+    local VARIABLE_VALUE="${2}"
+
+    if [[ ${#VARIABLE_VALUE} -lt 1 ]];
+    then
+        echo "   Empty >>${VARIABLE_NAME}<< provided."
+
+        exit 1
+    else
+        echo_if_be_verbose "   Valid >>${VARIABLE_NAME}<< provided, value has a string length of >>${#VARIABLE_VALUE}<<."
+    fi
+}
+
+#####
+# @param <string: "${@}">
+#####
+function _main ()
+{
+    #@todo:
+    #   * add support for dynamic user input
+    #       -a|--add-script (add a script like a one we can maintain to easeup setup/installation of "our" archlinux)
+    #       -l|--log-output 2>&1 | tee build.log
+    #       -p|--package (archzfs-linux or what ever)
+    #   * fix not working zfs embedding
+    #begin of variables declaration
+    local BUILD_FILE_NAME="archlinux-archzfs-linux"
+    local CURRENT_WORKING_DIRECTORY=$(pwd)
+    local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+
+    local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
+    local PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
+
+    local PATH_TO_THE_PROFILE_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/releng"
+    local PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
+    local ISO_FILE_PATH="${PATH_TO_THE_OUTPUT_DIRECTORY}/${BUILD_FILE_NAME}.iso"
+
+    local SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
+    #end of variables declaration
+
+    #bo: user input
+    #we are storing all arguments for the case if the script needs to be re-executed as root/system user
+    local ALL_ARGUMENTS_TO_PASS="${@}"
+    local BE_VERBOSE=0
+    local IS_FORCED=0
+    local SHOW_HELP=0
+
+    while true;
+    do
+        case "${1}" in
+            "-f" | "--force" )
+                IS_FORCED=1
+                shift 1
+                ;;
+            "-h" | "--help" )
+                SHOW_HELP=1
+                shift 1
+                ;;
+            "-v" | "--verbose" )
+                BE_VERBOSE=1
+                shift 1
+                ;;
+            * )
+                break
+                ;;
+        esac
+    done
+    #eo: user input
+
+    #bo: code
+    if [[ ${SHOW_HELP} -eq 1 ]];
+    then
+        echo ":: Usage"
+        echo "   ${0} [-f|--force] [-h|--help] [-v|--verbose]"
+
+        exit 0
+    fi
+
+    #we are calling this here to display the help as soon as possible without the need to call sudo
+    auto_elevate_if_not_called_from_root "${ALL_ARGUMENTS_TO_PASS}"
+
+    if [[ ${BE_VERBOSE} -eq 1 ]];
+    then
+        echo ":: Outputting status of the flags."
+        echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
+        echo "   IS_FORCED >>${IS_FORCED}<<."
+        echo "   SHOW_HELP >>${SHOW_HELP}<<."
+        echo ""
+    fi
+
 }
 
 ####
