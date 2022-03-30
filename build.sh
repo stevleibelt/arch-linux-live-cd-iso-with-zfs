@@ -15,7 +15,12 @@
 function add_packages_and_repository ()
 {
     echo_if_be_verbose ":: Starting adding packages and repository"
+
     local PATH_TO_THE_ARCHLIVE=${1:-""}
+
+    #bo: argument validation
+    _exit_if_string_is_empty "PATH_TO_THE_ARCHLIVE" "${PATH_TO_THE_ARCHLIVE}"
+    #eo: argument validation
 
     if [[ ! -d ${PATH_TO_THE_ARCHLIVE} ]];
     then
@@ -83,19 +88,15 @@ function build_archiso ()
     local SHA512_FILE_PATH=${5:-""}
 
     #bo: argument validation
-    #@todo
-    #if [[ ${#PATH_TO_THE_WORK_DIRECTORY} -lt 1 ]];
+    _exit_if_string_is_empty "PATH_TO_THE_WORK_DIRECTORY" "${PATH_TO_THE_WORK_DIRECTORY}"
+    _exit_if_string_is_empty "PATH_TO_THE_WORK_DIRECTORY" "${PATH_TO_THE_WORK_DIRECTORY}"
+    _exit_if_string_is_empty "PATH_TO_THE_WORK_DIRECTORY" "${PATH_TO_THE_WORK_DIRECTORY}"
+    _exit_if_string_is_empty "PATH_TO_THE_PROFILE_DIRECTORY" "${PATH_TO_THE_WORK_DIRECTORY}"
+    _exit_if_string_is_empty "ISO_FILE_PATH" "${ISO_FILE_PATH}"
+    _exit_if_string_is_empty "SHA512_FILE_PATH" "${SHA512_FILE_PATH}"
     #eo: argument validation
 
-    if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
-    then
-        echo "   Invalid path provided. >>${PATH_TO_THE_PROFILE_DIRECTORY}<< is not a directory."
-
-        exit 1
-    else
-        echo_if_be_verbose "   PATH_TO_THE_PROFILE_DIRECTORY >>${PATH_TO_THE_PROFILE_DIRECTORY}<<."
-    fi
-
+    #bo: environment setup
     if [[ ! -d ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
     then
         echo_if_be_verbose "   Directory >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does not exist. Creating it ..."
@@ -107,30 +108,13 @@ function build_archiso ()
 
     if [[ -d "${PATH_TO_THE_WORK_DIRECTORY}" ]];
     then
-        echo "   Directory >>${PATH_TO_THE_WORK_DIRECTORY}<< does exist. Removing it ..."
+        echo_if_be_verbose "   Directory >>${PATH_TO_THE_WORK_DIRECTORY}<< does exist. Removing it ..."
 
         rm -fr "${PATH_TO_THE_WORK_DIRECTORY}"
     fi
 
     /usr/bin/mkdir -p "${PATH_TO_THE_WORK_DIRECTORY}"
-
-    if [[ ${#ISO_FILE_PATH} -lt 1 ]];
-    then
-        echo "   Invalid file path provided. >>${ISO_FILE_PATH}<< is an empty string."
-
-        exit 2
-    else
-        echo_if_be_verbose "   Valid file path provided. >>${ISO_FILE_PATH}<< has a string length of >>${#ISO_FILE_PATH}<<."
-    fi
-
-    if [[ ${#SHA512_FILE_PATH} -lt 1 ]];
-    then
-        echo "   Invalid file path provided. >>${SHA512_FILE_PATH}<< is an empty string."
-
-        exit 3
-    else
-        echo "   Valid file path provided. >>${SHA512_FILE_PATH}<< has a string length of >>${#SHA512_FILE_PATH}<<."
-    fi
+    #bo: environment setup
 
     #begin of building
     mkarchiso -v -w ${PATH_TO_THE_WORK_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
@@ -197,11 +181,12 @@ function cleanup_build_path ()
     local ISO_FILE_PATH=${1:-""}
     local SHA512_FILE_PATH=${2:-""}
 
-    echo_if_be_verbose "   ISO_FILE_PATH >>${ISO_FILE_PATH}<<"
-    echo_if_be_verbose "   SHA512_FILE_PATH >>${SHA512_FILE_PATH}<<"
+    #bo: argument validation
+    _exit_if_string_is_empty "ISO_FILE_PATH" "${ISO_FILE_PATH}"
+    _exit_if_string_is_empty "SHA512_FILE_PATH" "${SHA512_FILE_PATH}"
+    #eo: argument validation
 
     #begin of cleanup
-    #cd ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
     if [[ -f ${ISO_FILE_PATH} ]];
     then
         if [[ ${IS_FORCED} -eq 1 ]];
@@ -264,6 +249,7 @@ function cleanup_build_path ()
         fi
     fi
     #end of cleanup
+
     echo_if_be_verbose ":: Finished cleanup build path"
 }
 
@@ -289,8 +275,10 @@ function evaluate_environment ()
     local PATH_TO_THE_PROFILE_DIRECTORY=${2:-""}
     local PATH_TO_THE_SOURCE_DATA_DIRECTORY=${1:-""}
 
-    echo_if_be_verbose "   PATH_TO_THE_PROFILE_DIRECTORY >>${PATH_TO_THE_PROFILE_DIRECTORY}<<"
-    echo_if_be_verbose "   PATH_TO_THE_SOURCE_DATA_DIRECTORY >>${PATH_TO_THE_SOURCE_DATA_DIRECTORY}<<"
+    #bo: argument validation
+    _exit_if_string_is_empty "PATH_TO_THE_PROFILE_DIRECTORY" "${PATH_TO_THE_PROFILE_DIRECTORY}"
+    _exit_if_string_is_empty "PATH_TO_THE_SOURCE_DATA_DIRECTORY" "${PATH_TO_THE_SOURCE_DATA_DIRECTORY}"
+    #bo: argument validation
 
     if [[ ! -d ${PATH_TO_THE_PROFILE_DIRECTORY} ]];
     then
@@ -371,11 +359,11 @@ function setup_environment ()
 {
     echo_if_be_verbose ":: Starting setup environment"
 
-    local PATH_TO_THE_SOURCE_PROFILE_DIRECTORY=${1:-""}
-    local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
+    #bo: argument validation
+    _exit_if_string_is_empty "PATH_TO_THE_SOURCE_PROFILE_DIRECTORY" "${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}"
+    _exit_if_string_is_empty "PATH_TO_THE_OUTPUT_DIRECTORY" "${PATH_TO_THE_OUTPUT_DIRECTORY}"
+    #eo: argument validation
 
-    echo_if_be_verbose "   PATH_TO_THE_SOURCE_PROFILE_DIRECTORY >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<"
-    echo_if_be_verbose "   PATH_TO_THE_OUTPUT_DIRECTORY >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"
 
     #bo: user input validation
     if [[ ! -d ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} ]];
@@ -444,6 +432,25 @@ function setup_environment ()
     #end of copying needed profile
 
     echo_if_be_verbose ":: Finished setup environment"
+}
+
+####
+# @param <string: VARIABLE_NAME>
+# @param <string: VARIABLE_VALUE>
+####
+function _exit_if_string_is_empty ()
+{
+    local VARIABLE_NAME="${1}"
+    local VARIABLE_VALUE="${2}"
+
+    if [[ ${#VARIABLE_VALUE} -lt 1 ]];
+    then
+        echo "   Empty >>${VARIABLE_NAME}<< provided."
+
+        exit 1
+    else
+        echo_if_be_verbose "   Valid >>${VARIABLE_NAME}<< provided, value has a string length of >>${#VARIABLE_VALUE}<<."
+    fi
 }
 
 #####

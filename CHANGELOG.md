@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Added output of flags when verbosity is enabled
 * Added way more output if run in verbose mode
 * Added addtional check in the step after bulding the iso to validate that an iso was build
+* Added doc block to each function
+* Added argument check in each function
 
 ### Changed
 
