@@ -22,6 +22,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+### Changed
+
+## [2.4.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.4.0) - released at 20220330
+
+### Added
+
 * Added [dump_iso.sh](dump_iso.sh) to dd a created iso
 * Added check if build was successful
     * The next steps where only executed if build was successful
