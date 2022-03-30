@@ -341,6 +341,9 @@ function auto_elevate_if_not_called_from_root ()
     if [[ ${WHO_AM_I} != "root" ]];
     then
         #call this script (${0}) again with sudo with all provided arguments (${@})
+        echo_if_be_verbose ":: Current user is not root. Restarting myself."
+        echo_if_be_verbose "   >>sudo \"${0}\" \"${@}\""
+
 	    sudo "${0}" "${@}"
 
         exit ${?}
@@ -355,6 +358,9 @@ function auto_elevate_if_not_called_from_root ()
 function setup_environment ()
 {
     echo_if_be_verbose ":: Starting setup environment"
+
+    local PATH_TO_THE_SOURCE_PROFILE_DIRECTORY=${1:-""}
+    local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
 
     #bo: argument validation
     _exit_if_string_is_empty "PATH_TO_THE_SOURCE_PROFILE_DIRECTORY" "${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}"
@@ -440,11 +446,13 @@ function _create_directory_or_exit ()
 
     /usr/bin/mkdir -p ${DIRECTORY_PATH}
 
-    if [[ ${?} -ne 0 ]];
-    then
-        echo "   Could not create directory path >>${DIRECTORY_PATH}<<."
+    local LAST_EXIST_CODE="${?}"
 
-        exit 1
+    if [[ ${LAST_EXIT_CODE} -ne 0 ]];
+    then
+        echo "   Could not create directory path >>${DIRECTORY_PATH}<<. Last exit code >>${LAST_EXIT_CODE}<<.."
+
+        exit ${LAST_EXIT_CODE}
     fi
 }
 
@@ -452,113 +460,18 @@ function _remove_path_or_exit ()
 {
     local PATH_TO_REMOVE="${1}"
 
-    echo_if_be_verbose "   Removing path >>${DIRECTORY_PATH}<<."
+    echo_if_be_verbose "   Removing path >>${PATH_TO_REMOVE}<<."
 
     /usr/bin/rm -fr ${PATH_TO_REMOVE}
 
-    if [[ ${?} -ne 0 ]];
+    local LAST_EXIST_CODE="${?}"
+
+    if [[ ${LAST_EXIT_CODE} -ne 0 ]];
     then
-        echo "   Could not remove path >>${PATH_TO_REMOVE}<<."
+        echo "   Could not remove path >>${PATH_TO_REMOVE}<<. Last exit code >>${LAST_EXIT_CODE}<<."
 
-        exit 1
+        exit ${LAST_EXIT_CODE}
     fi
-}
-
-####
-# @param <string: VARIABLE_NAME>
-# @param <string: VARIABLE_VALUE>
-####
-function _exit_if_string_is_empty ()
-{
-    local VARIABLE_NAME="${1}"
-    local VARIABLE_VALUE="${2}"
-
-    if [[ ${#VARIABLE_VALUE} -lt 1 ]];
-    then
-        echo "   Empty >>${VARIABLE_NAME}<< provided."
-
-        exit 1
-    else
-        echo_if_be_verbose "   Valid >>${VARIABLE_NAME}<< provided, value has a string length of >>${#VARIABLE_VALUE}<<."
-    fi
-}
-
-#####
-# @param <string: "${@}">
-#####
-function _main ()
-{
-    #@todo:
-    #   * add support for dynamic user input
-    #       -a|--add-script (add a script like a one we can maintain to easeup setup/installation of "our" archlinux)
-    #       -l|--log-output 2>&1 | tee build.log
-    #       -p|--package (archzfs-linux or what ever)
-    #   * fix not working zfs embedding
-    #begin of variables declaration
-    local BUILD_FILE_NAME="archlinux-archzfs-linux"
-    local CURRENT_WORKING_DIRECTORY=$(pwd)
-    local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
-
-    local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
-    local PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
-
-    local PATH_TO_THE_PROFILE_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/releng"
-    local PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
-    local ISO_FILE_PATH="${PATH_TO_THE_OUTPUT_DIRECTORY}/${BUILD_FILE_NAME}.iso"
-
-    local SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
-    #end of variables declaration
-
-    #bo: user input
-    #we are storing all arguments for the case if the script needs to be re-executed as root/system user
-    local ALL_ARGUMENTS_TO_PASS="${@}"
-    local BE_VERBOSE=0
-    local IS_FORCED=0
-    local SHOW_HELP=0
-
-    while true;
-    do
-        case "${1}" in
-            "-f" | "--force" )
-                IS_FORCED=1
-                shift 1
-                ;;
-            "-h" | "--help" )
-                SHOW_HELP=1
-                shift 1
-                ;;
-            "-v" | "--verbose" )
-                BE_VERBOSE=1
-                shift 1
-                ;;
-            * )
-                break
-                ;;
-        esac
-    done
-    #eo: user input
-
-    #bo: code
-    if [[ ${SHOW_HELP} -eq 1 ]];
-    then
-        echo ":: Usage"
-        echo "   ${0} [-f|--force] [-h|--help] [-v|--verbose]"
-
-        exit 0
-    fi
-
-    #we are calling this here to display the help as soon as possible without the need to call sudo
-    auto_elevate_if_not_called_from_root "${ALL_ARGUMENTS_TO_PASS}"
-
-    if [[ ${BE_VERBOSE} -eq 1 ]];
-    then
-        echo ":: Outputting status of the flags."
-        echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
-        echo "   IS_FORCED >>${IS_FORCED}<<."
-        echo "   SHOW_HELP >>${SHOW_HELP}<<."
-        echo ""
-    fi
-
 }
 
 ####
@@ -715,4 +628,23 @@ function _main ()
     #eo: code
 }
 
-_main "${@}"
+####
+# @param <string: VARIABLE_NAME>
+# @param <string: VARIABLE_VALUE>
+####
+function _exit_if_string_is_empty ()
+{
+    local VARIABLE_NAME="${1}"
+    local VARIABLE_VALUE="${2}"
+
+    if [[ ${#VARIABLE_VALUE} -lt 1 ]];
+    then
+        echo "   Empty >>${VARIABLE_NAME}<< provided."
+
+        exit 1
+    else
+        echo_if_be_verbose "   Valid >>${VARIABLE_NAME}<< provided, value has a string length of >>${#VARIABLE_VALUE}<<."
+    fi
+}
+
+_main ${@}
