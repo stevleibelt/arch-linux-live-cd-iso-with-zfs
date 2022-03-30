@@ -96,7 +96,7 @@ function _main ()
     #add time
     CREATION_DATE_TIME=$(echo -n "${CREATION_DATE_TIME}T"; stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d " " -f2 | cut -d "." -f1)
 
-    echo "${CREATION_DATE_TIME}" >> "${PATH_TO_THE_LATEST_BUILD_DATE}"
+    echo "${CREATION_DATE_TIME}" > "${PATH_TO_THE_LATEST_BUILD_DATE}"
     #eo: date creation
 
     #bo: upload
