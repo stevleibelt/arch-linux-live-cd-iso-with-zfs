@@ -128,7 +128,7 @@ function build_archiso ()
         echo "   Build failed!"
         echo "   Cleaning up now..."
 
-        for local FILESYSTEM_ITEM_NAME in $(ls "${PATH_TO_THE_OUTPUT_DIRECTORY}/" );
+        for FILESYSTEM_ITEM_NAME in $(ls "${PATH_TO_THE_OUTPUT_DIRECTORY}/" );
         do
             rm -fr ${PATH_TO_THE_OUTPUT_DIRECTORY}/${FILESYSTEM_ITEM_NAME}
         done
