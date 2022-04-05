@@ -19,7 +19,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+* Added `-d`, `-h` and `-v` to `upload_iso.sh`
+
 ### Changed
+
+* Remove usage of `BE_VERBOSE` in `configuration/upload_iso.sh` since this is superseeded by `-v`
 
 ## [2.4.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.4.0) - released at 20220330
 

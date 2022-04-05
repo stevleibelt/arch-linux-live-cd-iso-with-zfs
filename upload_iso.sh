@@ -46,10 +46,22 @@ function create_local_configuration_file ()
     echo "####" >> "${PATH_TO_THE_LOCAL_CONFIGURATION}"
     echo "" >> "${PATH_TO_THE_LOCAL_CONFIGURATION}"
     echo "#0 = off, 1 = on" >> "${PATH_TO_THE_LOCAL_CONFIGURATION}"
-    echo "local BE_VERBOSE=0" >> "${PATH_TO_THE_LOCAL_CONFIGURATION}"
     echo "local PATH_TO_SSH_KEY_FILE=\"${PATH_TO_SSH_KEY_FILE}\"" >> "${PATH_TO_THE_LOCAL_CONFIGURATION}"
     echo "local SCP_HOST_PATH=\"${SCP_HOST_PATH}\"" >> "${PATH_TO_THE_LOCAL_CONFIGURATION}"
+
+    echo_if_be_verbose "   Created file >>${PATH_TO_THE_LOCAL_CONFIGURATION}<<."
     #eo: user input destination scp host path"
+}
+
+####
+# @param <string: output>
+####
+function echo_if_be_verbose ()
+{
+    if [[ ${BE_VERBOSE} -eq 1 ]];
+    then
+        echo "${1}"
+    fi
 }
 
 function _main ()
@@ -65,12 +77,64 @@ function _main ()
     local PATH_TO_THE_LOCAL_CONFIGURATION="${PATH_TO_THIS_SCRIPT}/configuration/upload_iso.sh"
     #eo: variables
 
+    #bo: user input
+    #we are storing all arguments for the case if the script needs to be re-executed as root/system user
+    local ALL_ARGUMENTS_TO_PASS="${@}"
+    local BE_VERBOSE=0
+    local IS_DRY_RUN=0
+    local SHOW_HELP=0
+
+    while true;
+    do
+        case "${1}" in
+            "-d" | "--dry-run" )
+                IS_DRY_RUN=1
+                shift 1
+                ;;
+            "-h" | "--help" )
+                SHOW_HELP=1
+                shift 1
+                ;;
+            "-v" | "--verbose" )
+                BE_VERBOSE=1
+                shift 1
+                ;;
+            * )
+                break
+                ;;
+        esac
+    done
+    #eo: user input
+
+    #bo: help
+    if [[ ${SHOW_HELP} -eq 1 ]];
+    then
+        echo ":: Usage"
+        echo "   ${0} [-d|--dry-run] [-h|--help] [-v|--verbose]"
+
+        exit 0
+    fi
+    #bo: help
+
+    #bo: output used flags
+    if [[ ${BE_VERBOSE} -eq 1 ]];
+    then
+        echo ":: Outputting status of the flags."
+        echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
+        echo "   IS_DRY_RUN >>${IS_DRY_RUN}<<."
+        echo "   SHOW_HELP >>${SHOW_HELP}<<."
+        echo ""
+    fi
+    #eo: output used flags
+
     #bo: load or create local configuration
     if [[ ! -f ${PATH_TO_THE_LOCAL_CONFIGURATION} ]];
     then
+        echo_if_be_verbose "   No file >>${PATH_TO_THE_LOCAL_CONFIGURATION}<< found."
         create_local_configuration_file "${PATH_TO_THE_LOCAL_CONFIGURATION}"
     fi
 
+    echo_if_be_verbose "   Sourcing file >>${PATH_TO_THE_LOCAL_CONFIGURATION}<< found."
     source "${PATH_TO_THE_LOCAL_CONFIGURATION}"
     #eo: load or create local configuration
 
@@ -85,6 +149,7 @@ function _main ()
 
     if [[ ! -f "${PATH_TO_THE_ISO_SHA512}" ]];
     then
+        echo_if_be_verbose "   File >>${PATH_TO_THE_ISO_SHA512}<< not found. Creating it."
         sha512sum "${PATH_TO_THE_ISO}" >> "${PATH_TO_THE_ISO_SHA512}"
     fi
     #eo: environment check
@@ -96,17 +161,27 @@ function _main ()
     #add time
     CREATION_DATE_TIME=$(echo -n "${CREATION_DATE_TIME}T"; stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d " " -f2 | cut -d "." -f1)
 
+    echo_if_be_verbose "   Creation date time of file >>${PATH_TO_THE_ISO}<< is >>${CREATION_DATE_TIME}<<."
+
     echo "${CREATION_DATE_TIME}" > "${PATH_TO_THE_LATEST_BUILD_DATE}"
     #eo: date creation
 
     #bo: upload
-    if [[ ${BE_VERBOSE} -eq 1 ]];
+    echo_if_be_verbose "   Starting upload using following arguments:"
+    echo_if_be_verbose "    Files: >>${PATH_TO_THE_LATEST_BUILD_DATE}<<, >>${PATH_TO_THE_ISO_SHA512}<< and >>${PATH_TO_THE_ISO}<<."
+    echo_if_be_verbose "    Key: >>${PATH_TO_SSH_KEY_FILE}<<."
+    echo_if_be_verbose "    Hostpath: >>${SCP_HOST_PATH}<<."
+
+    if [[ ${IS_DRY_RUN} -eq 0 ]];
     then
-        scp -v -i "${PATH_TO_SSH_KEY_FILE}" "${PATH_TO_THE_LATEST_BUILD_DATE}" "${PATH_TO_THE_ISO_SHA512}" "${PATH_TO_THE_ISO}" "${SCP_HOST_PATH}"
-    else
-        scp -i "${PATH_TO_SSH_KEY_FILE}" "${PATH_TO_THE_LATEST_BUILD_DATE}" "${PATH_TO_THE_ISO_SHA512}" "${PATH_TO_THE_ISO}" "${SCP_HOST_PATH}"
+        if [[ ${BE_VERBOSE} -eq 1 ]];
+        then
+            scp -v -i "${PATH_TO_SSH_KEY_FILE}" "${PATH_TO_THE_LATEST_BUILD_DATE}" "${PATH_TO_THE_ISO_SHA512}" "${PATH_TO_THE_ISO}" "${SCP_HOST_PATH}"
+        else
+            scp -i "${PATH_TO_SSH_KEY_FILE}" "${PATH_TO_THE_LATEST_BUILD_DATE}" "${PATH_TO_THE_ISO_SHA512}" "${PATH_TO_THE_ISO}" "${SCP_HOST_PATH}"
+        fi
     fi
     #eo: upload
 }
 
-_main $@
+_main ${@}
