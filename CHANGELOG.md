@@ -19,7 +19,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+### Changed
+
+## [2.5.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.5.0) - not yet released
+
+### Added
+
 * Added `-d`, `-h` and `-v` to `upload_iso.sh`
+* Added flag `-l|--last-week` or `-w|--week-older` as discussed in [pull/6](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/6) - @todo
 
 ### Changed
 
