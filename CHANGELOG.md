@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * add flags for `build.sh`
     * `-c` - cleanup
 * validate if we can implement the "use older kernel" feature from [here](https://github.com/eoli3n/archiso-zfs/blob/master/init) to prevent failing builds when the archzfs package is not up to date to the latest linux kernel
+* add an arch installer like [archinstall](https://github.com/archlinux/archinstall), [anarchy installer](https://anarchyinstaller.gitlab.io/) or [alci](https://alci.online/)
 
 ## [Unreleased]
 
