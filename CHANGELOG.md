@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Added `-d`, `-h` and `-v` to `upload_iso.sh`
 * Added flag `-l|--last-week` or `-w|--week-older` as discussed in [pull/6](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/6) - @todo
+    * Check the [archive](https://archive.archlinux.org/repos/)
+    * What about `-l|--last {week|month|yyyy/mm/dd}`
+    * Yo can find the right place [here](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/6/files)
 
 ### Changed
 
