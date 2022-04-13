@@ -11,13 +11,15 @@
 
 ####
 # @param <string: PATH_TO_THE_ARCHLIVE>
+# [@param <string: REPO_INDEX_OR_EMPTY_STRING>]
 ####
 function add_packages_and_repository ()
 {
     echo_if_be_verbose ":: Starting adding packages and repository"
 
     #bo: variable
-    local PATH_TO_THE_ARCHLIVE=${1:-""}
+    local PATH_TO_THE_ARCHLIVE="${1:-''}"
+    local REPO_INDEX_OR_EMPTY_STRING="${2:-''}"
 
     local PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
     local PATH_TO_THE_PACMAN_CONF_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.conf"
@@ -27,6 +29,7 @@ function add_packages_and_repository ()
     _exit_if_string_is_empty "PATH_TO_THE_ARCHLIVE" "${PATH_TO_THE_ARCHLIVE}"
     #eo: argument validation
 
+    #bo: environment check
     if [[ ! -d ${PATH_TO_THE_ARCHLIVE} ]];
     then
         echo "   Invalid path to the archlive provided >>${PATH_TO_THE_ARCHLIVE}<< is not a directory."
@@ -56,6 +59,19 @@ function add_packages_and_repository ()
     else
         echo_if_be_verbose "   PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
     fi
+    #eo: environment check
+
+    #bo: repo index
+    if [[ "${#REPO_INDEX_OR_EMPTY_STRING}" -gt 0 ]];
+    then
+        echo_if_be_verbose "   Adapted repo index to >>${REPO_INDEX_OR_EMPTY_STRING}<< in file >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
+
+        #@see: https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/6/files
+        # archzfs repo often lags behind core a week or so, causing zfs kmod/kernel version mismatch and build failure
+        # Adding in last week's core archive repo before the official repo as a workaround
+        sed -i -e "s/\[core\]/\[core\]\nServer = https:\/\/archive.archlinux.org\/repos\/${REPO_INDEX_OR_EMPTY_STRING}\/\$repo\/os\/\$arch\//g" "${PATH_TO_THE_PACMAN_CONF_FILE}"
+    fi
+    #eo: repo index
 
     #bo: adding repository
     echo "" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
@@ -593,7 +609,13 @@ function _main ()
     cleanup_build_path ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
     setup_environment "/usr/share/archiso/configs/releng" ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
     evaluate_environment ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
-    add_packages_and_repository ${PATH_TO_THE_PROFILE_DIRECTORY}
+
+    if [[ ${USE_OTHER_REPO_INDEX} -eq 0 ]];
+    then
+        add_packages_and_repository "${PATH_TO_THE_PROFILE_DIRECTORY}"
+    else
+        add_packages_and_repository "${PATH_TO_THE_PROFILE_DIRECTORY}" "${REPO_INDEX}"
+    fi
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY} ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
 
     local BUILD_WAS_SUCCESSFUL="${?}"
