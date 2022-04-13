@@ -16,6 +16,12 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 
 ```
 #build an iso
+#flags
+#   -f|--force
+#   -h|--help
+#   -r|--repo-index <string: last|week|month|yyyy/mm/dd>
+#       @see: https://archive.archlinux.org/repos/
+#   -v|--verbose
 ./build.sh
 
 #test run an existing iso

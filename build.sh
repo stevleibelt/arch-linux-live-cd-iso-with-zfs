@@ -543,6 +543,7 @@ function _main ()
                 USE_OTHER_REPO_INDEX=1
                 REPO_INDEX="${2}"
                 shift 2
+                ;;
             "-v" | "--verbose" )
                 BE_VERBOSE=1
                 shift 1
@@ -571,7 +572,9 @@ function _main ()
         echo ":: Outputting status of the flags."
         echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
         echo "   IS_FORCED >>${IS_FORCED}<<."
+        echo "   REPO_INDEX >>${REPO_INDEX}<<."
         echo "   SHOW_HELP >>${SHOW_HELP}<<."
+        echo "   USE_OTHER_REPO_INDEX >>${USE_OTHER_REPO_INDEX}<<."
         echo ""
     fi
 
