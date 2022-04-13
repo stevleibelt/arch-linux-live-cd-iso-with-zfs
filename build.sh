@@ -524,7 +524,9 @@ function _main ()
     local ALL_ARGUMENTS_TO_PASS="${@}"
     local BE_VERBOSE=0
     local IS_FORCED=0
+    local REPO_INDEX="last"
     local SHOW_HELP=0
+    local USE_OTHER_REPO_INDEX=0
 
     while true;
     do
@@ -537,6 +539,10 @@ function _main ()
                 SHOW_HELP=1
                 shift 1
                 ;;
+            "-r" | "--repo-index" )
+                USE_OTHER_REPO_INDEX=1
+                REPO_INDEX="${2}"
+                shift 2
             "-v" | "--verbose" )
                 BE_VERBOSE=1
                 shift 1
@@ -552,7 +558,7 @@ function _main ()
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-f|--force] [-h|--help] [-v|--verbose]"
+        echo "   ${0} [-f|--force] [-h|--help] [-r|--repo-index <string: last|week|month|yyyy/mm/dd>] [-v|--verbose]"
 
         exit 0
     fi
