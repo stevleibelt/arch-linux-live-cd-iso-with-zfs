@@ -510,6 +510,7 @@ function _main ()
     local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
 
     local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
+    local PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE="${PATH_TO_THIS_SCRIPT}/configuration/build.sh"
     local PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
 
     local PATH_TO_THE_PROFILE_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/releng"
@@ -527,6 +528,13 @@ function _main ()
     local REPO_INDEX="last"
     local SHOW_HELP=0
     local USE_OTHER_REPO_INDEX=0
+    local USED_CONFIGURATION_FILE=0
+
+    if [[ "${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}" ]];
+    then
+        . "${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}"
+        local USED_CONFIGURATION_FILE=1
+    fi
 
     while true;
     do
@@ -572,9 +580,11 @@ function _main ()
         echo ":: Outputting status of the flags."
         echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
         echo "   IS_FORCED >>${IS_FORCED}<<."
+        echo "   PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE >>${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}<<."
         echo "   REPO_INDEX >>${REPO_INDEX}<<."
         echo "   SHOW_HELP >>${SHOW_HELP}<<."
         echo "   USE_OTHER_REPO_INDEX >>${USE_OTHER_REPO_INDEX}<<."
+        echo "   USED_CONFIGURATION_FILE >>${USED_CONFIGURATION_FILE}<<."
         echo ""
     fi
 

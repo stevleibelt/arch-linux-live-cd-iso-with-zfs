@@ -1,8 +1,9 @@
 #!/bin/bash
 ####
 # configuration file for build.sh that defines following variables
-# BE_VERBOSE=0|1
-# IS_FORCED=0|1
-# REPO_INDEX="last|week|month|yyyy/mm/dd"
-# SHOW_HELP=0
-# USE_OTHER_REPO_INDEX=0|1
+####
+# local BE_VERBOSE=0|1
+# local IS_FORCED=0|1
+# local REPO_INDEX="last|week|month|yyyy/mm/dd"
+# local SHOW_HELP=0
+# local USE_OTHER_REPO_INDEX=0|1
