@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Implemented code from [pull request/6](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/6) with an additional flag "-r|--repo-index <string: last|week|month|yyyy/mm/dd>"
 * Added [configuration file](configuration/build.sh.dist) for build.sh
+* Added `-d|--dry-run` in `build.sh`
 
 ### Changed
 
