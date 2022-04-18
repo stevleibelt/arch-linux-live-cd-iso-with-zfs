@@ -20,6 +20,7 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 ####
 #flags
 #   -f|--force
+#   -d|--dry-run
 #   -h|--help
 #   -r|--repo-index [<string: last|week|month|yyyy\/mm\/dd>]
 #       if you just use -r, default of >>last<< is used
