@@ -21,7 +21,8 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 #flags
 #   -f|--force
 #   -h|--help
-#   -r|--repo-index <string: last|week|month|yyyy/mm/dd>
+#   -r|--repo-index [<string: last|week|month|yyyy\/mm\/dd>]
+#       if you just use -r, default of >>last<< is used
 #       @see: https://archive.archlinux.org/repos/
 #   -v|--verbose
 ####
@@ -51,5 +52,6 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 
 In alphabetically order.
 
+* [derzahla](https://github.com/derzahla)
 * [gardar](https://github.com/gardar)
 * [stevleibelt](https://github.com/stevleibelt)
