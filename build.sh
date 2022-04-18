@@ -65,16 +65,13 @@ function add_packages_and_repository ()
     if [[ "${#REPO_INDEX_OR_EMPTY_STRING}" -gt 0 ]];
     then
         _echo_if_be_verbose "   Adapted repo index to >>${REPO_INDEX_OR_EMPTY_STRING}<< in file >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
-        echo "   Adapted repo index to >>${REPO_INDEX_OR_EMPTY_STRING}<< in file >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
+echo "   Adapted repo index to >>${REPO_INDEX_OR_EMPTY_STRING}<< in file >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
 
         #@see: https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/6/files
         # archzfs repo often lags behind core a week or so, causing zfs kmod/kernel version mismatch and build failure
         # Adding in last week's core archive repo before the official repo as a workaround
-        Server = https://archive.archlinux.org/repos/''/$repo/os/$arch/
-        sed -i -e "s/\[core\]/\[core\]\nServer = https:\/\/archive.archlinux.org\/repos\/${REPO_INDEX_OR_EMPTY_STRING}\/\$repo\/os\/\$arch\//g" "${PATH_TO_THE_PACMAN_CONF_FILE}"
+        sed -i -e 's/\[core\]/\[core\]\nServer = https:\/\/archive.archlinux.org\/repos\/'${REPO_INDEX_OR_EMPTY_STRING}'\/\$repo\/os\/\$arch\//g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
 
-        cat "${PATH_TO_THE_PACMAN_CONF_FILE}"
-        exit 0
     fi
     #eo: repo index
 
@@ -575,8 +572,14 @@ function _main ()
                 ;;
             "-r" | "--repo-index" )
                 USE_OTHER_REPO_INDEX=1
-                REPO_INDEX="${2}"
-                shift 2
+                if [[ ${#2} -gt 0 ]];
+                then
+                    REPO_INDEX="${2}"
+                    shift 2
+                else
+                    REPO_INDEX="week"
+                    shift 1
+                fi
                 ;;
             "-v" | "--verbose" )
                 BE_VERBOSE=1
@@ -593,7 +596,7 @@ function _main ()
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-d|--dry-run] [-f|--force] [-h|--help] [-r|--repo-index <string: last|week|month|yyyy/mm/dd>] [-v|--verbose]"
+        echo "   ${0} [-d|--dry-run] [-f|--force] [-h|--help] [-r|--repo-index [<string: last|week|month|yyyy\/mm\/dd>]] [-v|--verbose]"
 
         exit 0
     fi
@@ -613,8 +616,6 @@ function _main ()
         echo "   USE_OTHER_REPO_INDEX >>${USE_OTHER_REPO_INDEX}<<."
         echo "   USED_CONFIGURATION_FILE >>${USED_CONFIGURATION_FILE}<<."
         echo ""
-
-        exit 0
     fi
 
     cd "${PATH_TO_THIS_SCRIPT}"
