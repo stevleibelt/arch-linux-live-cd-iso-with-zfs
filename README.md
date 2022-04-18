@@ -52,5 +52,6 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 
 In alphabetically order.
 
+* [derzahla](https://github.com/derzahla)
 * [gardar](https://github.com/gardar)
 * [stevleibelt](https://github.com/stevleibelt)
