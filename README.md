@@ -15,7 +15,24 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 # Howto
 
 ```
+####
 #build an iso
+####
+#flags
+#   -f|--force
+#   -d|--dry-run
+#   -h|--help
+#   -r|--repo-index [<string: last|week|month|yyyy\/mm\/dd>]
+#       if you just use -r, default of >>last<< is used
+#       @see: https://archive.archlinux.org/repos/
+#   -v|--verbose
+####
+# tired of repeating the same flags again and again?
+#
+# optional configuration file is supported and saves your keystrokes
+# cp configuration/build.sh.dist configuration/build.sh
+# adapt file configuration/build.sh
+####
 ./build.sh
 
 #test run an existing iso
@@ -36,5 +53,6 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 
 In alphabetically order.
 
+* [derzahla](https://github.com/derzahla)
 * [gardar](https://github.com/gardar)
 * [stevleibelt](https://github.com/stevleibelt)

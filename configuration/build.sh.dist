@@ -1,0 +1,10 @@
+#!/bin/bash
+####
+# configuration file for build.sh that defines following variables
+####
+# local BE_VERBOSE=0|1
+# local IS_DRY_RUN=0|1
+# local IS_FORCED=0|1
+# local REPO_INDEX="last|week|month|yyyy/mm/dd"
+# local SHOW_HELP=0
+# local USE_OTHER_REPO_INDEX=0|1
