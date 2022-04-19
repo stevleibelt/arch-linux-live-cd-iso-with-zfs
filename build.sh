@@ -65,14 +65,21 @@ function add_packages_and_repository ()
     if [[ "${#REPO_INDEX_OR_EMPTY_STRING}" -gt 0 ]];
     then
         _echo_if_be_verbose "   Adapted repo index to >>${REPO_INDEX_OR_EMPTY_STRING}<< in file >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
-echo "   Adapted repo index to >>${REPO_INDEX_OR_EMPTY_STRING}<< in file >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
 
         #@see: https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/6/files
         # archzfs repo often lags behind core a week or so, causing zfs kmod/kernel version mismatch and build failure
         # Adding in last week's core archive repo before the official repo as a workaround
         if [[ ${IS_DRY_RUN} -ne 1 ]];
         then
+            _echo_if_be_verbose "   Adding entry of >>Server = https://archive.archlinux.org/repos/${REPO_INDEX_OR_EMPTY_STRING}/\$repo/os/\$arch<< to:"
+            _echo_if_be_verbose "       [core]"
             sed -i -e 's/\[core\]/\[core\]\nServer = https:\/\/archive.archlinux.org\/repos\/'${REPO_INDEX_OR_EMPTY_STRING}'\/\$repo\/os\/\$arch\//g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
+
+            _echo_if_be_verbose "       [extra]"
+            sed -i -e 's/\[extra\]/\[extra\]\nServer = https:\/\/archive.archlinux.org\/repos\/'${REPO_INDEX_OR_EMPTY_STRING}'\/\$repo\/os\/\$arch\//g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
+
+            _echo_if_be_verbose "       [community]"
+            sed -i -e 's/\[community\]/\[community\]\nServer = https:\/\/archive.archlinux.org\/repos\/'${REPO_INDEX_OR_EMPTY_STRING}'\/\$repo\/os\/\$arch\//g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
         fi
 
     fi
