@@ -22,7 +22,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-## [2.5.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.5.0) - not yet released
+* @todo - fix [issue/8](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/8)
+
+## [2.5.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.5.0) - 20220418
 
 ### Added
 
