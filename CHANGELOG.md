@@ -9,12 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### To Add
 
+* Add flag `-c|--cleanup` for `build.sh`
+* (Re)-Add support for `linux-lts` as done [here](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/)
+* Add an arch installer like:
+  * [eoli3n-arch-config](https://github.com/eoli3n/arch-config/tree/master/scripts/zfs/install)
+  * [archinstall](https://github.com/archlinux/archinstall)
+  * [anarchy installer](https://anarchyinstaller.gitlab.io/)
+  * [alci](https://alci.online/)
+
 ### To Change
 
-* add flags for `build.sh`
-    * `-c` - cleanup
-* validate if we can implement the "use older kernel" feature from [here](https://github.com/eoli3n/archiso-zfs/blob/master/init) to prevent failing builds when the archzfs package is not up to date to the latest linux kernel
-* add an arch installer like [archinstall](https://github.com/archlinux/archinstall), [anarchy installer](https://anarchyinstaller.gitlab.io/) or [alci](https://alci.online/)
+* Validate if we can implement the "use older kernel" feature from [here](https://github.com/eoli3n/archiso-zfs/blob/master/init) to prevent failing builds when the archzfs package is not up to date to the latest linux kernel
 
 ## [Unreleased]
 
@@ -26,7 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-* Fiex [issue/8](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/8)
+* Fixed [issue/8](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/8)
 
 ## [2.5.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.5.0) - 20220418
 
