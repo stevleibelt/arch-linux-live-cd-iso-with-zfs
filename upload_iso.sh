@@ -163,6 +163,8 @@ function _main ()
 
     echo_if_be_verbose "   Creation date time of file >>${PATH_TO_THE_ISO}<< is >>${CREATION_DATE_TIME}<<."
 
+    touch "${PATH_TO_THE_LATEST_BUILD_DATE}"
+
     echo "${CREATION_DATE_TIME}" > "${PATH_TO_THE_LATEST_BUILD_DATE}"
     #eo: date creation
 
