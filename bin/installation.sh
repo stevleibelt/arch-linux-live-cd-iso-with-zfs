@@ -3,12 +3,133 @@
 # Automated installation of zfs for your arch linux
 # I am not the smart guy inventing this. I am just someone glueing things togehter.
 ####
+# @todo
+#   Move question into seperate configuration
 # @see
 #  https://github.com/eoli3n/archiso-zfs
 #  https://github.com/eoli3n/arch-config
 # @since 20220625T19:25:20
 # @author stev leibelt <artodeto@bazzline.net>
 ####
+
+#bo: configuration
+function _run_configuration ()
+{
+    local DEVICE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/device"
+    local HOSTNAME_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/hostname"
+    local LANGUAGE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/language"
+    local LOCAL_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/local"
+    local TIMEZONE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/timezone"
+    local USERNAME_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/username"
+    local ZPOOLDATASET_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpooldataset"
+    local ZPOOLNAME_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpoolname"
+
+    _ask "Please input your prefered language (default is >>de<<)"
+    if [[ ${#REPLY} -ne 2 ]];
+    then
+        REPLY="de"
+    fi
+    echo "${REPLY}" > "${LANGUAGE_PATH}"
+
+    _ask "Please insert locales (de_DE.UTF-8): "
+    if [[ ${#REPLY} -ne 11 ]];
+    then
+        REPLY="de_DE.UTF-8"
+    fi
+    echo "${REPLY}" > "${LOCAL_PATH}"
+
+    _ask "Please input your prefered timezone (default is >>Europe/Berlin<<)"
+    if [[ ${#REPLY} -eq 0 ]];
+    then
+        REPLY="Europe/Berlin"
+    fi
+    echo "${REPLY}" > "${LANGUAGE_TIMEZONE}"
+
+    _ask "Please insert your username: "
+    echo "${REPLY}" > "${USERNAME_PATH}"
+
+    #ask user what device he want to use, remove all entries with "-part" to prevent listing partitions
+    echo ":: Please select a device where we want to install it."
+
+    select USER_SELECTED_ENTRY in $(ls /dev/disk/by-id/ | grep -v "\-part");
+    do
+        USER_SELECTED_DEVICE="/dev/disk/by-id/${USER_SELECTED_ENTRY}"
+        #store the selection
+        echo "${USER_SELECTED_DEVICE}" > "${DEVICE_PATH}"
+        break
+    done
+
+    _ask "Do you want to add a four character random string to the end of >>zpool<<? (y|N) "
+
+    local ZPOOL_NAME="rpool"
+    if echo ${REPLY} | grep -iq '^y$';
+    then
+        local RANDOM_STRING=$(echo ${RANDOM} | md5sum | head -c 4)
+
+        local ZPOOL_NAME="${ZPOOL_NAME}-${RANDOM_STRING}"
+    fi
+    echo "${ZPOOL_NAME}" > "${ZPOOLNAME_PATH}"
+
+    _ask "Name of the root dataset below >>${ZPOOL_NAME}/ROOT<< (default is tank)? "
+    local ZPOOL_DATASET="${ZPOOL_NAME}/ROOT/${REPLY:-tank}"
+    echo "${ZPOOL_DATASET}" > "${ZPOOLDATASET_PATH}"
+
+    _ask "Please insert hostname: "
+    echo "${REPLY}" > "${HOSTNAME_PATH}"
+}
+
+####
+# @param <string: configuration name>
+#   device
+#   hostname
+#   language
+#   timezone
+#   username
+#   zpooldataset
+#   zpoolname
+####
+function _get_from_configuration ()
+{
+    case ${1} in
+        "device")
+            CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/device"
+            break;;
+        "hostname")
+            CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/hostname"
+            break;;
+        "language")
+            CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/language"
+            break;;
+        "local")
+            CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/local"
+            break;;
+        "timezone")
+            CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/timezone"
+            break;;
+        "username")
+            CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/username"
+            break;;
+        "zpooldataset")
+            CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpooldataset"
+            break;;
+        "zpoolname")
+            CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpoolname"
+            break;;
+        *)
+            CONFIGURATION_FILE_PATH=${RANDOM}
+            break;;
+    esac
+
+    if [[ -f ${CONFIGURATION_FILE_PATH} ]];
+    then
+        cat "${CONFIGURATION_FILE_PATH}"
+    else
+        echo ":: Invalid configuration section >>${1}<< selected."
+
+        ext 1
+    fi
+}
+#eo: configuration
 
 #bo: preparation
 function _prepare_environment ()
@@ -25,7 +146,7 @@ function _prepare_environment ()
     if [[ -d /sys/firmware/efi/efivars ]];
     then
         _echo_if_be_verbose ":: UEFI is available."
-    fi
+    else
         echo ":: Looks like there is no uefi available."
         echo "   Sad thing, uefi is required."
 
@@ -51,22 +172,14 @@ function _prepare_environment ()
         exit 4
     fi
 
-    _ask "Please input your prefered language (default is >>de<<): "
-
-    if [[ ${#REPLY} -ne 2 ]];
-    then
-        REPLY="de"
-    fi
-
-    loadkeys ${REPLY}
+    local LANGUAGE=$(_get_from_configuration "language")
+    _echo_if_be_verbose "   Loading keyboad >>${LANGUAGE}<<."
+    loadkeys ${LANGUAGE}
 
     #bo: time
-    _ask "Please input your prefered timezone (defualt is >>Europe/Berlin<<): "
-
-    if [[ ${#REPLY} -gt 0 ]];
-    then
-        timedatectl set-timezone ${REPLY}
-    fi
+    local TIMEZONE=$(_get_from_configuration "timezone")
+    _echo_if_be_verbose "   Setting timezone >>${TIMEZONE}<<."
+    timedatectl set-timezone ${REPLY}
 
     timedatectl set-ntp true
     #eo: time
@@ -87,6 +200,7 @@ function _initialize_archzfs ()
     fi
 
     _echo_if_be_verbose ":: Adding archzfs to the repository."
+    _confirm_every_step
 
     #adding key
     pacman -Syy archlinux-keyring --noconfirm &>/dev/null
@@ -111,21 +225,6 @@ DELIM
 #eo: preparation
 
 #bo: configuration
-function _select_device ()
-{
-    #ask user what device he want to use, remove all entries with "-part" to prevent listing partitions
-    echo ":: Please select a device where we want to install it."
-
-    select USER_SELECTED_ENTRY in $(ls /dev/disk/by-id/ | grep -v "\-part");
-    do
-        USER_SELECTED_DEVICE="/dev/disk/by-id/${USER_SELECTED_ENTRY}"
-        #store the selection
-        echo "${USER_SELECTED_DEVICE}" > /tmp/_selected_device
-        echo ":: We will install on >>${USER_SELECTED_DEVICE}<<."
-        break
-    done
-}
-
 function _setup_zfs_passphrase ()
 {
     read -r -p "> Please insert your zfs passphrase: " -s USER_INPUT_PASSPHRASE
@@ -137,19 +236,20 @@ function _setup_zfs_passphrase ()
 
 function _wipe_device ()
 {
-    local DEVICE=$(cat /tmp/_selected_device)
-    _ask "Do you want to wipe the device >>${DEVICE}<<? (y|N) "
+    local DEVICE_PATH=$(_get_from_configuration "device")
 
-    if [[ ${REPLY} =~ ^[Yy]$ ]];
+    _ask "Do you want to wipe the device >>${DEVICE_PATH}<<? (y|N)"
+
+    if echo ${REPLY} | grep -iq '^y$';
     then
-        _echo_if_be_verbose ":: dd >>${DEVICE}<<.."
-        dd if=/dev/zeri of="${DEVICE}" bs=512 count=1
+        _echo_if_be_verbose ":: dd >>${DEVICE_PATH}<<.."
+        dd if=/dev/zero of="${DEVICE_PATH}" bs=512 count=1
 
-        _echo_if_be_verbose ":: wipefs >>${DEVICE}<<."
-        wipefs -af "${DEVICE}"
+        _echo_if_be_verbose ":: wipefs >>${DEVICE_PATH}<<."
+        wipefs -af "${DEVICE_PATH}"
 
-        _echo_if_be_verbose ":: sgdisk >>${DEVICE}<<."
-        sgdisk -Zo "${DEVICE}"
+        _echo_if_be_verbose ":: sgdisk >>${DEVICE_PATH}<<."
+        sgdisk -Zo "${DEVICE_PATH}"
     else
         echo ":: No wipe, no progress."
         echo "   Will exit now."
@@ -160,17 +260,17 @@ function _wipe_device ()
 
 function _partition_device ()
 {
-    local DEVICE=$(cat /tmp/_selected_device)
+    local DEVICE_PATH=$(_get_from_configuration "device")
 
     _echo_if_be_verbose ":: Creating EFI partition."
-    sgdisk -n1:1M:+512M -t1:EF00 "${DEVICE}"
-    local EFI_PARTITION="${DEVICE}-part1"
+    sgdisk -n1:1M:+512M -t1:EF00 "${DEVICE_PATH}"
+    local EFI_PARTITION="${DEVICE_PATH}-part1"
     
     _echo_if_be_verbose ":: Creating ZFS partition."
-    sgdisk -n3:0:0 -t3:bf01 "${DEVICE}"
+    sgdisk -n3:0:0 -t3:bf01 "${DEVICE_PATH}"
 
     _echo_if_be_verbose ":: Informing kernel about partition changes."
-    partprobe "${DEVICE}"
+    partprobe "${DEVICE_PATH}"
 
     _echo_if_be_verbose ":: Formating EFI partition."
     sleep 1 #needed to fix a possible issue that partprobe is not done yet
@@ -179,23 +279,36 @@ function _partition_device ()
 
 function _setup_zpool_and_dataset ()
 {
-    local DEVICE=$(cat /tmp/_selected_device)
-    local ZPOOL_NAME="zpool"
+    local DEVICE_PATH=$(_get_from_configuration "device")
+    local ZPOOL_NAME=$(_get_from_configuration "zpoolname")
+    local ZPOOL_DATASET=$(_get_from_configuration "zpooldataset")
 
-    local EFI_PARTITION="${DEVICE}-part1"
-    local ZFS_PARTITION="${DEVICE}-part3"
-
-    _ask "Do you want to add a four character random string to the end of >>zpool<<? (y|N) "
-
-    if [[ ${REPLY} =~ ^[Yy]$ ]];
-    then
-        local RANDOM_STRING=$(echo ${RANDOM} | md5sum | head -c 4)
-
-        local ZPOOL_NAME="${ZPOOL_NAME-${RANDOM_STRING}}"
-    fi
+    local EFI_PARTITION="${DEVICE_PATH}-part1"
+    local ZFS_PARTITION="${DEVICE_PATH}-part3"
 
     _echo_if_be_verbose ":: Using device partition >>${ZFS_PARTITION}<<"
-    _echo_if_be_verbose "   Creating zfs pool"
+    _echo_if_be_verbose "   Creating zfs pool on device path >>${ZFS_PARTITION}<<."
+
+    if [[ ! -h "${EFI_PARTITION}" ]];
+    then
+        echo ":: Expected device link >>${EFI_PARTITION}<< does not exist."
+
+        exit 1
+    fi
+
+    if [[ ! -h "${ZFS_PARTITION}" ]];
+    then
+        echo ":: Expected device link >>${ZFS_PARTITION}<< does not exist."
+
+        exit 2
+    fi
+
+    if [[ ! -f /etc/zfs/zroot.key ]];
+    then
+        echo ":: Expected file >>/etc/zfs/zroot.key<< does not exist."
+
+        exit 3
+    fi
 
     zpool create -f -o ashift=12                          \
                  -o autotrim=on                           \
@@ -213,50 +326,66 @@ function _setup_zpool_and_dataset ()
                  -O devices=off                           \
                  -R /mnt                                  \
                  "${ZPOOL_NAME}" "${ZFS_PARTITION}"
+    _confirm_every_step
 
+    #bo: create pool
     _echo_if_be_verbose ":: Creating root dataset"
     zfs create -o mountpoint=none "${ZPOOL_NAME}/ROOT"
 
     _echo_if_be_verbose ":: Set the commandline"
     zfs set org.zfsbootmenu:commandline="ro quiet" "${ZPOOL_NAME}/ROOT"
+    #eo: create pool
 
-    _ask "Name of the root dataset below >>${ZPOOL_NAME}/ROOT<<? "
-    local ZPOOL_ROOT_DATASET="${ZPOOL_NAME}/ROOT/${REPLY}"
-
-    _echo_if_be_verbose ":: Creating root dataset"
-    zfs create -o mountpoint=/ -o canmount=noauto "${ZPOOL_ROOT_DATASET}"
+    #bo: create system dataset
+    _echo_if_be_verbose ":: Creating root dataset >>${ZPOOL_DATASET}<<"
+    zfs create -o mountpoint=/ -o canmount=noauto "${ZPOOL_DATASET}"
 
     _echo_if_be_verbose ":: Creating zfs hostid"
     zgenhostid
 
     _echo_if_be_verbose ":: Configuring bootfs"
-    zpool set bootfs="${ZPOOL_ROOT_DATASET}" "${ZPOOL_NAME}"
+    zpool set bootfs="${ZPOOL_DATASET}" "${ZPOOL_NAME}"
 
     _echo_if_be_verbose ":: Manually mounting dataset"
     zfs mount "${ZPOOL_ROOT_DATASET}"
+    _confirm_every_step
+    #eo: create system dataset
 
+    #bo: create home dataset
     _echo_if_be_verbose ":: Creating home dataset"
     zfs -create -o mountpoint=/ -o canmount=off "${ZPOOL_NAME}/data"
     zfs -create                                 "${ZPOOL_NAME}/data/home"
+    _confirm_every_step
+    #eo: create home dataset
 
+    #bo: pool reload
     _echo_if_be_verbose ":: Export pool"
     zpool export "${ZPOOL_NAME}"
 
     _echo_if_be_verbose ":: Import pool"
     zpool import -d /dev/disk/by-id -R /mnt "${ZPOOL_NAME}" -N -f
     zfs load-key "${ZPOOL_NAME}"
+    _confirm_every_step
+    #eo: pool reload
 
-    _echo_if_be_verbose ":: Mounting root dataset"
-    zfs mount "${ZPOOL_ROOT_DATASET}"
+    #bo: mount system
+    _echo_if_be_verbose ":: Mounting system dataset"
+    zfs mount "${ZPOOL_DATASET}"
+    ##mounting the rest
     zfs mount -a
 
-    _echo_if_be_verbose ":: Mounting EFI partition"
+    _echo_if_be_verbose ":: Mounting EFI partition >>${EFI_PARTITION}<<"
     mkdir -p /mnt/efi
     mount "${EFI_PARTITION}" /mnt/efi
+    _confirm_every_step
+    #eo: mount system
 
+    #bo: copy zfs cache
     _echo_if_be_verbose ":: Copy zpool cache"
     mkdir -p /mnt/etc/zfs
     zpool set cachefile=/etc/zfs/zpool.cache "${ZPOOL_NAME}"
+    _confirm_every_step
+    #eo: copy zfs cache
 }
 #eo: configuration
 
@@ -268,6 +397,14 @@ function _ask ()
 {
     read -p ">> ${1}: " -r
     echo
+}
+
+function _confirm_every_step ()
+{
+    if [[ ${CONFIRM_EVERY_STEP} -eq 1 ]];
+    then
+        read -p "Press enter to continue"
+    fi
 }
 
 ####
@@ -286,20 +423,28 @@ function _main ()
     #bo: variables
     local CURRENT_WORKING_DIRECTORY=$(pwd)
     local CURRENT_DATE_TIME=$(date +""'%Y%m%d-%H%M%S')
+    local PATH_TO_THE_CONFIGURATION_DIRECTORY="/tmp/_configuration"
     local PATH_TO_THIS_SCRIPT=$(cd $(dirname "$0"); pwd)
     local CURRENT_RUNNING_KERNEL_VERSION=$(uname -r)
     #eo: variables
 
     #bo: user input
     local BE_VERBOSE=0
+    local CONFIRM_EVERY_STEP=0
     local IS_DRY_RUN=0
     local SHOW_HELP=0
 
     while true;
     do
         case "${1}" in
+            "-c" | "--confirm" )
+                CONFIRM_EVERY_STEP=1
+                shift 1
+                ;;
             "-d" | "--debug" )
                 set +x
+		        exec &> >(tee "debug.log")
+		        echo ":: >>debug.log<< is filled with data"
                 IS_DEBUG=1
                 shift 1
                 ;;
@@ -326,8 +471,9 @@ function _main ()
         echo "   PATH_TO_THIS_SCRIPT: >>${PATH_TO_THIS_SCRIPT}<<."
         echo "   PROJECT_ROOT_PATH: >>${PROJECT_ROOT_PATH}<<."
         echo "   BE_VERBOSE: >>${BE_VERBOSE}<<."
-        echo "   IS_DEBUG: >>${IS_DEBUG}<<."
+        echo "   CONFIRM_EVERY_STEP: >>${CONFIRM_EVERY_STEP}<<."
         echo "   CURRENT_RUNNING_KERNEL_VERSION: >>${CURRENT_RUNNING_KERNEL_VERSION}<<."
+        echo "   IS_DEBUG: >>${IS_DEBUG}<<."
         echo ""
     fi
     #eo: verbose output
@@ -336,25 +482,41 @@ function _main ()
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-d|--debug] [-h|--help] [-v|--verbose]"
+        echo "   ${0} [-c|--confirm] [-d|--debug] [-h|--help] [-v|--verbose]"
 
         exit 0
     fi
     #eo: help
 
+    #bo: configuration
+    if [[ ! -d "${PATH_TO_THE_CONFIGURATION_DIRECTORY}" ]];
+    then
+        _run_configuration
+    fi
+    #eo: configuration
+
     #bo: preparation
     _prepare_environment
+    _confirm_every_step
+
     _initialize_archzfs
+    _confirm_every_step
     #@see https://github.com/eoli3n/archiso-zfs/blob/master/init#L157
     #I guess we don't need it since we are running an archzfs
     #eo: preparation
 
     #bo: configuration
-    _select_device
     _setup_zfs_passphrase
+    _confirm_every_step
+
     _wipe_device
+    _confirm_every_step
+
     _partition_device
+    _confirm_every_step
+
     _setup_zpool_and_dataset
+    _confirm_every_step
     #eo: configuration
 
     #bo: installation
@@ -373,29 +535,28 @@ function _main ()
         vim             \
         git             \
         networkmanager
+    _confirm_every_step
 
+    local ZPOOL_NAME=$(_get_from_configuration "zpoolname")
     _echo_if_be_verbose ":: Generate fstab excluding zfs entries"
     genfstab -U /mnt | grep -v "${ZPOOL_NAME}" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
 
-    _ask "Please insert hostname: "
-    echo "${REPLY}" > /mnt/etc/hostname
+    #bo: hostname
+    local USER_HOSTNAME=$(_get_from_configuration "hostname")
+    echo "${USER_HOSTNAME}" > /mnt/etc/hostname
 
     _echo_if_be_verbose ":: Configuring /etc/hosts"
     cat > /mnt/etc/hosts <<DELIM
 #<ip-address>	<hostname.domain.org>	<hostname>
-127.0.0.1	    localhost   	        ${REPLY}
-::1   		    localhost              	${REPLY}
+127.0.0.1	    localhost   	        ${USER_HOSTNAME}
+::1   		    localhost              	${USER_HOSTNAME}
 DELIM
+    _confirm_every_step
+    #eo: hostname
 
-    _ask "Please insert locales (de_DE.UTF-8): "
-    if [[ ${#REPLY} -ne 11 ]];
-    then
-        REPLY="de_DE.UTF-8"
-    fi
-
-    #${REPLY:0:2}=de
-    local USER_INPUT_LANGUAGE="${REPLY:0:2}"
-    local USER_INPUT_LOCAL="${REPLY}"
+    #bo:
+    local USER_INPUT_LANGUAGE=$(_get_from_configuration "language")
+    local USER_INPUT_LOCAL=$(_get_from_configuration "local")
 
     echo "KEYMAP=${USER_INPUT_LANGUAGE}" > /mnt/etc/vconsole.conf
     sed -i "s/#\(${USER_INPUT_LOCAL}\)/\1/" /mnt/etc/locale.gen
@@ -409,14 +570,15 @@ FILES=(/etc/zfs/zroot.key)
 HOOKS=(base udev autodetect modconf block keyboard keymap zfs filesystems)
 COMPRESSION="zstd"
 DELIM
+    _confirm_every_step
 
     _echo_if_be_verbose ":: Copying zfs files"
     cp /etc/hostid /mnt/etc/hostid
     cp /etc/zfs/zpool.cache /mnt/etc/zfs/zpool.cache
     cp /etc/zfs/zroot.key /mnt/etc/zfs
+    _confirm_every_step
 
-    _ask "Please insert your username: "
-    local USER_NAME=${REPLY}
+    local USER_NAME=$(_get_from_configuration "username")
 
     _echo_if_be_verbose ":: Chroot and configure system"
     arch-chroot /mnt /bin/bash -xe <<DELIM
@@ -463,12 +625,14 @@ EOSF
   #create user
   useradd -m ${USER_NAME}
 DELIM
+    _confirm_every_step
 
     echo ":: Setting password of >>root<<"
     arch-chroot /mnt /bin/passwd
 
     echo ":: Setting password of >>${USER_NAME}<<"
     arch-chroot /mnt /bin/passwd "${USER_NAME}"
+    _confirm_every_step
 
     _echo_if_be_verbose ":: Configuring sudo"
     cat > /mnt/etc/sudoers <<DELIM
@@ -487,12 +651,14 @@ DELIM
     systemctl enable zfs-mount --root=/mnt
     systemctl enable zfs-import.target --root=/mnt
     systemctl enable zfs.target --root=/mnt
+    _confirm_every_step
 
     _echo_if_be_verbose ":: Configure zfs-mount-generator"
     mkdir -p /mnt/etc/zfs/zfs-list.cache
     touch /mnt/etc/zfs/zfs-list.cache/${ZPOOL_NAME}
     zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand | sed 's/\/mnt//' > /mnt/etc/zfs/zfs-list.cache/${ZPOOL_NAME}
     systemctl enable zfs-zed.service --root=/mnt
+    _confirm_every_step
 
     _echo_if_be_verbose ":: Configure zfsbootmenu"
     mkdir -p /mnt/efi/EFI/ZBM
@@ -524,7 +690,10 @@ Kernel:
 DELIM
 
     _echo_if_be_verbose ":: Setting commandline"
-    zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=${USER_INPUT_LANGUAGE}" "${ZPOOL_ROOT_DATASET}"
+    zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=${USER_INPUT_LANGUAGE}" "${ZPOOL_DATASET}"
+    _confirm_every_step
+
+    local DEVICE_PATH=$(_get_from_configuration "device")
 
     _echo_if_be_verbose ":: Configuring zfsbootmenu language"
     arch-chroot /mnt /bin/bash -xe <<DELIM
@@ -534,18 +703,18 @@ DELIM
   generate-zbm
 DELIM
 
+    local DEVICE_PATH=$(_get_from_configuration "device")
     _echo_if_be_verbose ":: Creating UEFI entries"
-    local USER_SELECTED_DEVICE=$(cat /tmp/_selected_device)
     
     if ! efibootmgr | grep ZFSBootMenu
     then
-        efibootmgr --disk "${USER_SELECTED_DEVICE}" \
+        efibootmgr --disk "${DEVICE_PATH}" \
           --part 1 \
           --create \
           --label "ZFSBootMenu Backup" \
           --loader "\EFI\ZBM\vmlinuz-backup.efi" \
           --verbose
-        efibootmgr --disk "${USER_SELECTED_DEVICE}" \
+        efibootmgr --disk "${DEVICE_PATH}" \
           --part 1 \
           --create \
           --label "ZFSBootMenu" \
@@ -554,6 +723,7 @@ DELIM
     else
         _echo_if_be_verbose "   Boot entries already created"
     fi
+    _confirm_every_step
 
     _echo_if_be_verbose ":: Unmounting all partitions"
     umount /mnt/efi
