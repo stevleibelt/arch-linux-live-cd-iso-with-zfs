@@ -559,6 +559,7 @@ DELIM
     #bo:
     local USER_INPUT_LANGUAGE=$(_get_from_configuration "language")
     local USER_INPUT_LOCAL=$(_get_from_configuration "local")
+    local USER_INPUT_TIMEZONE=$(_get_from_configuration "timezone")
 
     echo "KEYMAP=${USER_INPUT_LANGUAGE}" > /mnt/etc/vconsole.conf
     sed -i "s/#\(${USER_INPUT_LOCAL}\)/\1/" /mnt/etc/locale.gen
@@ -584,30 +585,34 @@ DELIM
 
     _echo_if_be_verbose ":: Chroot and configure system"
     arch-chroot /mnt /bin/bash -xe <<DELIM
-  ### Reinit keyring
-  # As keyring is initialized at boot, and copied to the install dir with pacstrap, and ntp is running
-  # Time changed after keyring initialization, it leads to malfunction
-  # Keyring needs to be reinitialised properly to be able to sign archzfs key.
-  rm -Rf /etc/pacman.d/gnupg
-  pacman-key --init
-  pacman-key --populate archlinux
-  pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
-  pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
-  pacman -S archlinux-keyring --noconfirm
-  cat >> /etc/pacman.conf <<"EOSF"
+### Reinit keyring
+# As keyring is initialized at boot, and copied to the install dir with pacstrap, and ntp is running
+# Time changed after keyring initialization, it leads to malfunction
+# Keyring needs to be reinitialised properly to be able to sign archzfs key.
+
+rm -Rf /etc/pacman.d/gnupg
+pacman-key --init
+pacman-key --populate archlinux
+pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
+pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
+pacman -S archlinux-keyring --noconfirm
+
+cat >> /etc/pacman.conf <<"EOSF"
 [archzfs]
 Server = http://archzfs.com/archzfs/x86_64
 Server = http://mirror.sum7.eu/archlinux/archzfs/archzfs/x86_64
 Server = https://mirror.biocrafting.net/archlinux/archzfs/archzfs/x86_64
 EOSF
   pacman -Syu --noconfirm zfs-utils
+
   #synchronize clock
   hwclock --systohc
 
   #set date
   timedatectl set-ntp true
+
   #@todo: fetch from previous
-  timedatectl set-timezone Europe/Berlin
+  timedatectl set-timezone ${USER_INPUT_TIMEZONE}
 
   #generate locale
   locale-gen
