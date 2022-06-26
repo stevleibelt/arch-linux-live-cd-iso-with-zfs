@@ -24,6 +24,8 @@ function _run_configuration ()
     local ZPOOLDATASET_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpooldataset"
     local ZPOOLNAME_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpoolname"
 
+    mkdir "${PATH_TO_THE_CONFIGURATION_DIRECTORY}"
+
     _ask "Please input your prefered language (default is >>de<<)"
     if [[ ${#REPLY} -ne 2 ]];
     then
@@ -31,7 +33,7 @@ function _run_configuration ()
     fi
     echo "${REPLY}" > "${LANGUAGE_PATH}"
 
-    _ask "Please insert locales (de_DE.UTF-8): "
+    _ask "Please insert locales (default is >>de_DE.UTF-8<<)"
     if [[ ${#REPLY} -ne 11 ]];
     then
         REPLY="de_DE.UTF-8"
@@ -43,7 +45,7 @@ function _run_configuration ()
     then
         REPLY="Europe/Berlin"
     fi
-    echo "${REPLY}" > "${LANGUAGE_TIMEZONE}"
+    echo "${REPLY}" > "${TIMEZONE_PATH}"
 
     _ask "Please insert your username: "
     echo "${REPLY}" > "${USERNAME_PATH}"
@@ -93,31 +95,31 @@ function _get_from_configuration ()
     case ${1} in
         "device")
             CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/device"
-            break;;
+            ;;
         "hostname")
             CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/hostname"
-            break;;
+            ;;
         "language")
             CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/language"
-            break;;
+            ;;
         "local")
             CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/local"
-            break;;
+            ;;
         "timezone")
             CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/timezone"
-            break;;
+            ;;
         "username")
             CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/username"
-            break;;
+            ;;
         "zpooldataset")
             CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpooldataset"
-            break;;
+            ;;
         "zpoolname")
             CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpoolname"
-            break;;
+            ;;
         *)
             CONFIGURATION_FILE_PATH=${RANDOM}
-            break;;
+            ;;
     esac
 
     if [[ -f ${CONFIGURATION_FILE_PATH} ]];
@@ -347,14 +349,14 @@ function _setup_zpool_and_dataset ()
     zpool set bootfs="${ZPOOL_DATASET}" "${ZPOOL_NAME}"
 
     _echo_if_be_verbose ":: Manually mounting dataset"
-    zfs mount "${ZPOOL_ROOT_DATASET}"
+    zfs mount "${ZPOOL_DATASET}"
     _confirm_every_step
     #eo: create system dataset
 
     #bo: create home dataset
     _echo_if_be_verbose ":: Creating home dataset"
-    zfs -create -o mountpoint=/ -o canmount=off "${ZPOOL_NAME}/data"
-    zfs -create                                 "${ZPOOL_NAME}/data/home"
+    zfs create -o mountpoint=/ -o canmount=off "${ZPOOL_NAME}/data"
+    zfs create                                 "${ZPOOL_NAME}/data/home"
     _confirm_every_step
     #eo: create home dataset
 
