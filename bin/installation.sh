@@ -25,7 +25,7 @@ function _prepare_environment ()
     if [[ -d /sys/firmware/efi/efivars ]];
     then
         _echo_if_be_verbose ":: UEFI is available."
-    fi
+    else
         echo ":: Looks like there is no uefi available."
         echo "   Sad thing, uefi is required."
 
@@ -284,6 +284,7 @@ function _echo_if_be_verbose ()
 function _main ()
 {
     #bo: variables
+    local AVAILABLE_STEPS=8
     local CURRENT_WORKING_DIRECTORY=$(pwd)
     local CURRENT_DATE_TIME=$(date +""'%Y%m%d-%H%M%S')
     local PATH_TO_THIS_SCRIPT=$(cd $(dirname "$0"); pwd)
@@ -292,22 +293,27 @@ function _main ()
 
     #bo: user input
     local BE_VERBOSE=0
+    local SELECTED_STEP=0
     local IS_DRY_RUN=0
     local SHOW_HELP=0
 
     while true;
     do
         case "${1}" in
-            "-d" | "--debug" )
-                set +x
-                IS_DEBUG=1
+            "-d" | "--dry-run" )
+                IS_DRY_RUN=1
                 shift 1
                 ;;
             "-h" | "--help" )
                 SHOW_HELP=1
                 shift 1
                 ;;
+            "-s" | "--step" )
+                SELECTED_STEP="${2}"
+                shift 2
+                ;;
             "-v" | "--verbose" )
+                set +x
                 BE_VERBOSE=1
                 shift 1
                 ;;
@@ -322,12 +328,13 @@ function _main ()
     if [[ ${BE_VERBOSE} -eq 1 ]];
     then
         echo ":: Dumping variables"
+        echo "   BE_VERBOSE: >>${BE_VERBOSE}<<."
+        echo "   CURRENT_RUNNING_KERNEL_VERSION: >>${CURRENT_RUNNING_KERNEL_VERSION}<<."
         echo "   CURRENT_WORKING_DIRECTORY: >>${CURRENT_WORKING_DIRECTORY}<<."
+        echo "   IS_DRY_RUN: >>${IS_DRY_RUN}<<."
         echo "   PATH_TO_THIS_SCRIPT: >>${PATH_TO_THIS_SCRIPT}<<."
         echo "   PROJECT_ROOT_PATH: >>${PROJECT_ROOT_PATH}<<."
-        echo "   BE_VERBOSE: >>${BE_VERBOSE}<<."
-        echo "   IS_DEBUG: >>${IS_DEBUG}<<."
-        echo "   CURRENT_RUNNING_KERNEL_VERSION: >>${CURRENT_RUNNING_KERNEL_VERSION}<<."
+        echo "   SELECTED_STEP: >>${SELECTED_STEP}<< from >>${AVAILABLE_STEPS}<<."
         echo ""
     fi
     #eo: verbose output
@@ -336,73 +343,114 @@ function _main ()
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-d|--debug] [-h|--help] [-v|--verbose]"
+        echo "   ${0} [-d|--dry-run] [-h|--help] [-s|--step <int: 1-${AVAILABLE_STEPS}>] [-v|--verbose]"
 
-        exit 0
     fi
     #eo: help
 
     #bo: preparation
-    _prepare_environment
-    _initialize_archzfs
+    local CURRENT_STEP=1
+
+    if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
+    then
+        _echo_if_be_verbose ":: bo step ${CURRENT_STEP} - preperation"
+
+        _prepare_environment
+        _initialize_archzfs
+
+        _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - preperation"
+    fi
     #@see https://github.com/eoli3n/archiso-zfs/blob/master/init#L157
     #I guess we don't need it since we are running an archzfs
     #eo: preparation
 
     #bo: configuration
-    _select_device
-    _setup_zfs_passphrase
-    _wipe_device
-    _partition_device
-    _setup_zpool_and_dataset
+    local CURRENT_STEP=2
+
+    if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
+    then
+        _echo_if_be_verbose ":: bo step ${CURRENT_STEP} - device setup"
+
+        _select_device
+        _setup_zfs_passphrase
+        _wipe_device
+        _partition_device
+        _setup_zpool_and_dataset
+
+        _echo_if_be_verbose ":: Sorting mirrors"
+        systemctl start reflector
+
+        _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - device setup"
+    fi
     #eo: configuration
 
     #bo: installation
-    _echo_if_be_verbose ":: Sorting mirrors"
-    systemctl start reflector
+    local CURRENT_STEP=3
 
-    _echo_if_be_verbose ":: Install base system"
-    #@todo: ask for a list or let the user provide a list of tools
-    pacstrap /mnt       \
-        base            \
-        base-devel      \
-        linux           \
-        linux-headers   \
-        linux-firmware  \
-        efibootmgr      \
-        vim             \
-        git             \
-        networkmanager
+    if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
+    then
+        _echo_if_be_verbose ":: bo step${CURRENT_STEP}  - Install base system"
 
-    _echo_if_be_verbose ":: Generate fstab excluding zfs entries"
-    genfstab -U /mnt | grep -v "${ZPOOL_NAME}" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
+        _echo_if_be_verbose "   Install base system"
+        #@todo: ask for a list or let the user provide a list of tools
+        pacstrap /mnt       \
+            base            \
+            base-devel      \
+            linux           \
+            linux-headers   \
+            linux-firmware  \
+            efibootmgr      \
+            vim             \
+            git             \
+            networkmanager
 
-    _ask "Please insert hostname: "
-    echo "${REPLY}" > /mnt/etc/hostname
+        _echo_if_be_verbose "   Generate fstab excluding zfs entries"
+        genfstab -U /mnt | grep -v "${ZPOOL_NAME}" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
 
-    _echo_if_be_verbose ":: Configuring /etc/hosts"
-    cat > /mnt/etc/hosts <<DELIM
+        _echo_if_be_verbose ":: eo step${CURRENT_STEP}  - Install base system"
+    fi
+
+    local CURRENT_STEP=4
+
+    if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
+    then
+        _echo_if_be_verbose ":: bo step ${CURRENT_STEP} - Configure base system"
+
+        _ask "Please insert hostname: "
+        echo "${REPLY}" > /mnt/etc/hostname
+
+        _echo_if_be_verbose ":: Configuring /etc/hosts"
+        cat > /mnt/etc/hosts <<DELIM
 #<ip-address>	<hostname.domain.org>	<hostname>
 127.0.0.1	    localhost   	        ${REPLY}
 ::1   		    localhost              	${REPLY}
 DELIM
 
-    _ask "Please insert locales (de_DE.UTF-8): "
-    if [[ ${#REPLY} -ne 11 ]];
-    then
-        REPLY="de_DE.UTF-8"
+        _ask "Please insert locales (de_DE.UTF-8): "
+        if [[ ${#REPLY} -ne 11 ]];
+        then
+            REPLY="de_DE.UTF-8"
+        fi
+
+        #${REPLY:0:2}=de
+        local USER_INPUT_LANGUAGE="${REPLY:0:2}"
+        local USER_INPUT_LOCAL="${REPLY}"
+
+        echo "KEYMAP=${USER_INPUT_LANGUAGE}" > /mnt/etc/vconsole.conf
+        sed -i "s/#\(${USER_INPUT_LOCAL}\)/\1/" /mnt/etc/locale.gen
+        echo "LANG=\"${USER_INPUT_LOCAL}\"" > /mnt/etc/locale.conf
+
+        _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - Configure base system"
     fi
 
-    #${REPLY:0:2}=de
-    local USER_INPUT_LANGUAGE="${REPLY:0:2}"
-    local USER_INPUT_LOCAL="${REPLY}"
+    local CURRENT_STEP=5
 
-    echo "KEYMAP=${USER_INPUT_LANGUAGE}" > /mnt/etc/vconsole.conf
-    sed -i "s/#\(${USER_INPUT_LOCAL}\)/\1/" /mnt/etc/locale.gen
-    echo "LANG=\"${USER_INPUT_LOCAL}\"" > /mnt/etc/locale.conf
+    if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
+    then
+        _echo_if_be_verbose ":: bo step ${CURRENT_STEP} - Setup zfs"
 
-    _echo_if_be_verbose ":: Preparing initramfs"
-    cat > /mnt/etc/mkinitcpio.conf <<DELIM
+        _echo_if_be_verbose "   Preparing initramfs"
+        cat > /mnt/etc/mkinitcpio.conf <<DELIM
 MODULES=()
 BINARIES=()
 FILES=(/etc/zfs/zroot.key)
@@ -410,16 +458,16 @@ HOOKS=(base udev autodetect modconf block keyboard keymap zfs filesystems)
 COMPRESSION="zstd"
 DELIM
 
-    _echo_if_be_verbose ":: Copying zfs files"
-    cp /etc/hostid /mnt/etc/hostid
-    cp /etc/zfs/zpool.cache /mnt/etc/zfs/zpool.cache
-    cp /etc/zfs/zroot.key /mnt/etc/zfs
+        _echo_if_be_verbose "   Copying zfs files"
+        cp /etc/hostid /mnt/etc/hostid
+        cp /etc/zfs/zpool.cache /mnt/etc/zfs/zpool.cache
+        cp /etc/zfs/zroot.key /mnt/etc/zfs
 
-    _ask "Please insert your username: "
-    local USER_NAME=${REPLY}
+        _ask "Please insert your username: "
+        local USER_NAME=${REPLY}
 
-    _echo_if_be_verbose ":: Chroot and configure system"
-    arch-chroot /mnt /bin/bash -xe <<DELIM
+        _echo_if_be_verbose "   Chroot and configure system"
+        arch-chroot /mnt /bin/bash -xe <<DELIM
   ### Reinit keyring
   # As keyring is initialized at boot, and copied to the install dir with pacstrap, and ntp is running
   # Time changed after keyring initialization, it leads to malfunction
@@ -464,42 +512,60 @@ EOSF
   useradd -m ${USER_NAME}
 DELIM
 
-    echo ":: Setting password of >>root<<"
-    arch-chroot /mnt /bin/passwd
+        echo "   Setting password of >>root<<"
+        arch-chroot /mnt /bin/passwd
 
-    echo ":: Setting password of >>${USER_NAME}<<"
-    arch-chroot /mnt /bin/passwd "${USER_NAME}"
+        echo "   Setting password of >>${USER_NAME}<<"
+        arch-chroot /mnt /bin/passwd "${USER_NAME}"
 
-    _echo_if_be_verbose ":: Configuring sudo"
-    cat > /mnt/etc/sudoers <<DELIM
+        _echo_if_be_verbose "   Configuring sudo"
+        cat > /mnt/etc/sudoers <<DELIM
 root ALL=(ALL) ALL
 ${USER_NAME} ALL=(ALL) ALL
 Defaults rootpw
 DELIM
 
-    #@todo configure network
-    #   https://github.com/eoli3n/arch-config/blob/master/scripts/zfs/install/02-install.sh#L160
-    #@todo configure dns
-    #   https://github.com/eoli3n/arch-config/blob/master/scripts/zfs/install/02-install.sh#L196
+        _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - Setup zfs"
+    fi
 
-    _echo_if_be_verbose ":: Configuring zfs"
-    systemctl enable zfs-import-cache --root=/mnt
-    systemctl enable zfs-mount --root=/mnt
-    systemctl enable zfs-import.target --root=/mnt
-    systemctl enable zfs.target --root=/mnt
+    local CURRENT_STEP=6
 
-    _echo_if_be_verbose ":: Configure zfs-mount-generator"
-    mkdir -p /mnt/etc/zfs/zfs-list.cache
-    touch /mnt/etc/zfs/zfs-list.cache/${ZPOOL_NAME}
-    zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand | sed 's/\/mnt//' > /mnt/etc/zfs/zfs-list.cache/${ZPOOL_NAME}
-    systemctl enable zfs-zed.service --root=/mnt
+    if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
+    then
+        _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - Configure zfs"
 
-    _echo_if_be_verbose ":: Configure zfsbootmenu"
-    mkdir -p /mnt/efi/EFI/ZBM
+        #@todo configure network
+        #   https://github.com/eoli3n/arch-config/blob/master/scripts/zfs/install/02-install.sh#L160
+        #@todo configure dns
+        #   https://github.com/eoli3n/arch-config/blob/master/scripts/zfs/install/02-install.sh#L196
 
-    _echo_if_be_verbose ":: Generate zfsbootmenu efi"
-    #@see https://github.com/zbm-dev/zfsbootmenu/blob/master/etc/zfsbootmenu/mkinitcpio.conf
-    cat > /mnt/etc/zfsbootmenu/mkinitcpio.conf <<DELIM
+        _echo_if_be_verbose ":: Configuring zfs"
+        systemctl enable zfs-import-cache --root=/mnt
+        systemctl enable zfs-mount --root=/mnt
+        systemctl enable zfs-import.target --root=/mnt
+        systemctl enable zfs.target --root=/mnt
+
+        _echo_if_be_verbose ":: Configure zfs-mount-generator"
+        mkdir -p /mnt/etc/zfs/zfs-list.cache
+        touch /mnt/etc/zfs/zfs-list.cache/${ZPOOL_NAME}
+        zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand | sed 's/\/mnt//' > /mnt/etc/zfs/zfs-list.cache/${ZPOOL_NAME}
+        systemctl enable zfs-zed.service --root=/mnt
+
+        _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - Configure zfs"
+    fi
+
+    local CURRENT_STEP=7
+
+    if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
+    then
+        _echo_if_be_verbose ":: bo step ${CURRENT_STEP} - Configure and setup zfsbootmenu"
+
+        _echo_if_be_verbose "   Configure zfsbootmenu"
+        mkdir -p /mnt/efi/EFI/ZBM
+
+        _echo_if_be_verbose "   Generate zfsbootmenu efi"
+        #@see https://github.com/zbm-dev/zfsbootmenu/blob/master/etc/zfsbootmenu/mkinitcpio.conf
+        cat > /mnt/etc/zfsbootmenu/mkinitcpio.conf <<DELIM
 MODULES=()
 BINARIES=()
 FILES=()
@@ -523,44 +589,56 @@ Kernel:
   Prefix: vmlinuz
 DELIM
 
-    _echo_if_be_verbose ":: Setting commandline"
-    zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=${USER_INPUT_LANGUAGE}" "${ZPOOL_ROOT_DATASET}"
+        _echo_if_be_verbose "   Setting commandline"
+        zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=${USER_INPUT_LANGUAGE}" "${ZPOOL_ROOT_DATASET}"
 
-    _echo_if_be_verbose ":: Configuring zfsbootmenu language"
-    arch-chroot /mnt /bin/bash -xe <<DELIM
+        _echo_if_be_verbose "   Configuring zfsbootmenu language"
+        arch-chroot /mnt /bin/bash -xe <<DELIM
   # Export locale
   export LANG="${USER_INPUT_LOCAL}"
   # Generate zfsbootmenu
   generate-zbm
 DELIM
 
-    _echo_if_be_verbose ":: Creating UEFI entries"
-    local USER_SELECTED_DEVICE=$(cat /tmp/_selected_device)
-    
-    if ! efibootmgr | grep ZFSBootMenu
-    then
-        efibootmgr --disk "${USER_SELECTED_DEVICE}" \
-          --part 1 \
-          --create \
-          --label "ZFSBootMenu Backup" \
-          --loader "\EFI\ZBM\vmlinuz-backup.efi" \
-          --verbose
-        efibootmgr --disk "${USER_SELECTED_DEVICE}" \
-          --part 1 \
-          --create \
-          --label "ZFSBootMenu" \
-          --loader "\EFI\ZBM\vmlinuz.efi" \
-          --verbose
-    else
-        _echo_if_be_verbose "   Boot entries already created"
+        _echo_if_be_verbose "   Creating UEFI entries"
+        local USER_SELECTED_DEVICE=$(cat /tmp/_selected_device)
+        
+        if ! efibootmgr | grep ZFSBootMenu
+        then
+            efibootmgr --disk "${USER_SELECTED_DEVICE}" \
+              --part 1 \
+              --create \
+              --label "ZFSBootMenu Backup" \
+              --loader "\EFI\ZBM\vmlinuz-backup.efi" \
+              --verbose
+            efibootmgr --disk "${USER_SELECTED_DEVICE}" \
+              --part 1 \
+              --create \
+              --label "ZFSBootMenu" \
+              --loader "\EFI\ZBM\vmlinuz.efi" \
+              --verbose
+        else
+            _echo_if_be_verbose "   Boot entries already created"
+        fi
+
+        _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - Configure and setup zfsbootmenu"
     fi
 
-    _echo_if_be_verbose ":: Unmounting all partitions"
-    umount /mnt/efi
-    zfs umount -a
+    local CURRENT_STEP=8
 
-    _echo_if_be_verbose ":: Exporting zpool"
-    zpool export "${ZPOOL_NAME}"
+    if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
+    then
+        _echo_if_be_verbose ":: bo step ${CURRENT_STEP} - tear down"
+
+        _echo_if_be_verbose "   Unmounting all partitions"
+        umount /mnt/efi
+        zfs umount -a
+
+        _echo_if_be_verbose "   Exporting zpool"
+        zpool export "${ZPOOL_NAME}"
+
+        _echo_if_be_verbose ":: bo step ${CURRENT_STEP} - tear down"
+    fi
     #eo: installation
 
     echo ":: Done"
