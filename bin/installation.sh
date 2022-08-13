@@ -15,14 +15,25 @@
 #bo: configuration
 function _run_configuration ()
 {
-    local DEVICE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/device"
-    local HOSTNAME_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/hostname"
-    local LANGUAGE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/language"
-    local LOCAL_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/local"
-    local TIMEZONE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/timezone"
-    local USERNAME_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/username"
-    local ZPOOLDATASET_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpooldataset"
-    local ZPOOLNAME_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpoolname"
+    local DEVICE_PATH
+    local HOSTNAME_PATH
+    local LANGUAGE_PATH
+    local LOCAL_PATH
+    local TIMEZONE_PATH
+    local USERNAME_PATH
+    local ZPOOLDATASET_PATH
+    local ZPOOLNAME_PATH
+
+    DEVICE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/device"
+    HOSTNAME_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/hostname"
+    LANGUAGE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/language"
+    LOCAL_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/local"
+    TIMEZONE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/timezone"
+    USERNAME_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/username"
+    ZPOOLDATASET_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpooldataset"
+    ZPOOLNAME_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/zpoolname"
+
+    mkdir "${PATH_TO_THE_CONFIGURATION_DIRECTORY}"
 
     mkdir "${PATH_TO_THE_CONFIGURATION_DIRECTORY}"
 
@@ -63,17 +74,26 @@ function _run_configuration ()
 
     _ask "Do you want to add a four character random string to the end of >>zpool<<? (y|N) "
 
-    local ZPOOL_NAME="rpool"
+    local ZPOOL_NAME
+
+    ZPOOL_NAME="rpool"
+
     if echo ${REPLY} | grep -iq '^y$';
     then
-        local RANDOM_STRING=$(echo ${RANDOM} | md5sum | head -c 4)
+        local RANDOM_STRING
 
-        local ZPOOL_NAME="${ZPOOL_NAME}-${RANDOM_STRING}"
+        RANDOM_STRING=$(echo ${RANDOM} | md5sum | head -c 4)
+
+        ZPOOL_NAME="${ZPOOL_NAME}-${RANDOM_STRING}"
     fi
     echo "${ZPOOL_NAME}" > "${ZPOOLNAME_PATH}"
 
     _ask "Name of the root dataset below >>${ZPOOL_NAME}/ROOT<< (default is tank)? "
-    local ZPOOL_DATASET="${ZPOOL_NAME}/ROOT/${REPLY:-tank}"
+
+    local ZPOOL_DATASET
+
+    ZPOOL_DATASET="${ZPOOL_NAME}/ROOT/${REPLY:-tank}"
+
     echo "${ZPOOL_DATASET}" > "${ZPOOLDATASET_PATH}"
 
     _ask "Please insert hostname: "
@@ -92,6 +112,8 @@ function _run_configuration ()
 ####
 function _get_from_configuration ()
 {
+    local CONFIGURATION_FILE_PATH
+
     case ${1} in
         "device")
             CONFIGURATION_FILE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/device"
@@ -136,6 +158,9 @@ function _get_from_configuration ()
 #bo: preparation
 function _prepare_environment ()
 {
+    local LANGUAGE
+    local TIMEZONE
+
     if grep -q "arch.*iso" /proc/cmdline;
     then
         _echo_if_be_verbose ":: This is an arch.*iso."
@@ -174,12 +199,12 @@ function _prepare_environment ()
         exit 4
     fi
 
-    local LANGUAGE=$(_get_from_configuration "language")
+    LANGUAGE=$(_get_from_configuration "language")
     _echo_if_be_verbose "   Loading keyboad >>${LANGUAGE}<<."
-    loadkeys ${LANGUAGE}
+    loadkeys "${LANGUAGE}"
 
     #bo: time
-    local TIMEZONE=$(_get_from_configuration "timezone")
+    TIMEZONE=$(_get_from_configuration "timezone")
     _echo_if_be_verbose "   Setting timezone >>${TIMEZONE}<<."
     timedatectl set-timezone ${REPLY}
 
@@ -238,7 +263,9 @@ function _setup_zfs_passphrase ()
 
 function _wipe_device ()
 {
-    local DEVICE_PATH=$(_get_from_configuration "device")
+    local DEVICE_PATH
+
+    DEVICE_PATH=$(_get_from_configuration "device")
 
     _ask "Do you want to wipe the device >>${DEVICE_PATH}<<? (y|N)"
 
@@ -262,11 +289,14 @@ function _wipe_device ()
 
 function _partition_device ()
 {
-    local DEVICE_PATH=$(_get_from_configuration "device")
+    local DEVICE_PATH=
+    local EFI_PARTITION
+
+    DEVICE_PATH=$(_get_from_configuration "device")
 
     _echo_if_be_verbose ":: Creating EFI partition."
     sgdisk -n1:1M:+512M -t1:EF00 "${DEVICE_PATH}"
-    local EFI_PARTITION="${DEVICE_PATH}-part1"
+    EFI_PARTITION="${DEVICE_PATH}-part1"
     
     _echo_if_be_verbose ":: Creating ZFS partition."
     sgdisk -n3:0:0 -t3:bf01 "${DEVICE_PATH}"
@@ -281,9 +311,15 @@ function _partition_device ()
 
 function _setup_zpool_and_dataset ()
 {
-    local DEVICE_PATH=$(_get_from_configuration "device")
-    local ZPOOL_NAME=$(_get_from_configuration "zpoolname")
-    local ZPOOL_DATASET=$(_get_from_configuration "zpooldataset")
+    local EFI_PARTITION
+    local DEVICE_PATH
+    local ZFS_PARTITION
+    local ZPOOL_NAME
+    local ZPOOL_DATASET
+
+    DEVICE_PATH=$(_get_from_configuration "device")
+    ZPOOL_NAME=$(_get_from_configuration "zpoolname")
+    ZPOOL_DATASET=$(_get_from_configuration "zpooldataset")
 
     local EFI_PARTITION="${DEVICE_PATH}-part1"
     local ZFS_PARTITION="${DEVICE_PATH}-part3"
@@ -328,6 +364,7 @@ function _setup_zpool_and_dataset ()
                  -O devices=off                           \
                  -R /mnt                                  \
                  "${ZPOOL_NAME}" "${ZFS_PARTITION}"
+
     _confirm_every_step
 
     #bo: create pool
@@ -423,26 +460,39 @@ function _echo_if_be_verbose ()
 function _main ()
 {
     #bo: variables
-    local AVAILABLE_STEPS=8
-    local CURRENT_WORKING_DIRECTORY=$(pwd)
-    local CURRENT_DATE_TIME=$(date +""'%Y%m%d-%H%M%S')
-    local PATH_TO_THE_CONFIGURATION_DIRECTORY="/tmp/_configuration"
-    local PATH_TO_THIS_SCRIPT=$(cd $(dirname "$0"); pwd)
-    local CURRENT_RUNNING_KERNEL_VERSION=$(uname -r)
+    local AVAILABLE_STEPS
+    local BE_VERBOSE
+    local CURRENT_RUNNING_KERNEL_VERSION
+    local CURRENT_STEP
+    local CURRENT_WORKING_DIRECTORY
+    local CONFIRM_EVERY_STEP
+    local IS_DRY_RUN
+    local PATH_TO_THE_CONFIGURATION_DIRECTORY
+    local PATH_TO_THIS_SCRIPT
+    local SELECTED_STEP
+    local SHOW_HELP
+    local ZPOOL_NAME
+
+    AVAILABLE_STEPS=8
+    CURRENT_WORKING_DIRECTORY=$(pwd)
+    PATH_TO_THE_CONFIGURATION_DIRECTORY="/tmp/_configuration"
+    PATH_TO_THIS_SCRIPT=$(cd "$(dirname "${0}")" || exit; pwd)
+    CURRENT_RUNNING_KERNEL_VERSION=$(uname -r)
     #eo: variables
 
     #bo: user input
-    local BE_VERBOSE=0
-    local SELECTED_STEP=0
-    local CONFIRM_EVERY_STEP=0
-    local IS_DRY_RUN=0
-    local SHOW_HELP=0
+    BE_VERBOSE=0
+    SELECTED_STEP=0
+    CONFIRM_EVERY_STEP=0
+    IS_DRY_RUN=0
+    SHOW_HELP=0
 
     while true;
     do
         case "${1}" in
             "-d" | "--dry-run" )
                 IS_DRY_RUN=1
+                ;;
             "-c" | "--confirm" )
                 CONFIRM_EVERY_STEP=1
                 shift 1
@@ -503,7 +553,7 @@ function _main ()
     #eo: configuration
 
     #bo: preparation
-    local CURRENT_STEP=1
+    CURRENT_STEP=1
 
     if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
     then
@@ -523,7 +573,7 @@ function _main ()
     #eo: preparation
 
     #bo: configuration
-    local CURRENT_STEP=2
+    CURRENT_STEP=2
 
     if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
     then
@@ -546,7 +596,7 @@ function _main ()
     #eo: configuration
 
     #bo: installation
-    local CURRENT_STEP=3
+    CURRENT_STEP=3
 
     if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
     then
@@ -565,7 +615,7 @@ function _main ()
 
         _confirm_every_step
 
-    local ZPOOL_NAME=$(_get_from_configuration "zpoolname")
+    ZPOOL_NAME=$(_get_from_configuration "zpoolname")
 
         _echo_if_be_verbose "   Generate fstab excluding zfs entries"
         genfstab -U /mnt | grep -v "${ZPOOL_NAME}" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
@@ -573,16 +623,21 @@ function _main ()
         _echo_if_be_verbose ":: eo step${CURRENT_STEP}  - Install base system"
     fi
 
-    local CURRENT_STEP=4
+    CURRENT_STEP=4
 
     if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
     then
         _echo_if_be_verbose ":: bo step ${CURRENT_STEP} - Configure base system"
 
-        local USER_INPUT_LANGUAGE=$(_get_from_configuration "language")
-        local USER_INPUT_LOCAL=$(_get_from_configuration "local")
-        local USER_INPUT_TIMEZONE=$(_get_from_configuration "timezone")
-        local USER_HOSTNAME=$(_get_from_configuration "hostname")
+        local USER_INPUT_LANGUAGE
+        local USER_INPUT_LOCAL
+        local USER_INPUT_TIMEZONE
+        local USER_HOSTNAME
+
+        USER_INPUT_LANGUAGE=$(_get_from_configuration "language")
+        USER_INPUT_LOCAL=$(_get_from_configuration "local")
+        USER_INPUT_TIMEZONE=$(_get_from_configuration "timezone")
+        USER_HOSTNAME=$(_get_from_configuration "hostname")
 
         echo "${USER_HOSTNAME}" > /mnt/etc/hostname
 
@@ -603,13 +658,14 @@ DELIM
         _confirm_every_step
     fi
 
-    local CURRENT_STEP=5
+    CURRENT_STEP=5
 
     if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
     then
         _echo_if_be_verbose ":: bo step ${CURRENT_STEP} - Setup zfs"
+        local USER_NAME
 
-        local USER_NAME=$(_get_from_configuration "username")
+        USER_NAME=$(_get_from_configuration "username")
 
         _echo_if_be_verbose "   Preparing initramfs"
         cat > /mnt/etc/mkinitcpio.conf <<DELIM
@@ -726,8 +782,7 @@ DELIM
         _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - Setup zfs"
     fi
 
-    local CURRENT_STEP=6
-
+    CURRENT_STEP=6
 
     if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
     then
@@ -757,7 +812,7 @@ DELIM
         _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - Configure zfs"
     fi
 
-    local CURRENT_STEP=7
+    CURRENT_STEP=7
 
     if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
     then
@@ -796,7 +851,9 @@ DELIM
         zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=${USER_INPUT_LANGUAGE}" "${ZPOOL_ROOT_DATASET}"
         _confirm_every_step
 
-        local DEVICE_PATH=$(_get_from_configuration "device")
+        local DEVICE_PATH
+
+        DEVICE_PATH=$(_get_from_configuration "device")
 
         _echo_if_be_verbose "   Configuring zfsbootmenu language"
         arch-chroot /mnt /bin/bash -xe <<DELIM
@@ -809,7 +866,9 @@ DELIM
         _confirm_every_step
 
         _echo_if_be_verbose "   Creating UEFI entries"
-        local USER_SELECTED_DEVICE=$(cat /tmp/_selected_device)
+        local USER_SELECTED_DEVICE
+
+        USER_SELECTED_DEVICE=$(cat /tmp/_selected_device)
         
         if ! efibootmgr | grep ZFSBootMenu
         then
@@ -832,7 +891,7 @@ DELIM
         _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - Configure and setup zfsbootmenu"
     fi
 
-    local CURRENT_STEP=8
+    CURRENT_STEP=8
 
     if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
     then
@@ -854,4 +913,4 @@ DELIM
 }
 #eo: general
 
-_main ${@}
+_main "${@}"
