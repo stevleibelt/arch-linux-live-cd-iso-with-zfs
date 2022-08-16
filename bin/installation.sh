@@ -8,6 +8,9 @@
 # @see
 #  https://github.com/eoli3n/archiso-zfs
 #  https://github.com/eoli3n/arch-config
+#  https://github.com/picodotdev/alis
+#  https://github.com/MatMoul/archfi/blob/master/archfi
+#  https://get.zfsbootmenu.org/
 # @since 20220625T19:25:20
 # @author stev leibelt <artodeto@bazzline.net>
 ####
@@ -696,6 +699,33 @@ EOSF
   mkinitcpio -P
 
   #install zfsbootmenu and dependencies
+  #maybe use a prebuild instead?
+  #@see: https://get.zfsbootmenu.org/
+
+  #bo: from the arch wiki
+  #@see: https://wiki.archlinux.org/title/Install_Arch_Linux_on_ZFS#Using_ZFSBootMenu_for_UEFI
+  # /boot must be on the root filesystem
+  # mount your esp
+  #
+  ##bo: generate image
+  # pacman -S zfsbootmenu (aur) and efibootmgr
+  # configure /etc/zfsbootmenu/config.yaml
+  # generate zfsbootmenu image
+  #   generate-zbm
+  # configure zfs boot commandline arguments
+  #   zfs set org.zfsbootmenu:commandline="rw" zroot/ROOT
+  # add zfsbootmenu entry to efi boot manager
+  #   # efibootmgr -c -d your_esp_disk -p your_esp_partition_number -L "ZFSBootMenu" -l '\EFI\zbm\vmlinuz-linux.EFI'
+  ##eo: generate image
+  ##bo: use binary
+  # pacman -S zfsbootmenu-efi-bin (aur) and efibootmgr
+  # configure zfs boot commandline arguments
+  #   zfs set org.zfsbootmenu:commandline="rw" zroot/ROOT
+  # add zfsbootmenu entry to efi boot manager
+  #   # efibootmgr -c -d your_esp_disk -p your_esp_partition_number -L "ZFSBootMenu" -l '\EFI\zbm\zfsbootmenu-release-vmlinuz-x86_64.EFI'
+  ##eo: use binary
+  #eo: from the arch wiki
+
   git clone --depth=1 https://github.com/zbm-dev/zfsbootmenu/ /tmp/zfsbootmenu
   pacman -S cpanminus kexec-tools fzf util-linux --noconfirm
   cd /tmp/zfsbootmenu
