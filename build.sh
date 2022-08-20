@@ -100,6 +100,7 @@ function add_packages_and_repository ()
         _echo_if_be_verbose "   Adding packages."
 
         #bo: adding package
+        echo "git" >> ${PATH_TO_THE_PACKAGES_FILE}
         echo "zfs-linux" >> ${PATH_TO_THE_PACKAGES_FILE}
         echo "zfs-utils" >> ${PATH_TO_THE_PACKAGES_FILE}
         #eo: adding package
