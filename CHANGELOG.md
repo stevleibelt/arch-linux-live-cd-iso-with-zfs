@@ -11,8 +11,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Add flag `-c|--cleanup` for `build.sh`
 * (Re)-Add support for `linux-lts` as done [here](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/)
+* Add packages to be available in `/root`
+  * [pbrisbin/downgrade](https://github.com/pbrisbin/downgrade)
+  * [stevleibelt/arch-linux-configuration](https://stevleibelt/arch-linux-configuration)
+  * [stevleibelt/arch-linux-live-cd-zfs-setup](https://github.com/stevleibelt/arch-linux-live-cd-zfs-setup)
 * Add an arch installer like:
-  * [eoli3n-arch-config](https://github.com/eoli3n/arch-config/tree/master/scripts/zfs/install)
   * [archinstall](https://github.com/archlinux/archinstall)
   * [anarchy installer](https://anarchyinstaller.gitlab.io/)
   * [alci](https://alci.online/)
