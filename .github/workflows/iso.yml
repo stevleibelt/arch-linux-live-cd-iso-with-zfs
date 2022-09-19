@@ -1,0 +1,45 @@
+---
+name: Build ArchLinux zfs iso
+on:
+  schedule:  # arch relases are published first day of the month
+    - cron: '50 23 1 * *'  # https://gitlab.archlinux.org/archlinux/releng/-/pipeline_schedules
+  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  iso:
+    if: ${{ github.event.pull_request.merged == true ||
+         github.event_name == 'schedule' ||
+         github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+      options: --privileged
+    steps:
+      - name: Set timestamp tag
+        id: timetag
+        run: echo "timestamp=$(date +'%Y%m%d')" >> "$GITHUB_ENV"
+      - name: Check out codebase
+        uses: actions/checkout@v3
+      - name: Install requirements
+        run: |
+          pacman -Sy
+          pacman -S --noconfirm archlinux-keyring archiso
+          pacman-key --init
+          pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
+          pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
+      - name: Build iso
+        run: |
+          chmod +x ./*.sh
+          ls
+          bash ./build.sh -r week --verbose
+      - name: Upload a release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: archlinux-archzfs-linux-${{ env.timestamp }}
+          tag_name: ${{ env.timestamp }}
+          prerelease: ${{ github.event_name != 'schedule' }}
+          files: |
+            dynamic_data/out/*
