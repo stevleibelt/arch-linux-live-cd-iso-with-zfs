@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-* Changed some of the `_echo_if_be_verbose calls by adding the variable name before outputing its content`
+* Changed some of the `_echo_if_be_verbose`` calls by adding the variable name before outputing its content`
 
 ## [2.6.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.6.0) - 20220419
 
