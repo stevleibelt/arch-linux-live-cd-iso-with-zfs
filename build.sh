@@ -87,7 +87,7 @@ function add_packages_and_repository ()
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
-        _echo_if_be_verbose "   Adding archzfs repositories to >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
+        _echo_if_be_verbose "   Adding archzfs repositories to PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
 
         #bo: adding repository
         echo "" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
@@ -139,16 +139,16 @@ function build_archiso ()
     #bo: environment setup
     if [[ ! -d ${PATH_TO_THE_OUTPUT_DIRECTORY} ]];
     then
-        _echo_if_be_verbose "   Directory >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does not exist."
+        _echo_if_be_verbose "   PATH_TO_THE_OUTPUT_DIRECTORY >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does not exist."
 
         _create_directory_or_exit "${PATH_TO_THE_OUTPUT_DIRECTORY}"
     else
-        _echo_if_be_verbose "   Directory >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does exist."
+        _echo_if_be_verbose "   PATH_TO_THE_OUTPUT_DIRECTORY >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< does exist."
     fi
 
     if [[ -d "${PATH_TO_THE_WORK_DIRECTORY}" ]];
     then
-        _echo_if_be_verbose "   Directory >>${PATH_TO_THE_WORK_DIRECTORY}<< does exist."
+        _echo_if_be_verbose "   PATH_TO_THE_WORK_DIRECTORY >>${PATH_TO_THE_WORK_DIRECTORY}<< does exist."
 
         _remove_path_or_exit "${PATH_TO_THE_WORK_DIRECTORY}"
     fi
@@ -193,7 +193,7 @@ function build_archiso ()
 
             _echo_if_be_verbose ""
             _echo_if_be_verbose "   Iso created in path:"
-            _echo_if_be_verbose "   >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"
+            _echo_if_be_verbose "   PATH_TO_THE_OUTPUT_DIRECTORY >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"
 
             _echo_if_be_verbose "   --------"
             echo "   Listing directory content, filterd by >>archzfs<<..."
@@ -252,7 +252,7 @@ function cleanup_build_path ()
             then
                 _create_directory_or_exit "${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}"
             else
-                _echo_if_be_verbose "   >>${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}<< exists."
+                _echo_if_be_verbose "   PATH_TO_MOVE_THE_EXISTING_BUILD_FILES >>${PATH_TO_MOVE_THE_EXISTING_BUILD_FILES}<< exists."
             fi
 
             _echo_if_be_verbose ":: Moving files ..."
@@ -331,7 +331,7 @@ function evaluate_environment ()
 
         exit 1
     else
-        _echo_if_be_verbose "   >>${PATH_TO_THE_PROFILE_DIRECTORY}<< exists."
+        _echo_if_be_verbose "   PATH_TO_THE_PROFILE_DIRECTORY >>${PATH_TO_THE_PROFILE_DIRECTORY}<< exists."
     fi
 
     if [[ ! -d ${PATH_TO_THE_SOURCE_DATA_DIRECTORY} ]];
@@ -340,7 +340,7 @@ function evaluate_environment ()
 
         exit 2
     else
-        _echo_if_be_verbose "   >>${PATH_TO_THE_SOURCE_DATA_DIRECTORY}<< exists."
+        _echo_if_be_verbose "   PATH_TO_THE_SOURCE_DATA_DIRECTORY >>${PATH_TO_THE_SOURCE_DATA_DIRECTORY}<< exists."
     fi
 
     #begin of check if pacman-init.service file is still the same
