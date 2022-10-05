@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Added `touch` to update creation date of `last_build_date.txt`
 * Added `git` as mandatory package to ease up using [arch-linux-configuration](https://github.com/stevleibelt/arch-linux-configuration)
+* Added "possible errors" section in the readme
 
 ### Changed
 
