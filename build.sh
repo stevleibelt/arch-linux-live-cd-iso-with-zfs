@@ -100,9 +100,22 @@ function add_packages_and_repository ()
         _echo_if_be_verbose "   Adding packages."
 
         #bo: adding package
+        _echo_if_be_verbose "     Addiing package >>git<<."
         echo "git" >> ${PATH_TO_THE_PACKAGES_FILE}
-        echo "zfs-linux" >> ${PATH_TO_THE_PACKAGES_FILE}
-        echo "zfs-utils" >> ${PATH_TO_THE_PACKAGES_FILE}
+
+        if [[ ${USE_DKMS} -eq 1 ]];
+        then
+          #@todo - if we ever want to support lts kernel, we need to adapt this line
+          _echo_if_be_verbose "     Addiing package >>linux-headers<<."
+          echo "linux-headers" >> ${PATH_TO_THE_PACKAGES_FILE}
+          _echo_if_be_verbose "     Addiing package >>zfs-dkms<<."
+          echo "zfs-dkms" >> ${PATH_TO_THE_PACKAGES_FILE}
+        else
+          _echo_if_be_verbose "     Addiing package >>zfs-linux<<."
+          echo "zfs-linux" >> ${PATH_TO_THE_PACKAGES_FILE}
+          _echo_if_be_verbose "     Addiing package >>zfs-utils<<."
+          echo "zfs-utils" >> ${PATH_TO_THE_PACKAGES_FILE}
+        fi
         #eo: adding package
         echo ":: Finished adding packages and repository"
     fi
@@ -591,6 +604,7 @@ function _main ()
     local IS_FORCED=0
     local REPO_INDEX="last"
     local SHOW_HELP=0
+    local USE_DKMS=0
     local USE_OTHER_REPO_INDEX=0
     local USED_CONFIGURATION_FILE=0
 
@@ -626,6 +640,10 @@ function _main ()
                     shift 1
                 fi
                 ;;
+            "-u" | "--use-dkms" )
+                USE_DKMS=1
+                shift 1
+                ;;
             "-v" | "--verbose" )
                 BE_VERBOSE=1
                 shift 1
@@ -641,7 +659,7 @@ function _main ()
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-d|--dry-run] [-f|--force] [-h|--help] [-r|--repo-index [<string: last|week|month|yyyy\/mm\/dd>]] [-v|--verbose]"
+        echo "   ${0} [-d|--dry-run] [-f|--force] [-h|--help] [-r|--repo-index [<string: last|week|month|yyyy\/mm\/dd>]] [-u|--use-dkms] [-v|--verbose]"
 
         exit 0
     fi
@@ -658,6 +676,7 @@ function _main ()
         echo "   PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE >>${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}<<."
         echo "   REPO_INDEX >>${REPO_INDEX}<<."
         echo "   SHOW_HELP >>${SHOW_HELP}<<."
+        echo "   USE_DKMS >>${USE_DKMS}<<."
         echo "   USE_OTHER_REPO_INDEX >>${USE_OTHER_REPO_INDEX}<<."
         echo "   USED_CONFIGURATION_FILE >>${USED_CONFIGURATION_FILE}<<."
         echo ""
