@@ -58,8 +58,9 @@ Following issues are not reproducable on all my machines.
 * [Another archiso build script by Maurice Zhou](https://gitlab.com/m_zhou/archiso)
 * [archiso documentation](https://git.archlinux.org/archiso.git/tree/docs)
 * [archiso project page](https://git.archlinux.org/archiso.git)
+* [Install UEFI and BIOS compatible Arch Linx with encrypted ZFS and ZFSBootMenu by Kayvlim](https://wiki.archlinux.org/title/User:Kayvlim/Install_UEFI_and_BIOS_compatible_Arch_Linux_with_Encrypted_ZFS_and_ZFSBootMenu#Swap) - 20221108
 * [pacman wiki page](https://wiki.archlinux.org/index.php/Pacman)
-* [Ubuntu server zfsbootmenu](https://github.com/Sithuk/ubuntu-server-zfsbootmenu)
+* [Ubuntu server zfsbootmenu](https://github.com/Sithuk/ubuntu-server-zfsbootmenu) - 20221108
 
 ## Contributers
 
