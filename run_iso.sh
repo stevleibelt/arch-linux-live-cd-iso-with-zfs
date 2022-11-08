@@ -32,7 +32,7 @@ function _main ()
         if [[ ! -d "/usr/share/qemu" ]];
         then
             echo ":: qemu package is missing, installing it ..."
-            pacman -S qemu
+            pacman -S qemu-full
         fi
 
         if [[ ! -d "/usr/share/edk2-ovmf" ]];

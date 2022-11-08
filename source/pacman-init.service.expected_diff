@@ -1,3 +1,9 @@
-10a11,12
+4c4,6
+< After=etc-pacman.d-gnupg.mount
+---
+> After=etc-pacman.d-gnupg.mount time-sync.target
+> BindsTo=etc-pacman.d-gnupg.mount
+> Before=archlinux-keyring-wkd-sync.service
+10a13,14
 > ExecStart=/usr/bin/pacman-key -r "DDF7DB817396A49B2A2723F7403BD972F75D9D76"
 > ExecStart=/usr/bin/pacman-key --lsign-key "DDF7DB817396A49B2A2723F7403BD972F75D9D76"

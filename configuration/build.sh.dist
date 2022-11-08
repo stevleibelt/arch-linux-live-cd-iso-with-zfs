@@ -7,4 +7,5 @@
 # local IS_FORCED=0|1
 # local REPO_INDEX="last|week|month|yyyy/mm/dd"
 # local SHOW_HELP=0
+# local USE_DKMS=0|1
 # local USE_OTHER_REPO_INDEX=0|1

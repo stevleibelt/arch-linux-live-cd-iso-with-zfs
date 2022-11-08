@@ -42,6 +42,17 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 ./upload_iso.sh [<string: path to the iso>]
 ```
 
+## Possible issues
+
+Following issues are not reproducable on all my machines.
+
+### error: target not found: ipw2100-fw
+
+* This error happens when calling `build.sh`
+* [This](https://gitlab.archlinux.org/archlinux/archiso/-/commit/4d64a58a905403b3abfca5077dcd924ef7901ba7) commit seams to be the reason
+* [This](https://bbs.archlinux.org/viewtopic.php?id=279908) thread contins information
+* [This](https://forum.endeavouros.com/t/missing-aur-packages-ipw2100-fw-ipw2200-fw/32019) is a solution for endevour os
+
 ## Links
 
 * [Another archiso build script by Maurice Zhou](https://gitlab.com/m_zhou/archiso)

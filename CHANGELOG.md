@@ -30,8 +30,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Added `touch` to update creation date of `last_build_date.txt`
 * Added `git` as mandatory package to ease up using [arch-linux-configuration](https://github.com/stevleibelt/arch-linux-configuration)
+* Added "possible errors" section in the readme
+* Added flag `-u|--use-dkms` to use `zfs-dkms` instead of `zfs-linux`
 
 ### Changed
+
+* Changed some of the `_echo_if_be_verbose`` calls by adding the variable name before outputing its content`
+* Updated `source/pacman-init.service`
+* Moved from `qemu` to `qemu-full`
 
 ## [2.6.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.6.0) - 20220419
 
