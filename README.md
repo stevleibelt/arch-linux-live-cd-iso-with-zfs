@@ -12,7 +12,7 @@ All needed packages where installed automatically. The build script will output 
 
 At the end, you only need to dd the iso to your favorit usb drive, use [venotoy](https://www.ventoy.net) or burn it on an optical disk.
 
-# Howto
+## Howto
 
 ```
 ####
@@ -42,17 +42,23 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 ./upload_iso.sh [<string: path to the iso>]
 ```
 
-# Links
+## Links
 
 * [Another archiso build script by Maurice Zhou](https://gitlab.com/m_zhou/archiso)
 * [archiso documentation](https://git.archlinux.org/archiso.git/tree/docs)
 * [archiso project page](https://git.archlinux.org/archiso.git)
 * [pacman wiki page](https://wiki.archlinux.org/index.php/Pacman)
+* [Ubuntu server zfsbootmenu](https://github.com/Sithuk/ubuntu-server-zfsbootmenu)
 
-# Contributers
+## Contributers
 
 In alphabetically order.
 
 * [derzahla](https://github.com/derzahla)
 * [gardar](https://github.com/gardar)
+  * Added [git workflows](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/11)
+* [Kodiman](https://github.com/Kodiman)
+  * Added information of the [Ubuntu server zfsbootmenu](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/14)
 * [stevleibelt](https://github.com/stevleibelt)
+  * Main Developer
+
