@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### To Change
 
+* Recheck github actions using things like [this](https://github.com/ossf/education/pull/36/files) as an example
 * Validate if we can implement the "use older kernel" feature from [here](https://github.com/eoli3n/archiso-zfs/blob/master/init) to prevent failing builds when the archzfs package is not up to date to the latest linux kernel
 
 ## [Unreleased]
