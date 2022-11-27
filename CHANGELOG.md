@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 * Changed some of the `_echo_if_be_verbose`` calls by adding the variable name before outputing its content`
+* Added removal of `last_build_date.txt` if exists when `upload_iso.sh` is executed
 * Updated `source/pacman-init.service`
 * Moved from `qemu` to `qemu-full`
 
