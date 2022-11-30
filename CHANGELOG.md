@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### To Add
 
+* Add usage for `kernel.archzfs.com` [Link](https://end.re/blog/ebp036_archzfs-repo-for-kernels/), [Source](https://github.com/archzfs/archzfs/issues/467#issuecomment-1332029677)
 * Add flag `-c|--cleanup` for `build.sh`
 * (Re)-Add support for `linux-lts` as done [here](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/)
 * Add packages to be available in `/root`
