@@ -122,15 +122,15 @@ function add_packages_and_repository ()
         # Adding in last week's core archive repo before the official repo as a workaround
         if [[ ${IS_DRY_RUN} -ne 1 ]];
         then
-            _echo_if_be_verbose "   Adding entry of >>Server = https://archive.archlinux.org/repos/${REPO_INDEX_OR_EMPTY_STRING}/\$repo/os/\$arch<< to:"
+	    _echo_if_be_verbose "   Adding entry of >>Server = https://archive.archlinux.org/repos/${REPO_INDEX_OR_EMPTY_STRING}/\$repo/os/\$arch<< to:"
             _echo_if_be_verbose "       [core]"
-            sed -i -e 's/\[core\]/\[core\]\nServer = https:\/\/archive.archlinux.org\/repos\/'${REPO_INDEX_OR_EMPTY_STRING}'\/\$repo\/os\/\$arch\//g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
+            sed -i -e 's|\[core\]|\[core\]\nServer = https://archive.archlinux.org/repos/'${REPO_INDEX_OR_EMPTY_STRING}'/\$repo/os/\$arch/|g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
 
             _echo_if_be_verbose "       [extra]"
-            sed -i -e 's/\[extra\]/\[extra\]\nServer = https:\/\/archive.archlinux.org\/repos\/'${REPO_INDEX_OR_EMPTY_STRING}'\/\$repo\/os\/\$arch\//g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
+            sed -i -e 's|\[extra\]|\[extra\]\nServer = https://archive.archlinux.org/repos/'${REPO_INDEX_OR_EMPTY_STRING}'/\$repo/os/\$arch/|g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
 
             _echo_if_be_verbose "       [community]"
-            sed -i -e 's/\[community\]/\[community\]\nServer = https:\/\/archive.archlinux.org\/repos\/'${REPO_INDEX_OR_EMPTY_STRING}'\/\$repo\/os\/\$arch\//g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
+            sed -i -e 's|\[community\]|\[community\]\nServer = https://archive.archlinux.org/repos/'${REPO_INDEX_OR_EMPTY_STRING}'/\$repo/os/\$arch/|g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
         fi
 
     fi
@@ -753,7 +753,7 @@ function _main ()
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-d|--dry-run] [-f|--force] [-h|--help] [-r|--repo-index [<string: last|week|month|yyyy\/mm\/dd>]] [-u|--use-dkms] [-v|--verbose]"
+        echo "   ${0} [-d|--dry-run] [-f|--force] [-h|--help] [-r|--repo-index [<string: last|week|month|yyyy/mm/dd>]] [-u|--use-dkms] [-v|--verbose]"
 
         exit 0
     fi
