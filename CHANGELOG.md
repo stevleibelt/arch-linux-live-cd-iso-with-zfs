@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+* Updated workflow and added step that creates `configuration/build.sh`
+
 ## [2.8.1](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.8.1) - 20230129
 
 ### Changed

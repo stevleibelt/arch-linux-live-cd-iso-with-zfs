@@ -30,11 +30,18 @@ jobs:
           pacman-key --init
           pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
           pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
+      - name: Prepare configuration
+        run: | 
+          echo "local ASK_TO_DUMP_ISO=0" > configuration/build.sh
+          echo "local ASK_TO_RUN_ISO=0" >> configuration/build.sh
+          echo "local ASK_TO_UPLOAD_ISO=0" >> configuration/build.sh
+          echo "local IS_FORCED=1" >> configuration/build.sh
+          echo "local USE_DKMS=1" >> configuration/build.sh
       - name: Build iso
         run: |
           chmod +x ./*.sh
           ls
-          bash ./build.sh -r week --verbose
+          bash ./build.sh --verbose
       - name: Upload a release
         uses: softprops/action-gh-release@v1
         with:
