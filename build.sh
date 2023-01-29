@@ -10,6 +10,57 @@
 ####
 
 ####
+# @param <string: PATH_TO_THE_ARCHLIVE_ROOT_USER> - this is not >>/<< but >>/root<<
+####
+function add_files ()
+{
+    _echo_if_be_verbose ":: Starting adding files"
+
+    #bo: variable
+    local PATH_TO_THE_ARCHLIVE_ROOT_USER=${1:-""}
+    #eo: variable
+
+    #bo: argument validation
+    _exit_if_string_is_empty "PATH_TO_THE_ARCHLIVE_ROOT_USER" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}"
+    #eo: argument validation
+
+    #bo: environment check
+    if [[ ! -d ${PATH_TO_THE_ARCHLIVE_ROOT_USER} ]];
+    then
+      echo "   Invalid path to the archlive provided >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}<< is not a directory."
+
+      exit 1
+    else
+      _echo_if_be_verbose "   PATH_TO_THE_ARCHLIVE_ROOT_USER >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}<<."
+    fi
+
+    if [[ ${IS_DRY_RUN} -ne 1 ]];
+    then
+      _echo_if_be_verbose "   Creating directory >>document<<"
+      /usr/bin/mkdir "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document"
+      exit_if_last_exit_code_is_not_zero ${?} "Creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document<< failed."
+
+      _echo_if_be_verbose "   Creating directory >>software<<"
+      /usr/bin/mkdir "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software"
+      exit_if_last_exit_code_is_not_zero ${?} "Creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software<< failed."
+
+      _echo_if_be_verbose "   Adding repository >>arch-linux-configuration<< "
+      git clone https://github.com/stevleibelt/arch-linux-configuration "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration"
+      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration<< failed."
+
+      _echo_if_be_verbose "   Adding repository >>downgrade<< "
+      git clone https://github.com/archlinux-downgrade/downgrade "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade"
+      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade<< failed."
+
+      _echo_if_be_verbose "   Adding repository >>general_howtos<< "
+      git clone https://github.com/stevleibelt/general_howtos "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos"
+      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos<< failed."
+    fi
+
+    _echo_if_be_verbose ":: Finished adding files"
+}
+
+####
 # @param <string: PATH_TO_THE_ARCHLIVE>
 # [@param <string: REPO_INDEX_OR_EMPTY_STRING>]
 ####
@@ -121,6 +172,45 @@ function add_packages_and_repository ()
     fi
 }
 
+function ask_for_more ()
+{
+  if [[ ${ASK_TO_RUN_ISO} -eq 1 ]];
+  then
+    echo ":: Do you want to run the iso for testing? [y|N]"
+
+    read RUN_ISO
+
+    if [[ ${RUN_ISO} == "y" ]];
+    then
+      bash "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ${ISO_FILE_PATH}
+    fi
+  fi
+
+  if [[ ${ASK_TO_DUMP_ISO} -eq 1 ]];
+  then
+    echo ":: Do you want to dump the iso on a device? [y|N]"
+
+    read DUMP_ISO
+
+    if [[ ${DUMP_ISO} == "y" ]];
+    then
+      bash "${PATH_TO_THIS_SCRIPT}/dump_iso.sh" ${ISO_FILE_PATH}
+    fi
+  fi
+
+  if [[ ${ASK_TO_UPLOAD_ISO} -eq 1 ]];
+  then
+    echo ":: Do you want to upload the iso for testing? [y|N]"
+
+    read RUN_ISO
+
+    if [[ ${RUN_ISO} == "y" ]];
+    then
+      bash "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" ${ISO_FILE_PATH}
+    fi
+  fi
+}
+
 ####
 # @param <string: PATH_TO_THE_WORK_DIRECTORY>
 # @param <string: PATH_TO_THE_OUTPUT_DIRECTORY>
@@ -175,16 +265,7 @@ function build_archiso ()
         mkarchiso -v -w ${PATH_TO_THE_WORK_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
     fi
 
-    LAST_EXIT_CODE="${?}"
-
-    if [[ ${LAST_EXIT_CODE} -gt 0 ]];
-    then
-        echo ""
-        echo "   Build failed!"
-        echo "   Exit code of mkarchios >>${LAST_EXIT_CODE}<<."
-
-        exit ${LAST_EXIT_CODE}
-    fi
+    exit_if_last_exit_code_is_not_zero ${?} "Execution of >>mkarchiso<< failed."
     #end of building
 
     #begin of renaming and hash generation
@@ -309,6 +390,25 @@ function cleanup_build_path ()
     #end of cleanup
 
     _echo_if_be_verbose ":: Finished cleanup build path"
+}
+
+####
+# @param <int: last_exit_code>
+# [@param <string: error_message>]
+####
+function exit_if_last_exit_code_is_not_zero ()
+{
+  local LAST_EXIT_CODE=${1:-1}
+  local ERROR_MESSAGE="${2:-'Something went wrong while building the image.'}"
+
+  if [[ ${1} -ne 0 ]];
+  then
+    echo ":: Error"
+    echo "   Last exit code>>${LAST_EXIT_CODE}<<."
+    echo "   >>${ERROR_MESSAGE}<<."
+
+    exit ${LAST_EXIT_CODE}
+  fi
 }
 
 ####
@@ -519,14 +619,7 @@ function _create_directory_or_exit ()
         /usr/bin/mkdir -p ${DIRECTORY_PATH}
     fi
 
-    local LAST_EXIST_CODE="${?}"
-
-    if [[ ${LAST_EXIT_CODE} -ne 0 ]];
-    then
-        echo "   Could not create directory path >>${DIRECTORY_PATH}<<. Last exit code >>${LAST_EXIT_CODE}<<.."
-
-        exit ${LAST_EXIT_CODE}
-    fi
+    exit_if_last_exit_code_is_not_zero ${?} "Could not create directory path >>${DIRECTORY_PATH}<<."
 }
 
 function _remove_path_or_exit ()
@@ -537,16 +630,14 @@ function _remove_path_or_exit ()
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
+      if [[ -d "${PATH_TO_REMOVE}" ]];
+      then
         /usr/bin/rm -fr ${PATH_TO_REMOVE}
-    fi
 
-    local LAST_EXIST_CODE="${?}"
-
-    if [[ ${LAST_EXIT_CODE} -ne 0 ]];
-    then
-        echo "   Could not remove path >>${PATH_TO_REMOVE}<<. Last exit code >>${LAST_EXIT_CODE}<<."
-
-        exit ${LAST_EXIT_CODE}
+        exit_if_last_exit_code_is_not_zero ${?} "Could not remove path >>${PATH_TO_REMOVE}<<."
+      else
+        _echo_if_be_verbose "   Path >>${PATH_TO_REMOVE}<< could not be removed because it does not exist."
+      fi
     fi
 }
 
@@ -599,6 +690,9 @@ function _main ()
     #bo: user input
     #we are storing all arguments for the case if the script needs to be re-executed as root/system user
     local ALL_ARGUMENTS_TO_PASS="${@}"
+    local ASK_TO_DUMP_ISO=1
+    local ASK_TO_RUN_ISO=1
+    local ASK_TO_UPLOAD_ISO=1
     local BE_VERBOSE=0
     local IS_DRY_RUN=0
     local IS_FORCED=0
@@ -670,6 +764,9 @@ function _main ()
     if [[ ${BE_VERBOSE} -eq 1 ]];
     then
         echo ":: Outputting status of the flags."
+        echo "   ASK_TO_RUN_ISO >>${ASK_TO_RUN_ISO}<<."
+        echo "   ASK_TO_DUMP_ISO >>${ASK_TO_DUMP_ISO}<<."
+        echo "   ASK_TO_UPLOAD_ISO >>${ASK_TO_DUMP_ISO}<<."
         echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
         echo "   IS_DRY_RUN >>${IS_DRY_RUN}<<."
         echo "   IS_FORCED >>${IS_FORCED}<<."
@@ -695,53 +792,16 @@ function _main ()
         add_packages_and_repository "${PATH_TO_THE_PROFILE_DIRECTORY}" "${REPO_INDEX}"
     fi
 
+    #@todo
+    add_files "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/root"
+
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY} ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
 
     local BUILD_WAS_SUCCESSFUL="${?}"
 
     if [[ ${BUILD_WAS_SUCCESSFUL} -eq 0 ]];
     then
-        if [[ -f "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ]];
-        then
-            echo ":: Do you want to run the iso for testing? [y|N]"
-
-            read RUN_ISO
-
-            if [[ ${RUN_ISO} == "y" ]];
-            then
-                bash "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ${ISO_FILE_PATH}
-            fi
-        else
-            echo ":: Expected script is not available in path >>${PATH_TO_THIS_SCRIPT}/run_iso.sh<<."
-        fi
-
-        if [[ -f "${PATH_TO_THIS_SCRIPT}/dump_iso.sh" ]];
-        then
-            echo ":: Do you want to dump the iso on a device? [y|N]"
-
-            read DUMP_ISO
-
-            if [[ ${DUMP_ISO} == "y" ]];
-            then
-                bash "${PATH_TO_THIS_SCRIPT}/dump_iso.sh" ${ISO_FILE_PATH}
-            fi
-        else
-            echo ":: Expected script is not available in path >>${PATH_TO_THIS_SCRIPT}/dump_iso.sh<<."
-        fi
-
-        if [[ -f "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" ]];
-        then
-            echo ":: Do you want to upload the iso for testing? [y|N]"
-
-            read RUN_ISO
-
-            if [[ ${RUN_ISO} == "y" ]];
-            then
-                bash "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" ${ISO_FILE_PATH}
-            fi
-        else
-            echo ":: Expected script is not available in path >>${PATH_TO_THIS_SCRIPT}/upload_iso.sh<<."
-        fi
+      ask_for_more
     fi
 
     cd "${CURRENT_WORKING_DIRECTORY}"

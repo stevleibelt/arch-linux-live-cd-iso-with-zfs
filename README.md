@@ -12,6 +12,22 @@ All needed packages where installed automatically. The build script will output 
 
 At the end, you only need to dd the iso to your favorit usb drive, use [venotoy](https://www.ventoy.net) or burn it on an optical disk.
 
+## Live enviroment
+
+This iso comes with some batteries included.
+
+* Git
+* Vim
+* [arch-linux-configuration](https://github.com/stevleibelt/arch-linux-configuration) in `/root/software/arch-linux-configuration`
+  * This repository has a [recover](https://github.com/stevleibelt/arch-linux-configuration/tree/master/scripts/zfs/recover) section to ease up fixing broken installations
+* [downgrade](https://github.com/pbrisbin/downgrade) to the image in the path `/root/software/downgrade`
+  * This repository has a [downgrade](https://github.com/archlinux-downgrade/downgrade/tree/main/bin) executable to ease up downgrade a package
+* [general_howtos](https://github.com/stevleibelt/general_howtos) in `/root/document/general_howtos`
+  * This repository has an [arch linux](https://github.com/stevleibelt/General_Howtos/tree/master/operation_system/linux/distribution/arch) knowledge section inside
+  * This repository has a [unix](https://github.com/stevleibelt/General_Howtos/tree/master/operation_system/unix) knowledge section inside
+  * This repository has a [zfs](https://github.com/stevleibelt/General_Howtos/tree/master/filesystem/zfs) knowledge section inside
+  * And much more knowledge
+
 ## Howto
 
 ```
@@ -25,6 +41,7 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 #   -r|--repo-index [<string: last|week|month|yyyy\/mm\/dd>]
 #       if you just use -r, default of >>last<< is used
 #       @see: https://archive.archlinux.org/repos/
+#   -u|--use-dkms
 #   -v|--verbose
 ####
 # tired of repeating the same flags again and again?

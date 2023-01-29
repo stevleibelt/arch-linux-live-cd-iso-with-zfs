@@ -12,10 +12,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Add usage for `kernel.archzfs.com` [Link](https://end.re/blog/ebp036_archzfs-repo-for-kernels/), [Source](https://github.com/archzfs/archzfs/issues/467#issuecomment-1332029677)
 * Add flag `-c|--cleanup` for `build.sh`
 * (Re)-Add support for `linux-lts` as done [here](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/)
-* Add packages to be available in `/root`
-  * [pbrisbin/downgrade](https://github.com/pbrisbin/downgrade)
-  * [stevleibelt/arch-linux-configuration](https://stevleibelt/arch-linux-configuration)
-  * [stevleibelt/arch-linux-live-cd-zfs-setup](https://github.com/stevleibelt/arch-linux-live-cd-zfs-setup)
 * Add an arch installer like:
   * [archinstall](https://github.com/archlinux/archinstall)
   * [anarchy installer](https://anarchyinstaller.gitlab.io/)
@@ -33,6 +29,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 * Fixed not working [run_iso.sh](run_iso.sh)
+
+## [2.8.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.8.0) - 20230129
+
+### Added
+
+* Added configuration option `ASK_TO_DUMP_ISO`, `ASK_TO_RUN_ISO` and `ASK_TO_UPLOAD_ISO`
+* Added git repository [arch-linux-configuration](https://github.com/stevleibelt/arch-linux-configuration) to the image in the path `/root/software/arch-linux-configuration`
+* Added git repository [downgrade](https://github.com/pbrisbin/downgrade) to the image in the path `/root/software/downgrade`
+* Added git repository [general_howtos](https://github.com/stevleibelt/general_howtos) to the image in path `/root/document/general_howtos`
 
 ## [2.7.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.7.0) - 20230111
 
