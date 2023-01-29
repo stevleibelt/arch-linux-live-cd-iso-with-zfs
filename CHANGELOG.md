@@ -28,7 +28,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-* Fixed not working [run_iso.sh](run_iso.sh)
+## [2.8.1](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.8.1) - 20230129
+
+### Changed
+
+* Updated [sed repro index logic](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/15)
 
 ## [2.8.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.8.0) - 20230129
 
@@ -38,6 +42,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Added git repository [arch-linux-configuration](https://github.com/stevleibelt/arch-linux-configuration) to the image in the path `/root/software/arch-linux-configuration`
 * Added git repository [downgrade](https://github.com/pbrisbin/downgrade) to the image in the path `/root/software/downgrade`
 * Added git repository [general_howtos](https://github.com/stevleibelt/general_howtos) to the image in path `/root/document/general_howtos`
+
+### Changed
+
+* Fixed not working [run_iso.sh](run_iso.sh)
 
 ## [2.7.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.7.0) - 20230111
 
