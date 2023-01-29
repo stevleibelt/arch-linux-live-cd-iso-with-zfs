@@ -84,6 +84,7 @@ Following issues are not reproducable on all my machines.
 In alphabetically order.
 
 * [derzahla](https://github.com/derzahla)
+  * Updated [sed repro index logic](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/15)
 * [gardar](https://github.com/gardar)
   * Added [git workflows](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/11)
 * [Kodiman](https://github.com/Kodiman)
