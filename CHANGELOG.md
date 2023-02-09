@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+* Changed number of available iso file check from "greater 0" to "equal 1"
 * Updated workflow and added step that creates `configuration/build.sh`
 
 ## [2.8.1](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.8.1) - 20230129

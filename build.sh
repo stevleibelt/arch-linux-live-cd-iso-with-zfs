@@ -275,7 +275,7 @@ function build_archiso ()
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
-        if [[ ${NUMBER_OF_ISO_FILES_AVAILABLE} -gt 0 ]];
+        if [[ ${NUMBER_OF_ISO_FILES_AVAILABLE} -eq 1 ]];
         then
             chmod -R 765 *
 
@@ -296,9 +296,9 @@ function build_archiso ()
             _echo_if_be_verbose "   --------"
             _echo_if_be_verbose ":: Finished bulding archiso"
         else
-            echo ":: No iso file found. Something went wrong."
+            echo ":: Invalid amount of iso files found."
             echo "   Current path >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
-            echo "   Number of found >>\*.iso<< files >>${NUMBER_OF_ISO_FILES_AVAILABLE}<<."
+            echo "   Number of found >>\*.iso<< files >>${NUMBER_OF_ISO_FILES_AVAILABLE}<<. Should be exact one iso file available."
 
             exit 3
         fi
