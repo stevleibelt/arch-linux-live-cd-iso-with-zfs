@@ -502,7 +502,8 @@ function auto_elevate_if_not_called_from_root ()
     local WHO_AM_I=$(whoami)
 
     #begin of check if we are root
-    if [[ ${WHO_AM_I} != "root" ]];
+    #if [[ ${WHO_AM_I} != "root" ]];
+    if [[ ${UID] -ne 0} ]];
     then
         #call this script (${0}) again with sudo with all provided arguments (${@})
         _echo_if_be_verbose ":: Current user is not root. Restarting myself."
