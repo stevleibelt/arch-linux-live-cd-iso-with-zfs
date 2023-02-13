@@ -511,7 +511,7 @@ function auto_elevate_if_not_called_from_root ()
 
 	    sudo "${0}" "${@}"
 
-        exit ${?}
+      exit ${?}
     fi
     #end of check if we are root
 }
