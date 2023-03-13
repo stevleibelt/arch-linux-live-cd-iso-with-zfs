@@ -19,6 +19,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### To Change
 
+* Manipulate `dynamic_dat/releng/profiledef.sh` before running the iso build process
+  * [issue/9](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/9)
+  * [official profiledef.sh documentation](https://gitlab.archlinux.org/archlinux/archiso/-/blob/master/docs/README.profile.rst)
+  * [example of an manipulated file](https://github.com/HougeLangley/archzfs-iso/blob/master/profiledef.sh)
+  * Things to change
+    * `iso_name`
+    * `iso_label`
+    * `iso_publisher`
+    * `iso_application`
+    * `file_permissions`
+      * own git repros in user home should have 775
 * Recheck github actions using things like [this](https://github.com/ossf/education/pull/36/files) as an example
 * Validate if we can implement the "use older kernel" feature from [here](https://github.com/eoli3n/archiso-zfs/blob/master/init) to prevent failing builds when the archzfs package is not up to date to the latest linux kernel
 
