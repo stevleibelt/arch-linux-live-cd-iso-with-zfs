@@ -2,7 +2,7 @@
 name: Build ArchLinux zfs iso
 on:
   schedule:  # arch relases are published first day of the month
-    - cron: '50 23 1 * *'  # https://gitlab.archlinux.org/archlinux/releng/-/pipeline_schedules
+    - cron: '50 23 1 * *'
   workflow_dispatch:
   pull_request:
     types:
@@ -33,12 +33,12 @@ jobs:
           pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
           pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
       - name: Prepare configuration
-        run: | 
-          echo "local ASK_TO_DUMP_ISO=0" > configuration/build.sh
-          echo "local ASK_TO_RUN_ISO=0" >> configuration/build.sh
-          echo "local ASK_TO_UPLOAD_ISO=0" >> configuration/build.sh
-          echo "local IS_FORCED=1" >> configuration/build.sh
-          echo "local USE_DKMS=1" >> configuration/build.sh
+        run: |
+          echo -e "local ASK_TO_DUMP_ISO=0
+          local ASK_TO_RUN_ISO=0
+          local ASK_TO_UPLOAD_ISO=0
+          local IS_FORCED=1
+          local USE_DKMS=1" > configuration/build.sh
       - name: Build iso
         run: |
           chmod +x ./*.sh
