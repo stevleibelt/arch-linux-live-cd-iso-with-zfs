@@ -7,12 +7,14 @@ on:
   pull_request:
     types:
       - closed
+  push:
 
 jobs:
   iso:
     if: ${{ github.event.pull_request.merged == true ||
          github.event_name == 'schedule' ||
-         github.event_name == 'workflow_dispatch' }}
+         github.event_name == 'workflow_dispatch' ||
+         github.event.repository.default_branch }}
     runs-on: ubuntu-latest
     container:
       image: archlinux:latest
