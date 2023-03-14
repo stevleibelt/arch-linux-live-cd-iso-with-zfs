@@ -26,7 +26,7 @@ jobs:
       - name: Install requirements
         run: |
           pacman -Sy
-          pacman -S --noconfirm archlinux-keyring archiso
+          pacman -S --noconfirm archlinux-keyring archiso git
           pacman-key --init
           pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
           pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
