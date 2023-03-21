@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+* Added [scorecard](https://github.com/marketplace/actions/ossf-scorecard-action) github action
+
 ### Changed
 
 * Changed number of available iso file check from "greater 0" to "equal 1"
