@@ -370,12 +370,12 @@ function cleanup_build_path ()
                 _echo_if_be_verbose "   Moving skipped, >>${SHA512_FILE_PATH}<< does exist."
             fi
         else
-            _remove_path_or_exit "${ISO_FILE_PATH}"
+            _remove_file_path_or_exit "${ISO_FILE_PATH}"
 
             #following lines prevent us from getting asked from mv to override the existing file
             if [[ -f ${SHA512_FILE_PATH} ]];
             then
-                _remove_path_or_exit "${SHA512_FILE_PATH}"
+                _remove_file_path_or_exit "${SHA512_FILE_PATH}"
             fi
         fi
     else
@@ -384,7 +384,7 @@ function cleanup_build_path ()
         #it can happen that the iso file does not exist but the sha512 file exists
         if [[ -f ${SHA512_FILE_PATH} ]];
         then
-            _remove_path_or_exit "${SHA512_FILE_PATH}"
+            _remove_file_path_or_exit "${SHA512_FILE_PATH}"
         fi
     fi
     #end of cleanup
@@ -620,6 +620,9 @@ function _create_directory_or_exit ()
     exit_if_last_exit_code_is_not_zero ${?} "Could not create directory path >>${DIRECTORY_PATH}<<."
 }
 
+####
+# @param <string: PATH_TO_REMOVE>
+####
 function _remove_path_or_exit ()
 {
     local PATH_TO_REMOVE="${1}"
@@ -635,6 +638,28 @@ function _remove_path_or_exit ()
         exit_if_last_exit_code_is_not_zero ${?} "Could not remove path >>${PATH_TO_REMOVE}<<."
       else
         _echo_if_be_verbose "   Path >>${PATH_TO_REMOVE}<< could not be removed because it does not exist."
+      fi
+    fi
+}
+
+####
+# @param <string: FILE_PATH_TO_REMOVE>
+####
+function _remove_file_path_or_exit ()
+{
+    local FILE_PATH_TO_REMOVE="${1}"
+
+    _echo_if_be_verbose "   Removing path >>${FILE_PATH_TO_REMOVE}<<."
+
+    if [[ ${IS_DRY_RUN} -ne 1 ]];
+    then
+      if [[ -f "${FILE_PATH_TO_REMOVE}" ]];
+      then
+        /usr/bin/rm -f ${FILE_PATH_TO_REMOVE}
+
+        exit_if_last_exit_code_is_not_zero ${?} "Could not remove path >>${FILE_PATH_TO_REMOVE}<<."
+      else
+        _echo_if_be_verbose "   Path >>${FILE_PATH_TO_REMOVE}<< could not be removed because it does not exist."
       fi
     fi
 }
@@ -825,4 +850,4 @@ function _exit_if_string_is_empty ()
     fi
 }
 
-_main ${@}
+_main "${@}"

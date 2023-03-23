@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 * Added [scorecard](https://github.com/marketplace/actions/ossf-scorecard-action) github action
+* Added explicit and dedicated function `_remove_file_path_or_exit`
 
 ### Changed
 
