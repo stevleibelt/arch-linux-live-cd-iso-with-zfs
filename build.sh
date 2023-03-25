@@ -48,6 +48,10 @@ function add_files ()
       git clone https://github.com/stevleibelt/arch-linux-configuration "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration<< failed."
 
+      _echo_if_be_verbose "   Adding repository >>arch-linux-live-cd-zfs-setup<< "
+      git clone https://github.com/stevleibelt/arch-linux-live-cd-zfs-setup "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup"
+      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup<< failed."
+
       _echo_if_be_verbose "   Adding repository >>downgrade<< "
       git clone https://github.com/archlinux-downgrade/downgrade "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade<< failed."
