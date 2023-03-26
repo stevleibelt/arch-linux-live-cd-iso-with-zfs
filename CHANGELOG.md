@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### To Change
 
+* Apply [shellcheck](https://github.com/koalaman/shellcheck) to all scripts
 * Manipulate `dynamic_dat/releng/profiledef.sh` before running the iso build process
   * [issue/9](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/9)
   * [official profiledef.sh documentation](https://gitlab.archlinux.org/archlinux/archiso/-/blob/master/docs/README.profile.rst)
@@ -44,6 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+* Updated [upload_iso.sh](upload_iso.sh) to meet the [shellcheck](https://www.shellcheck.net/)
 * Changed number of available iso file check from "greater 0" to "equal 1"
 * Updated workflow and added step that creates `configuration/build.sh`
 

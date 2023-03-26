@@ -10,10 +10,14 @@
 function create_local_configuration_file ()
 {
     #bo: variables
-    local CURRENT_DATE=$(date +'%y-%m-%d')
-    local PATH_TO_THE_LOCAL_CONFIGURATION="${1}"
+    local CURRENT_DATE
+    local PATH_TO_THE_LOCAL_CONFIGURATION
+    local PATH_TO_THE_LOCAL_CONFIGURATION_DIST
 
-    local PATH_TO_THE_LOCAL_CONFIGURATION_DIST="${PATH_TO_THE_LOCAL_CONFIGURATION}.dist"
+    CURRENT_DATE=$(date +'%y-%m-%d')
+    PATH_TO_THE_LOCAL_CONFIGURATION="${1}"
+
+    PATH_TO_THE_LOCAL_CONFIGURATION_DIST="${PATH_TO_THE_LOCAL_CONFIGURATION}.dist"
     #eo: variables
 
     #bo: check environment
@@ -67,22 +71,35 @@ function echo_if_be_verbose ()
 function _main ()
 {
     #bo: variables
-    local BE_VERBOSE=0
-    local PATH_TO_THE_ISO=${1:-""}
-    local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+    local PATH_TO_THE_ISO
+    local PATH_TO_THIS_SCRIPT
+    local PATH_TO_THE_ISO
+    local PATH_TO_THE_ISO_SHA512
+    local PATH_TO_THE_LATEST_BUILD_DATE
+    local PATH_TO_THE_LOCAL_CONFIGURATION
 
-    local PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/last_build_date.txt"
-    local PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso"
-    local PATH_TO_THE_ISO_SHA512="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso.sha512sum"
-    local PATH_TO_THE_LOCAL_CONFIGURATION="${PATH_TO_THIS_SCRIPT}/configuration/upload_iso.sh"
+
+    PATH_TO_THE_ISO=${1:-""}
+    PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+
+    PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/last_build_date.txt"
+    PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso"
+    PATH_TO_THE_ISO_SHA512="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso.sha512sum"
+    PATH_TO_THE_LOCAL_CONFIGURATION="${PATH_TO_THIS_SCRIPT}/configuration/upload_iso.sh"
     #eo: variables
 
     #bo: user input
     #we are storing all arguments for the case if the script needs to be re-executed as root/system user
-    local ALL_ARGUMENTS_TO_PASS="${@}"
-    local BE_VERBOSE=0
-    local IS_DRY_RUN=0
-    local SHOW_HELP=0
+    local ALL_ARGUMENTS_TO_PASS
+    local BE_VERBOSE
+    local IS_DRY_RUN
+    local SHOW_HELP
+
+    ALL_ARGUMENTS_TO_PASS="${@}"
+    BE_VERBOSE=0
+    IS_DRY_RUN=0
+    SHOW_HELP=0
+
 
     while true;
     do
@@ -165,7 +182,8 @@ function _main ()
 
     if [[ -f "${PATH_TO_THE_LATEST_BUILD_DATE}" ]];
     then
-      rm "${PATH_TO_THE_LATEST_BUILD_DATE}"
+      # We have to sudo since there is a high chance previously called "build.sh" has changed the owner to root
+      sudo rm "${PATH_TO_THE_LATEST_BUILD_DATE}"
     fi
 
     touch "${PATH_TO_THE_LATEST_BUILD_DATE}"
