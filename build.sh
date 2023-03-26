@@ -21,7 +21,9 @@ function add_files ()
     _echo_if_be_verbose ":: Starting adding files"
 
     #bo: variable
-    local PATH_TO_THE_ARCHLIVE_ROOT_USER=${1:-""}
+    local PATH_TO_THE_ARCHLIVE_ROOT_USER
+
+    PATH_TO_THE_ARCHLIVE_ROOT_USER=${1:-""}
     #eo: variable
 
     #bo: argument validation
@@ -77,11 +79,16 @@ function add_packages_and_repository ()
     _echo_if_be_verbose ":: Starting adding packages and repository"
 
     #bo: variable
-    local PATH_TO_THE_ARCHLIVE=${1:-""}
-    local REPO_INDEX_OR_EMPTY_STRING=${2:-""}
+    local PATH_TO_THE_ARCHLIVE
+    local REPO_INDEX_OR_EMPTY_STRING
+    local PATH_TO_THE_PACKAGES_FILE
+    local PATH_TO_THE_PACMAN_CONF_FILE
 
-    local PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
-    local PATH_TO_THE_PACMAN_CONF_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.conf"
+    PATH_TO_THE_ARCHLIVE=${1:-""}
+    REPO_INDEX_OR_EMPTY_STRING=${2:-""}
+
+    PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
+    PATH_TO_THE_PACMAN_CONF_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.conf"
     #eo: variable
 
     #bo: argument validation
@@ -231,11 +238,18 @@ function build_archiso ()
     _echo_if_be_verbose ":: Starting bulding archiso"
 
     #bo: variable
-    local ISO_FILE_PATH=${4:-""}
-    local PATH_TO_THE_PROFILE_DIRECTORY=${3:-""}
-    local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
-    local PATH_TO_THE_WORK_DIRECTORY=${1:-""}
-    local SHA512_FILE_PATH=${5:-""}
+    local ISO_FILE_PATH
+    local NUMBER_OF_ISO_FILES_AVAILABLE
+    local PATH_TO_THE_PROFILE_DIRECTORY
+    local PATH_TO_THE_OUTPUT_DIRECTORY
+    local PATH_TO_THE_WORK_DIRECTORY
+    local SHA512_FILE_PATH
+
+    ISO_FILE_PATH=${4:-""}
+    PATH_TO_THE_PROFILE_DIRECTORY=${3:-""}
+    PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
+    PATH_TO_THE_WORK_DIRECTORY=${1:-""}
+    SHA512_FILE_PATH=${5:-""}
     #eo: variable
 
     #bo: argument validation
@@ -279,7 +293,7 @@ function build_archiso ()
     #begin of renaming and hash generation
     cd ${PATH_TO_THE_OUTPUT_DIRECTORY}
 
-    local NUMBER_OF_ISO_FILES_AVAILABLE=$(find -iname "*.iso" -type f | wc -l)
+    NUMBER_OF_ISO_FILES_AVAILABLE=$(find -iname "*.iso" -type f | wc -l)
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
@@ -321,9 +335,11 @@ function cleanup_build_path ()
 {
     _echo_if_be_verbose ":: Starting cleanup build path"
 
-    local ISO_FILE_PATH=${1:-""}
-    local SHA512_FILE_PATH=${2:-""}
+    local ISO_FILE_PATH
+    local SHA512_FILE_PATH
 
+    ISO_FILE_PATH=${1:-""}
+    SHA512_FILE_PATH=${2:-""}
     #bo: argument validation
     _exit_if_string_is_empty "ISO_FILE_PATH" "${ISO_FILE_PATH}"
     _exit_if_string_is_empty "SHA512_FILE_PATH" "${SHA512_FILE_PATH}"
@@ -445,9 +461,15 @@ function evaluate_environment ()
 {
     _echo_if_be_verbose ":: Starting evaluating environment"
 
-    local PATH_TO_THE_PROFILE_DIRECTORY=${2:-""}
-    local PATH_TO_THE_SOURCE_DATA_DIRECTORY=${1:-""}
+    local FILE_PATH_TO_KEEP_THE_DIFF
+    local FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE
+    local FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE
+    local FILE_PATH_TO_PACMAN_INIT_SERVICE_EXPECTED_DIFF
+    local PATH_TO_THE_PROFILE_DIRECTORY
+    local PATH_TO_THE_SOURCE_DATA_DIRECTORY
 
+    PATH_TO_THE_PROFILE_DIRECTORY=${2:-""}
+    PATH_TO_THE_SOURCE_DATA_DIRECTORY=${1:-""}
     #bo: argument validation
     _exit_if_string_is_empty "PATH_TO_THE_PROFILE_DIRECTORY" "${PATH_TO_THE_PROFILE_DIRECTORY}"
     _exit_if_string_is_empty "PATH_TO_THE_SOURCE_DATA_DIRECTORY" "${PATH_TO_THE_SOURCE_DATA_DIRECTORY}"
@@ -472,10 +494,10 @@ function evaluate_environment ()
     fi
 
     #begin of check if pacman-init.service file is still the same
-    local FILE_PATH_TO_KEEP_THE_DIFF=$(mktemp)
-    local FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE="/usr/share/archiso/configs/releng/airootfs/etc/systemd/system/pacman-init.service"
-    local FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE="${PATH_TO_THE_SOURCE_DATA_DIRECTORY}/pacman-init.service"
-    local FILE_PATH_TO_PACMAN_INIT_SERVICE_EXPECTED_DIFF="${PATH_TO_THE_SOURCE_DATA_DIRECTORY}/pacman-init.service.expected_diff"
+    FILE_PATH_TO_KEEP_THE_DIFF=$(mktemp)
+    FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE="/usr/share/archiso/configs/releng/airootfs/etc/systemd/system/pacman-init.service"
+    FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE="${PATH_TO_THE_SOURCE_DATA_DIRECTORY}/pacman-init.service"
+    FILE_PATH_TO_PACMAN_INIT_SERVICE_EXPECTED_DIFF="${PATH_TO_THE_SOURCE_DATA_DIRECTORY}/pacman-init.service.expected_diff"
 
     diff ${FILE_PATH_TO_THE_SOURCE_PACMAN_INIT_SERVICE} "${FILE_PATH_TO_OUR_PACMAN_INIT_SERVICE}" > ${FILE_PATH_TO_KEEP_THE_DIFF}
 
@@ -536,9 +558,13 @@ function setup_environment ()
 {
     _echo_if_be_verbose ":: Starting setup environment"
 
-    local PATH_TO_THE_SOURCE_PROFILE_DIRECTORY=${1:-""}
-    local PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
+    local PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY
+    local PATH_TO_THE_OUTPUT_DIRECTORY
+    local PATH_TO_THE_SOURCE_PROFILE_DIRECTORY
+    local PROFILE_NAME
 
+    PATH_TO_THE_SOURCE_PROFILE_DIRECTORY=${1:-""}
+    PATH_TO_THE_OUTPUT_DIRECTORY=${2:-""}
     #bo: argument validation
     _exit_if_string_is_empty "PATH_TO_THE_SOURCE_PROFILE_DIRECTORY" "${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}"
     _exit_if_string_is_empty "PATH_TO_THE_OUTPUT_DIRECTORY" "${PATH_TO_THE_OUTPUT_DIRECTORY}"
@@ -582,8 +608,8 @@ function setup_environment ()
     #end of check if archiso is installed
 
     #begin of dynamic data directory exists
-    local PROFILE_NAME=$(basename ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY})
-    local PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY="${PATH_TO_THE_OUTPUT_DIRECTORY}/${PROFILE_NAME}"
+    PROFILE_NAME=$(basename ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY})
+    PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY="${PATH_TO_THE_OUTPUT_DIRECTORY}/${PROFILE_NAME}"
 
     if [[ -d ${PATH_TO_THE_DESTINATION_PROFILE_DIRECTORY} ]];
     then
@@ -623,7 +649,9 @@ function setup_environment ()
 ####
 function _create_directory_or_exit ()
 {
-    local DIRECTORY_PATH="${1}"
+    local DIRECTORY_PATH
+
+    DIRECTORY_PATH="${1}"
 
     _echo_if_be_verbose "   Creating directory path >>${DIRECTORY_PATH}<<."
 
@@ -640,7 +668,9 @@ function _create_directory_or_exit ()
 ####
 function _remove_path_or_exit ()
 {
-    local PATH_TO_REMOVE="${1}"
+    local PATH_TO_REMOVE
+
+    PATH_TO_REMOVE="${1}"
 
     _echo_if_be_verbose "   Removing path >>${PATH_TO_REMOVE}<<."
 
@@ -662,7 +692,9 @@ function _remove_path_or_exit ()
 ####
 function _remove_file_path_or_exit ()
 {
-    local FILE_PATH_TO_REMOVE="${1}"
+    local FILE_PATH_TO_REMOVE
+
+    FILE_PATH_TO_REMOVE="${1}"
 
     _echo_if_be_verbose "   Removing path >>${FILE_PATH_TO_REMOVE}<<."
 
@@ -685,8 +717,11 @@ function _remove_file_path_or_exit ()
 ####
 function _exit_if_string_is_empty ()
 {
-    local VARIABLE_NAME="${1}"
-    local VARIABLE_VALUE="${2}"
+    local VARIABLE_NAME
+    local VARIABLE_VALUE
+
+    VARIABLE_NAME="${1}"
+    VARIABLE_VALUE="${2}"
 
     if [[ ${#VARIABLE_VALUE} -lt 1 ]];
     then
@@ -703,6 +738,18 @@ function _exit_if_string_is_empty ()
 #####
 function _main ()
 {
+    local BUILD_FILE_NAME
+    local BUILD_WAS_SUCCESSFUL
+    local CURRENT_WORKING_DIRECTORY
+    local ISO_FILE_PATH
+    local PATH_TO_THIS_SCRIPT
+    local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
+    local PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE
+    local PATH_TO_THE_OUTPUT_DIRECTORY
+    local PATH_TO_THE_PROFILE_DIRECTORY
+    local PATH_TO_THE_SOURCE_DATA_DIRECTORY
+    local SHA512_FILE_PATH
+
     #@todo:
     #   * add support for dynamic user input
     #       -a|--add-script (add a script like a one we can maintain to easeup setup/installation of "our" archlinux)
@@ -710,40 +757,53 @@ function _main ()
     #       -p|--package (archzfs-linux or what ever)
     #   * fix not working zfs embedding
     #begin of variables declaration
-    local BUILD_FILE_NAME="archlinux-archzfs-linux"
-    local CURRENT_WORKING_DIRECTORY=$(pwd)
-    local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+    BUILD_FILE_NAME="archlinux-archzfs-linux"
+    CURRENT_WORKING_DIRECTORY=$(pwd)
+    PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
 
-    local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
-    local PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE="${PATH_TO_THIS_SCRIPT}/configuration/build.sh"
-    local PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
+    PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
+    PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE="${PATH_TO_THIS_SCRIPT}/configuration/build.sh"
+    PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
 
-    local PATH_TO_THE_PROFILE_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/releng"
-    local PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
-    local ISO_FILE_PATH="${PATH_TO_THE_OUTPUT_DIRECTORY}/${BUILD_FILE_NAME}.iso"
+    PATH_TO_THE_PROFILE_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/releng"
+    PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
+    ISO_FILE_PATH="${PATH_TO_THE_OUTPUT_DIRECTORY}/${BUILD_FILE_NAME}.iso"
 
-    local SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
+    SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
     #end of variables declaration
 
     #bo: user input
     #we are storing all arguments for the case if the script needs to be re-executed as root/system user
-    local ALL_ARGUMENTS_TO_PASS="${@}"
-    local ASK_TO_DUMP_ISO=1
-    local ASK_TO_RUN_ISO=1
-    local ASK_TO_UPLOAD_ISO=1
-    local BE_VERBOSE=0
-    local IS_DRY_RUN=0
-    local IS_FORCED=0
-    local REPO_INDEX="last"
-    local SHOW_HELP=0
-    local USE_DKMS=0
-    local USE_OTHER_REPO_INDEX=0
-    local USED_CONFIGURATION_FILE=0
+    local ALL_ARGUMENTS_TO_PASS
+    local ASK_TO_DUMP_ISO
+    local ASK_TO_RUN_ISO
+    local ASK_TO_UPLOAD_ISO
+    local BE_VERBOSE
+    local IS_DRY_RUN
+    local IS_FORCED
+    local REPO_INDEX
+    local SHOW_HELP
+    local USE_DKMS
+    local USE_OTHER_REPO_INDEX
+    local USED_CONFIGURATION_FILE
+
+    ALL_ARGUMENTS_TO_PASS="${@}"
+    ASK_TO_DUMP_ISO=1
+    ASK_TO_RUN_ISO=1
+    ASK_TO_UPLOAD_ISO=1
+    BE_VERBOSE=0
+    IS_DRY_RUN=0
+    IS_FORCED=0
+    REPO_INDEX="last"
+    SHOW_HELP=0
+    USE_DKMS=0
+    USE_OTHER_REPO_INDEX=0
+    USED_CONFIGURATION_FILE=0
 
     if [[ -f "${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}" ]];
     then
         . "${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}"
-        local USED_CONFIGURATION_FILE=1
+        USED_CONFIGURATION_FILE=1
     fi
 
     while true;
@@ -835,7 +895,7 @@ function _main ()
 
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY} ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
 
-    local BUILD_WAS_SUCCESSFUL="${?}"
+    BUILD_WAS_SUCCESSFUL="${?}"
 
     if [[ ${BUILD_WAS_SUCCESSFUL} -eq 0 ]];
     then
@@ -852,8 +912,11 @@ function _main ()
 ####
 function _exit_if_string_is_empty ()
 {
-    local VARIABLE_NAME="${1}"
-    local VARIABLE_VALUE="${2}"
+    local VARIABLE_NAME
+    local VARIABLE_VALUE
+
+    VARIABLE_NAME="${1}"
+    VARIABLE_VALUE="${2}"
 
     if [[ ${#VARIABLE_VALUE} -lt 1 ]];
     then
