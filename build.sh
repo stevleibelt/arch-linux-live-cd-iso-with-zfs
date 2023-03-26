@@ -9,10 +9,6 @@
 # @since 2016-05-09
 ####
 
-# exit when any command fails
-# ref: https://intoli.com/blog/exit-on-errors-in-bash-scripts/
-set -e
-
 ####
 # @param <string: PATH_TO_THE_ARCHLIVE_ROOT_USER> - this is not >>/<< but >>/root<<
 ####
@@ -791,6 +787,10 @@ function _main ()
 
     #we are calling this here to display the help as soon as possible without the need to call sudo
     auto_elevate_if_not_called_from_root "${ALL_ARGUMENTS_TO_PASS}"
+
+    # exit when any command fails
+    # ref: https://intoli.com/blog/exit-on-errors-in-bash-scripts/
+    set -e
 
     if [[ ${BE_VERBOSE} -eq 1 ]];
     then
