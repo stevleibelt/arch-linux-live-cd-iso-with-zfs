@@ -416,6 +416,33 @@ function cleanup_build_path ()
     _echo_if_be_verbose ":: Finished cleanup build path"
 }
 
+function _create_latest_build_date ()
+{
+  local CREATION_DATE_TIME
+  local FILE_PATH
+
+  CREATION_DATE_TIME=""
+  FILE_PATH="${1}"
+
+  if [[ -f "${FILE_PATH}" ]];
+  then
+    rm "${FILE_PATH}"
+  fi
+
+  _echo_if_be_verbose "   Creating file >>${FILE_PATH}<<"
+
+  #add date
+  CREATION_DATE_TIME=$(stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d " " -f1)
+
+  #add time
+  CREATION_DATE_TIME=$(echo -n "${CREATION_DATE_TIME}T"; stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d " " -f2 | cut -d "." -f1)
+
+  touch "${FILE_PATH}"
+
+  echo "${CREATION_DATE_TIME}" > "${FILE_PATH}"
+}
+
+
 ####
 # @param <int: last_exit_code>
 # [@param <string: error_message>]
@@ -744,6 +771,7 @@ function _main ()
     local ISO_FILE_PATH
     local PATH_TO_THIS_SCRIPT
     local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
+    local PATH_TO_THE_LATEST_BUILD_DATE
     local PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE
     local PATH_TO_THE_OUTPUT_DIRECTORY
     local PATH_TO_THE_PROFILE_DIRECTORY
@@ -769,6 +797,7 @@ function _main ()
     PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
     ISO_FILE_PATH="${PATH_TO_THE_OUTPUT_DIRECTORY}/${BUILD_FILE_NAME}.iso"
 
+    PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THE_OUTPUT_DIRECTORY}/last_build_date.txt"
     SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
     #end of variables declaration
 
@@ -899,6 +928,9 @@ function _main ()
 
     if [[ ${BUILD_WAS_SUCCESSFUL} -eq 0 ]];
     then
+      
+      _create_latest_build_date "${PATH_TO_THE_LATEST_BUILD_DATE}"
+
       ask_for_more
     fi
 

@@ -45,8 +45,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-* Updated [upload_iso.sh](upload_iso.sh) to meet the [shellcheck](https://www.shellcheck.net/)
 * Changed number of available iso file check from "greater 0" to "equal 1"
+* Changed place where `last_build_date.txt` is created, moved from [upload_iso.sh](upload_iso.sh) to [build.sh][build.sh]
+* Updated [upload_iso.sh](upload_iso.sh) to meet the [shellcheck](https://www.shellcheck.net/)
 * Updated workflow and added step that creates `configuration/build.sh`
 
 ## [2.8.1](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.8.1) - 20230129

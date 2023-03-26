@@ -171,26 +171,6 @@ function _main ()
     fi
     #eo: environment check
 
-    #bo: date creation
-    local CREATION_DATE_TIME=""
-    #add date
-    CREATION_DATE_TIME=$(stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d " " -f1)
-    #add time
-    CREATION_DATE_TIME=$(echo -n "${CREATION_DATE_TIME}T"; stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d " " -f2 | cut -d "." -f1)
-
-    echo_if_be_verbose "   Creation date time of file >>${PATH_TO_THE_ISO}<< is >>${CREATION_DATE_TIME}<<."
-
-    if [[ -f "${PATH_TO_THE_LATEST_BUILD_DATE}" ]];
-    then
-      # We have to sudo since there is a high chance previously called "build.sh" has changed the owner to root
-      sudo rm "${PATH_TO_THE_LATEST_BUILD_DATE}"
-    fi
-
-    touch "${PATH_TO_THE_LATEST_BUILD_DATE}"
-
-    echo "${CREATION_DATE_TIME}" > "${PATH_TO_THE_LATEST_BUILD_DATE}"
-    #eo: date creation
-
     #bo: upload
     echo_if_be_verbose "   Starting upload using following arguments:"
     echo_if_be_verbose "    Files: >>${PATH_TO_THE_LATEST_BUILD_DATE}<<, >>${PATH_TO_THE_ISO_SHA512}<< and >>${PATH_TO_THE_ISO}<<."
