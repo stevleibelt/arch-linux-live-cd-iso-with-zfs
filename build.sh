@@ -9,6 +9,10 @@
 # @since 2016-05-09
 ####
 
+# enable !! command completion
+# ref: https://intoli.com/blog/exit-on-errors-in-bash-scripts/
+set -o history -o histexpand
+
 ####
 # @param <string: PATH_TO_THE_ARCHLIVE_ROOT_USER> - this is not >>/<< but >>/root<<
 ####
@@ -402,13 +406,20 @@ function cleanup_build_path ()
 ####
 function exit_if_last_exit_code_is_not_zero ()
 {
-  local LAST_EXIT_CODE=${1:-1}
-  local ERROR_MESSAGE="${2:-'Something went wrong while building the image.'}"
+  local LAST_EXIT_CODE
+  local LAST_COMMAND
+  local ERROR_MESSAGE
 
-  if [[ ${1} -ne 0 ]];
+  LAST_EXIT_CODE=${1:-1}
+  LAST_COMMAND="${@:2}"
+  ERROR_MESSAGE="${2:-'Something went wrong while building the image.'}"
+
+  if [[ ${LAST_EXIT_CODE} -ne 0 ]];
   then
     echo ":: Error"
-    echo "   Last exit code>>${LAST_EXIT_CODE}<<."
+    echo "   Last exit code >>${LAST_EXIT_CODE}<<."
+    # ref: https://intoli.com/blog/exit-on-errors-in-bash-scripts/
+    echo "   Last command >>${LAST_COMMAND}<<."
     echo "   >>${ERROR_MESSAGE}<<."
 
     exit ${LAST_EXIT_CODE}
@@ -787,10 +798,6 @@ function _main ()
 
     #we are calling this here to display the help as soon as possible without the need to call sudo
     auto_elevate_if_not_called_from_root "${ALL_ARGUMENTS_TO_PASS}"
-
-    # exit when any command fails
-    # ref: https://intoli.com/blog/exit-on-errors-in-bash-scripts/
-    set -e
 
     if [[ ${BE_VERBOSE} -eq 1 ]];
     then
