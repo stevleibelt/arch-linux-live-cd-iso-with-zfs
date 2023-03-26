@@ -13,6 +13,9 @@
 # ref: https://intoli.com/blog/exit-on-errors-in-bash-scripts/
 set -o history -o histexpand
 
+# copy all command output to a log file
+exec &> >(tee "build.sh.log")
+
 ####
 # @param <string: PATH_TO_THE_ARCHLIVE_ROOT_USER> - this is not >>/<< but >>/root<<
 ####
