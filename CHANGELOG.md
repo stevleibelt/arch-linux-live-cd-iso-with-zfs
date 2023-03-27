@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+* Added check if dkms build failed in the `mkarchiso` call by grep'ing the logs - Workaround for [issue/18](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/18)
 * Added logging to [build.sh](build.sh) into file `build.sh.log`
 * Added `set -e` on [build.sh](build.sh)
 * Added [arch-linux-cd-zfs-setup](https://github.com/stevleibelt/arch-linux-live-cd-zfs-setup) to the image path `root/software/arch-linux-live-cd-zfs-setup` - Mostly for debugging and the case when neither zfs-dkms nor zfs-linux is compatible with the current/latest linux kernel [e.g. see [here](https://github.com/archzfs/archzfs/issues/486)]
