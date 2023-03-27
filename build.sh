@@ -779,6 +779,8 @@ function _main ()
     local PATH_TO_THE_OUTPUT_DIRECTORY
     local PATH_TO_THE_PROFILE_DIRECTORY
     local PATH_TO_THE_SOURCE_DATA_DIRECTORY
+    local USE_GIT_PACKAGE
+    local USED_PACKAGE
     local SHA512_FILE_PATH
 
     #@todo:
@@ -853,6 +855,10 @@ function _main ()
                 SHOW_HELP=1
                 shift 1
                 ;;
+            "-p" | "--package" )
+                USED_PACKAGE="${2}"
+                shift 2
+                ;;
             "-r" | "--repo-index" )
                 USE_OTHER_REPO_INDEX=1
                 if [[ ${#2} -gt 0 ]];
@@ -864,7 +870,7 @@ function _main ()
                     shift 1
                 fi
                 ;;
-            "-u" | "--use-dkms" )
+            "-u" | "--use-dkms" ) #@deprecated
                 USE_DKMS=1
                 shift 1
                 ;;
@@ -903,11 +909,18 @@ function _main ()
         echo "   PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE >>${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}<<."
         echo "   REPO_INDEX >>${REPO_INDEX}<<."
         echo "   SHOW_HELP >>${SHOW_HELP}<<."
-        echo "   USE_DKMS >>${USE_DKMS}<<."
+        echo "   @deprecated USE_DKMS >>${USE_DKMS}<<."
         echo "   USE_OTHER_REPO_INDEX >>${USE_OTHER_REPO_INDEX}<<."
+        echo "   USE_GIT_PACKAGE >>${USE_GIT_PACKAGE}<<."
+        echo "   USED_PACKAGE >>${USED_PACKAGE}<<."
         echo "   USED_CONFIGURATION_FILE >>${USED_CONFIGURATION_FILE}<<."
         echo ""
     fi
+
+# @todo
+# USED_PACKAGE='dkms' #linux | linux-lts | dkms
+# USE_GIT_PACKAGE=0
+
 
     cd "${PATH_TO_THIS_SCRIPT}"
 

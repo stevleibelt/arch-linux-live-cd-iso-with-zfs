@@ -38,10 +38,11 @@ This iso comes with some batteries included.
 #   -f|--force
 #   -d|--dry-run
 #   -h|--help
+#   -p|--package [<string: dkms|linux|linux-lts|linux-hardened|linux-zen>]
 #   -r|--repo-index [<string: last|week|month|yyyy\/mm\/dd>]
 #       if you just use -r, default of >>last<< is used
 #       @see: https://archive.archlinux.org/repos/
-#   -u|--use-dkms
+#   -u|--use-dkms #@deprecated
 #   -v|--verbose
 ####
 # tired of repeating the same flags again and again?
