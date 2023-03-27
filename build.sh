@@ -287,10 +287,23 @@ function build_archiso ()
     #begin of building
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
-        mkarchiso -v -w ${PATH_TO_THE_WORK_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
-    fi
+      mkarchiso -v -w ${PATH_TO_THE_WORK_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
 
-    exit_if_last_exit_code_is_not_zero ${?} "Execution of >>mkarchiso<< failed."
+      exit_if_last_exit_code_is_not_zero ${?} "Execution of >>mkarchiso<< failed."
+
+      # Workaround to indicated build issue
+      # ref: https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/18
+      if grep -q 'Bad return status for module build on kernel' build.sh.log;
+      then
+        echo ":: Build error detected."
+        echo "   Dumping detected lines from file >>build.sh.log<<"
+        echo ""
+        cat build.sh.log | grep 'Bad return status for module build on kernel'
+        echo ""
+        
+        exit 3
+      fi
+    fi
     #end of building
 
     #begin of renaming and hash generation
