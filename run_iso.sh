@@ -9,35 +9,42 @@
 
 function _main ()
 {
-  local PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
-  local PATH_TO_THE_ISO="${1:-${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso}"
-  local WHO_AM_I=$(whoami)
+  local PATH_TO_THIS_SCRIPT
+  local PATH_TO_THE_ISO
+  local SUDO_COMMAND_PREFIX
+  local WHO_AM_I
 
-  if [[ ${WHO_AM_I} == "roo" ]];
+  PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+  PATH_TO_THE_ISO="${1:-${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso}"
+  WHO_AM_I=$(whoami)
+
+  if [[ ${WHO_AM_I} == "root" ]];
   then
-    local SUDO_COMMAND_PREFIX=""
+    SUDO_COMMAND_PREFIX=""
   else
-    local SUDO_COMMAND_PREFIX="sudo "
+    SUDO_COMMAND_PREFIX="sudo "
   fi
 
   if [[ -f "${PATH_TO_THE_ISO}" ]];
   then
     if [[ ! -d "/usr/share/qemu" ]];
     then
-      echo ":: qemu package is missing, installing it ..."
+      echo ":: Qemu package is missing, installing it ..."
 
       ${SUDO_COMMAND_PREFIX} pacman -S qemu-full
     fi
 
     if [[ ! -d "/usr/share/edk2-ovmf" ]];
     then
-      echo ":: edk2-ovmf package is missing, installing it ..."
+      echo ":: Edk2-ovmf package is missing, installing it ..."
 
       ${SUDO_COMMAND_PREFIX} pacman -S edk2-ovmf
     fi
 
     echo ":: Do you want to run it as UEFI? [y|N]"
-    read RUN_AS_UEFI
+    read -r RUN_AS_UEFI
+
+    echo "   Starting iso >>${PATH_TO_THE_ISO}<<"
 
     if [[ ${RUN_AS_UEFI} == "y" ]];
     then
@@ -51,4 +58,4 @@ function _main ()
   fi
 }
 
-_main $@
+_main "$@"
