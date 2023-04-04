@@ -464,11 +464,11 @@ function _create_latest_build_date ()
   _echo_if_be_verbose "   Creating file >>${LATEST_BUILD_DATE_FILE_PATH}<<"
 
   #add date
-  CREATION_DATE_TIME=$(stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d ' ' -f 1)
+  CREATION_DATE_TIME=$(stat -c '%w' "${ARCH_ISO_FILE_PATH}" | cut -d ' ' -f 1)
   _echo_if_be_verbose "       Detected creation date >>${CREATION_DATE_TIME}<<"
 
   #add time
-  CREATION_DATE_TIME=$(echo -n "${CREATION_DATE_TIME}T"; stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d ' ' -f 2 | cut -d '.' -f 1)
+  CREATION_DATE_TIME=$(echo -n "${CREATION_DATE_TIME}T"; stat -c '%w' "${ARCH_ISO_FILE_PATH}" | cut -d ' ' -f 2 | cut -d '.' -f 1)
   _echo_if_be_verbose "       Detected creation date time >>${CREATION_DATE_TIME}<<"
 
   touch "${LATEST_BUILD_DATE_FILE_PATH}"
