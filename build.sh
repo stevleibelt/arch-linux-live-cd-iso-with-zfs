@@ -218,7 +218,7 @@ function ask_for_more ()
 
   if [[ ${ASK_TO_UPLOAD_ISO} -eq 1 ]];
   then
-    echo ":: Do you want to upload the iso for testing? [y|N]"
+    echo ":: Do you want to upload the iso? [y|N]"
 
     read RUN_ISO
 
