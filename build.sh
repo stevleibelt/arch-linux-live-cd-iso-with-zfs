@@ -432,30 +432,48 @@ function cleanup_build_path ()
     _echo_if_be_verbose ":: Finished cleanup build path"
 }
 
+####
+# @param <string: latest_build_date_file_path>
+# @param <string: arch_iso_file_path>
+####
 function _create_latest_build_date ()
 {
+  local ARCH_ISO_FILE_PATH
   local CREATION_DATE_TIME
-  local FILE_PATH
+  local LATEST_BUILD_DATE_FILE_PATH
 
+  ARCH_ISO_FILE_PATH="${2}"
   CREATION_DATE_TIME=""
-  FILE_PATH="${1}"
+  LATEST_BUILD_DATE_FILE_PATH="${1}"
 
-  if [[ -f "${FILE_PATH}" ]];
+  if [[ ! -f "${ARCH_ISO_FILE_PATH}" ]];
   then
-    rm "${FILE_PATH}"
+    echo ":: Error!"
+    echo "   Invalid arch iso file path provided"
+    echo "   >>${ARCH_ISO_FILE_PATH}<< is not a file"
+    echo ""
+
+    exit 20
   fi
 
-  _echo_if_be_verbose "   Creating file >>${FILE_PATH}<<"
+  if [[ -f "${LATEST_BUILD_DATE_FILE_PATH}" ]];
+  then
+    rm "${LATEST_BUILD_DATE_FILE_PATH}"
+  fi
+
+  _echo_if_be_verbose "   Creating file >>${LATEST_BUILD_DATE_FILE_PATH}<<"
 
   #add date
-  CREATION_DATE_TIME=$(stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d " " -f1)
+  CREATION_DATE_TIME=$(stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d ' ' -f 1)
+  _echo_if_be_verbose "       Detected creation date >>${CREATION_DATE_TIME}<<"
 
   #add time
-  CREATION_DATE_TIME=$(echo -n "${CREATION_DATE_TIME}T"; stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d " " -f2 | cut -d "." -f1)
+  CREATION_DATE_TIME=$(echo -n "${CREATION_DATE_TIME}T"; stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d ' ' -f 2 | cut -d '.' -f 1)
+  _echo_if_be_verbose "       Detected creation date time >>${CREATION_DATE_TIME}<<"
 
-  touch "${FILE_PATH}"
+  touch "${LATEST_BUILD_DATE_FILE_PATH}"
 
-  echo "${CREATION_DATE_TIME}" > "${FILE_PATH}"
+  echo "${CREATION_DATE_TIME}" > "${LATEST_BUILD_DATE_FILE_PATH}"
 }
 
 
@@ -945,7 +963,7 @@ function _main ()
     if [[ ${BUILD_WAS_SUCCESSFUL} -eq 0 ]];
     then
       
-      _create_latest_build_date "${PATH_TO_THE_LATEST_BUILD_DATE}"
+      _create_latest_build_date "${PATH_TO_THE_LATEST_BUILD_DATE}" "${ISO_FILE_PATH}"
 
       ask_for_more
     fi
