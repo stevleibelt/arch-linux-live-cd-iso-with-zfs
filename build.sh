@@ -435,10 +435,10 @@ function _create_latest_build_date ()
   _echo_if_be_verbose "   Creating file >>${FILE_PATH}<<"
 
   #add date
-  CREATION_DATE_TIME=$(stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d " " -f1)
+  CREATION_DATE_TIME=$(stat -c '%w' "${FILE_PATH}" | cut -d " " -f1)
 
   #add time
-  CREATION_DATE_TIME=$(echo -n "${CREATION_DATE_TIME}T"; stat -c '%w' "${PATH_TO_THE_ISO}" | cut -d " " -f2 | cut -d "." -f1)
+  CREATION_DATE_TIME=$(echo -n "${CREATION_DATE_TIME}T"; stat -c '%w' "${FILE_PATH}" | cut -d " " -f2 | cut -d "." -f1)
 
   touch "${FILE_PATH}"
 
