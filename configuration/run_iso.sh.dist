@@ -1,0 +1,5 @@
+#!/bin/bash
+####
+##only y and n set as value results in not asking
+#RUN_AS_UEFI="y"
+#RUN_AS_UEFI="n"

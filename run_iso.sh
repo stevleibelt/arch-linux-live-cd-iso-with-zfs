@@ -10,13 +10,20 @@
 function _main ()
 {
   local PATH_TO_THIS_SCRIPT
+  local PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE
   local PATH_TO_THE_ISO
   local SUDO_COMMAND_PREFIX
   local WHO_AM_I
 
   PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+  PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE="${PATH_TO_THIS_SCRIPT}/configuration/run_iso.sh"
   PATH_TO_THE_ISO="${1:-${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso}"
   WHO_AM_I=$(whoami)
+
+  if [[ -f "${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}" ]];
+  then
+    source "${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}"
+  fi
 
   if [[ ${WHO_AM_I} == "root" ]];
   then
@@ -41,8 +48,11 @@ function _main ()
       ${SUDO_COMMAND_PREFIX} pacman -S edk2-ovmf
     fi
 
-    echo ":: Do you want to run it as UEFI? [y|N]"
-    read -r RUN_AS_UEFI
+    if [[ "${RUN_AS_UEFI}" != 'y' && "${RUN_AS_UEFI}" != 'n' ]];
+    then
+      echo ":: Do you want to run it as UEFI? [y|N]"
+      read -r RUN_AS_UEFI
+    fi
 
     echo "   Starting iso >>${PATH_TO_THE_ISO}<<"
 
