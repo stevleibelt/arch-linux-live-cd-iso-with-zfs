@@ -140,7 +140,7 @@ function add_packages_and_repository ()
         # Adding in last week's core archive repo before the official repo as a workaround
         if [[ ${IS_DRY_RUN} -ne 1 ]];
         then
-	    _echo_if_be_verbose "   Adding entry of >>Server = https://archive.archlinux.org/repos/${REPO_INDEX_OR_EMPTY_STRING}/\$repo/os/\$arch<< to:"
+	          _echo_if_be_verbose "   Adding entry of >>Server = https://archive.archlinux.org/repos/${REPO_INDEX_OR_EMPTY_STRING}/\$repo/os/\$arch<< to:"
             _echo_if_be_verbose "       [core]"
             sed -i -e 's|\[core\]|\[core\]\nServer = https://archive.archlinux.org/repos/'${REPO_INDEX_OR_EMPTY_STRING}'/\$repo/os/\$arch/|g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
 
@@ -174,15 +174,18 @@ function add_packages_and_repository ()
 
         if [[ ${USE_DKMS} -eq 1 ]];
         then
-          #@todo - if we ever want to support lts kernel, we need to adapt this line
-          _echo_if_be_verbose "     Addiing package >>linux-headers<<."
-          echo "linux-headers" >> ${PATH_TO_THE_PACKAGES_FILE}
-          _echo_if_be_verbose "     Addiing package >>zfs-dkms<<."
+          if [[ ${KERNEL} != 'linux' ]];
+          then
+            sed -i -e "s/^linux$/${KERNEL}/g" "${PATH_TO_THE_PACKAGES_FILE}"
+          fi
+          _echo_if_be_verbose "     Adding package >>${KERNEL}-headers<<."
+          echo "${KERNEL}-headers" >> ${PATH_TO_THE_PACKAGES_FILE}
+          _echo_if_be_verbose "     Adding package >>zfs-dkms<<."
           echo "zfs-dkms" >> ${PATH_TO_THE_PACKAGES_FILE}
         else
-          _echo_if_be_verbose "     Addiing package >>zfs-linux<<."
-          echo "zfs-linux" >> ${PATH_TO_THE_PACKAGES_FILE}
-          _echo_if_be_verbose "     Addiing package >>zfs-utils<<."
+          _echo_if_be_verbose "     Adding package >>zfs-${KERNEL}<<."
+          echo "zfs-${KERNEL}" >> ${PATH_TO_THE_PACKAGES_FILE}
+          _echo_if_be_verbose "     Adding package >>zfs-utils<<."
           echo "zfs-utils" >> ${PATH_TO_THE_PACKAGES_FILE}
         fi
         #eo: adding package
@@ -818,22 +821,12 @@ function _main ()
     #       -l|--log-output 2>&1 | tee build.log
     #       -p|--package (archzfs-linux or what ever)
     #   * fix not working zfs embedding
-    #begin of variables declaration
-    BUILD_FILE_NAME="archlinux-archzfs-linux"
+    #begin of main variables declaration
     CURRENT_WORKING_DIRECTORY=$(pwd)
     PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
 
-    PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
     PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE="${PATH_TO_THIS_SCRIPT}/configuration/build.sh"
-    PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
-
-    PATH_TO_THE_PROFILE_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/releng"
-    PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
-    ISO_FILE_PATH="${PATH_TO_THE_OUTPUT_DIRECTORY}/${BUILD_FILE_NAME}.iso"
-
-    PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THE_OUTPUT_DIRECTORY}/last_build_date.txt"
-    SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
-    #end of variables declaration
+    #begin of main variables declaration
 
     #bo: user input
     #we are storing all arguments for the case if the script needs to be re-executed as root/system user
@@ -844,6 +837,7 @@ function _main ()
     local BE_VERBOSE
     local IS_DRY_RUN
     local IS_FORCED
+    local KERNEL
     local REPO_INDEX
     local SHOW_HELP
     local USE_DKMS
@@ -857,6 +851,7 @@ function _main ()
     BE_VERBOSE=0
     IS_DRY_RUN=0
     IS_FORCED=0
+    KERNEL='linux'
     REPO_INDEX="last"
     SHOW_HELP=0
     USE_DKMS=0
@@ -884,6 +879,10 @@ function _main ()
                 SHOW_HELP=1
                 shift 1
                 ;;
+            "-k" | "--kernel" )
+                KERNEL="${2:linux}"
+                shift 2
+                ;;
             "-r" | "--repo-index" )
                 USE_OTHER_REPO_INDEX=1
                 if [[ ${#2} -gt 0 ]];
@@ -910,11 +909,25 @@ function _main ()
     done
     #eo: user input
 
+    #begin of variables declaration
+    BUILD_FILE_NAME="archlinux-archzfs-${KERNEL}"
+
+    PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
+    PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
+    PATH_TO_THE_PROFILE_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/releng"
+    PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
+
+    ISO_FILE_PATH="${PATH_TO_THE_OUTPUT_DIRECTORY}/${BUILD_FILE_NAME}.iso"
+    PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THE_OUTPUT_DIRECTORY}/last_build_date.txt"
+
+    SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
+    #end of variables declaration
+
     #bo: code
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-d|--dry-run] [-f|--force] [-h|--help] [-r|--repo-index [<string: last|week|month|yyyy/mm/dd>]] [-u|--use-dkms] [-v|--verbose]"
+        echo "   ${0} [-d|--dry-run] [-f|--force] [-h|--help] [-k|--kernel <string: linux-lts>] [-r|--repo-index [<string: last|week|month|yyyy/mm/dd>]] [-u|--use-dkms] [-v|--verbose]"
 
         exit 0
     fi
@@ -955,6 +968,29 @@ function _main ()
 
     #@todo
     add_files "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/root"
+
+    if [[ ${KERNEL} != 'linux' ]];
+    then
+      # ref:
+      #   https://wiki.archlinux.org/title/Archiso#Kernel
+      #   https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/
+      _echo_if_be_verbose "   Adapting kernel preset"
+      local PATH_TO_MKINIT
+      PATH_TO_MKINIT="${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/etc/mkinitcpio.d"
+
+      mv "${PATH_TO_MKINIT}/linux.preset" "${PATH_TO_MKINIT}/${KERNEL}.preset"
+      sed -i -e "s/vmlinuz-linux/vmlinuz-${KERNEL}/g" "${PATH_TO_MKINIT}/${KERNEL}.preset"
+      sed -i -e "s/initramfs-linux.img/initramfs-${KERNEL}.img/g" "${PATH_TO_MKINIT}/${KERNEL}.preset"
+
+      cat > "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/etc/mkinitcpio.d/${KERNEL}.preset" <<DELIM
+PRESETS=('archiso')
+
+ALL_kver='/boot/vmlinuz-${KERNEL}'
+ALL_config='/etc/mkinitcpio.conf'
+
+archiso_image=\"/boot/initramfs-${KERNEL}.img\"
+DELIM
+    fi
 
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY} ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
 

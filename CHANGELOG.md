@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### To Add
 
+* Add support for [remove packages](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/)
 * Add usage for `kernel.archzfs.com` [Link](https://end.re/blog/ebp036_archzfs-repo-for-kernels/), [Source](https://github.com/archzfs/archzfs/issues/467#issuecomment-1332029677)
 * Add flag `-c|--cleanup` for `build.sh`
-* (Re)-Add support for `linux-lts` as done [here](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/)
 * Add an arch installer like:
   * [archinstall](https://github.com/archlinux/archinstall)
   * [anarchy installer](https://anarchyinstaller.gitlab.io/)
@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+* Added support for `linux-lts` as done [here](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/), see [here](https://wiki.archlinux.org/title/Archiso#Kernel)
+  * Usage: `build.sh -k 'linux-lts'` or `echo KERNEL='linux-lts' > configuration/build.sh`
 * Added check if dkms build failed in the `mkarchiso` call by grep'ing the logs - Workaround for [issue/18](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/18)
 * Added logging to [build.sh](build.sh) into file `build.sh.log`
 * Added `set -e` on [build.sh](build.sh)

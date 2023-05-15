@@ -8,6 +8,7 @@
 # BE_VERBOSE=0|1
 # IS_DRY_RUN=0|1
 # IS_FORCED=0|1
+# KERNEL="linux|linux-lts"
 # REPO_INDEX="last|week|month|yyyy/mm/dd"
 # SHOW_HELP=0
 # USE_DKMS=0|1
