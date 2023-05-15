@@ -981,15 +981,6 @@ function _main ()
       mv "${PATH_TO_MKINIT}/linux.preset" "${PATH_TO_MKINIT}/${KERNEL}.preset"
       sed -i -e "s/vmlinuz-linux/vmlinuz-${KERNEL}/g" "${PATH_TO_MKINIT}/${KERNEL}.preset"
       sed -i -e "s/initramfs-linux.img/initramfs-${KERNEL}.img/g" "${PATH_TO_MKINIT}/${KERNEL}.preset"
-
-      cat > "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/etc/mkinitcpio.d/${KERNEL}.preset" <<DELIM
-PRESETS=('archiso')
-
-ALL_kver='/boot/vmlinuz-${KERNEL}'
-ALL_config='/etc/mkinitcpio.conf'
-
-archiso_image=\"/boot/initramfs-${KERNEL}.img\"
-DELIM
     fi
 
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY} ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
