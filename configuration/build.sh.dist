@@ -2,13 +2,13 @@
 ####
 # configuration file for build.sh that defines following variables
 ####
-# local ASK_TO_DUMP_ISO=0|1
-# local ASK_TO_RUN_ISO=0|1
-# local ASK_TO_UPLOAD_ISO=0|1
-# local BE_VERBOSE=0|1
-# local IS_DRY_RUN=0|1
-# local IS_FORCED=0|1
-# local REPO_INDEX="last|week|month|yyyy/mm/dd"
-# local SHOW_HELP=0
-# local USE_DKMS=0|1
-# local USE_OTHER_REPO_INDEX=0|1
+# ASK_TO_DUMP_ISO=0|1
+# ASK_TO_RUN_ISO=0|1
+# ASK_TO_UPLOAD_ISO=0|1
+# BE_VERBOSE=0|1
+# IS_DRY_RUN=0|1
+# IS_FORCED=0|1
+# REPO_INDEX="last|week|month|yyyy/mm/dd"
+# SHOW_HELP=0
+# USE_DKMS=0|1
+# USE_OTHER_REPO_INDEX=0|1
