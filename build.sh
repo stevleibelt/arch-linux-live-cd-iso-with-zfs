@@ -979,9 +979,9 @@ function _main ()
       local PATH_TO_MKINIT
       local PATH_TO_SYSLINUX
 
-      PATH_TO_EFIBOOT_LOADER_ENTRIES="${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/efiboot/loader/entries"
+      PATH_TO_EFIBOOT_LOADER_ENTRIES="${PATH_TO_THE_PROFILE_DIRECTORY}/efiboot/loader/entries"
       PATH_TO_MKINIT="${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/etc/mkinitcpio.d"
-      PATH_TO_SYSLINUX="${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/syslinux"
+      PATH_TO_SYSLINUX="${PATH_TO_THE_PROFILE_DIRECTORY}/syslinux"
 
       # bo: efiboot adaptation
       sed -i "s/vmlinuz-linux/vmlinuz-${KERNEL}/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/01-archiso-x86_64-linux.conf
