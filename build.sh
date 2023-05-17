@@ -942,8 +942,10 @@ function _main ()
         echo "   ASK_TO_DUMP_ISO >>${ASK_TO_DUMP_ISO}<<."
         echo "   ASK_TO_UPLOAD_ISO >>${ASK_TO_DUMP_ISO}<<."
         echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
+        echo "   BUILD_FILE_NAME >>${BUILD_FILE_NAME}<<."
         echo "   IS_DRY_RUN >>${IS_DRY_RUN}<<."
         echo "   IS_FORCED >>${IS_FORCED}<<."
+        echo "   KERNEL >>${KERNEL}<<."
         echo "   PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE >>${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}<<."
         echo "   REPO_INDEX >>${REPO_INDEX}<<."
         echo "   SHOW_HELP >>${SHOW_HELP}<<."
@@ -953,7 +955,7 @@ function _main ()
         echo ""
     fi
 
-    cd "${PATH_TO_THIS_SCRIPT}"
+    cd "${PATH_TO_THIS_SCRIPT}" || echo "Could not change into directory >>${PATH_TO_THIS_SCRIPT}<<"
 
     cleanup_build_path ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
     setup_environment "/usr/share/archiso/configs/releng" ${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}
@@ -1014,6 +1016,13 @@ DELIM
       sed -i "s/initramfs-linux.img/initramfs-${KERNEL}.img/" "${PATH_TO_SYSLINUX}"/archiso_pxe-linux.cfg
       # eo: syslinux adaptation
     fi
+
+    # bo: profiledef adaptation
+    local PATH_TO_PROFILEDEF
+
+    PATH_TO_PROFILEDEF="${PATH_TO_THE_PROFILE_DIRECTORY}/profiledef.sh"
+    sed -i "s/iso_name=\"archlinux\"/iso_name=\"${BUILD_FILE_NAME}\"/" "${PATH_TO_PROFILEDEF}"
+    # eo: profiledef adaptation
 
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY} ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
 

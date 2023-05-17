@@ -6,6 +6,7 @@
 # ASK_TO_RUN_ISO=0|1
 # ASK_TO_UPLOAD_ISO=0|1
 # BE_VERBOSE=0|1
+# BUILD_FILE_NAME="archlinux-archzfs-${KERNEL}"
 # IS_DRY_RUN=0|1
 # IS_FORCED=0|1
 # KERNEL="linux|linux-lts"
