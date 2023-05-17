@@ -974,13 +974,45 @@ function _main ()
       # ref:
       #   https://wiki.archlinux.org/title/Archiso#Kernel
       #   https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/
-      _echo_if_be_verbose "   Adapting kernel preset"
+      _echo_if_be_verbose "   Adapting kernel related files"
+      local PATH_TO_EFIBOOT_LOADER_ENTRIES
       local PATH_TO_MKINIT
-      PATH_TO_MKINIT="${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/etc/mkinitcpio.d"
+      local PATH_TO_SYSLINUX
 
+      PATH_TO_EFIBOOT_LOADER_ENTRIES="${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/efiboot/loader/entries"
+      PATH_TO_MKINIT="${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/etc/mkinitcpio.d"
+      PATH_TO_SYSLINUX="${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/syslinux"
+
+      # bo: efiboot adaptation
+      sed -i "s/vmlinuz-linux/vmlinuz-${KERNEL}/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/01-archiso-x86_64-linux.conf
+      sed -i "s/initramfs-linux.img/initramfs-${KERNEL}.img/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/01-archiso-x86_64-linux.conf
+      sed -i "s/vmlinuz-linux/vmlinuz-${KERNEL}/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/02-archiso-x86_64-speech-linux.conf
+      sed -i "s/initramfs-linux.img/initramfs-${KERNEL}.img/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/02-archiso-x86_64-speech-linux.conf
+      sed -i "s/vmlinuz-linux/vmlinuz-${KERNEL}/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/03-archiso-x86_64-ram-linux.conf
+      sed -i "s/initramfs-linux.img/initramfs-${KERNEL}.img/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/03-archiso-x86_64-ram-linux.conf
+      # eo: efiboot adaptation
+
+      # bo: mkinitcpio adaptation
       mv "${PATH_TO_MKINIT}/linux.preset" "${PATH_TO_MKINIT}/${KERNEL}.preset"
       sed -i -e "s/vmlinuz-linux/vmlinuz-${KERNEL}/g" "${PATH_TO_MKINIT}/${KERNEL}.preset"
       sed -i -e "s/initramfs-linux.img/initramfs-${KERNEL}.img/g" "${PATH_TO_MKINIT}/${KERNEL}.preset"
+
+      cat > "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/etc/mkinitcpio.d/${KERNEL}.preset" <<DELIM
+PRESETS=('archiso')
+
+ALL_kver='/boot/vmlinuz-${KERNEL}'
+ALL_config='/etc/mkinitcpio.conf'
+
+archiso_image=\"/boot/initramfs-${KERNEL}.img\"
+DELIM
+      # eo: mkinitcpio adaptation
+
+      # bo: syslinux adaptation
+      sed -i "s/vmlinuz-linux/vmlinuz-${KERNEL}/" "${PATH_TO_SYSLINUX}"/archiso_sys-linux.cfg
+      sed -i "s/initramfs-linux.img/initramfs-${KERNEL}.img/" "${PATH_TO_SYSLINUX}"/archiso_sys-linux.cfg
+      sed -i "s/vmlinuz-linux/vmlinuz-${KERNEL}/" "${PATH_TO_SYSLINUX}"/archiso_pxe-linux.cfg
+      sed -i "s/initramfs-linux.img/initramfs-${KERNEL}.img/" "${PATH_TO_SYSLINUX}"/archiso_pxe-linux.cfg
+      # eo: syslinux adaptation
     fi
 
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY} ${ISO_FILE_PATH} ${SHA512_FILE_PATH}
