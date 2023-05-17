@@ -176,7 +176,7 @@ function add_packages_and_repository ()
         then
           if [[ ${KERNEL} != 'linux' ]];
           then
-            sed -i -e "s/^linux$/${KERNEL}/g" "${PATH_TO_THE_PACKAGES_FILE}"
+            sed -i -e "s/^linux$/${KERNEL}/" "${PATH_TO_THE_PACKAGES_FILE}"
           fi
           _echo_if_be_verbose "     Adding package >>${KERNEL}-headers<<."
           echo "${KERNEL}-headers" >> ${PATH_TO_THE_PACKAGES_FILE}
