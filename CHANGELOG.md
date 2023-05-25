@@ -38,6 +38,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+### Changed
+
+## [2.9.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.9.0) - 20230523
+
+### Added
+
 * Added automatically change of `iso_name` in profiledef.sh
 * Added support for `linux-lts` as done [here](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/), see [here](https://wiki.archlinux.org/title/Archiso#Kernel)
   * Usage: `build.sh -k 'linux-lts'` or `echo KERNEL='linux-lts' > configuration/build.sh`
