@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+* Added build option `USE_GIT_PACKAGE`
+
 ### Changed
 
 ## [2.9.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.9.0) - 20230523
