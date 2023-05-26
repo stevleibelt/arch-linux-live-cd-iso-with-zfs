@@ -40,6 +40,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+* Change default git workflow job to `linux-lts-dkms`
+
 ## [2.10.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.10.0) - 20230526
 
 ### Added
