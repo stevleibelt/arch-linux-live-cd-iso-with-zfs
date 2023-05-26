@@ -169,7 +169,7 @@ function add_packages_and_repository ()
         _echo_if_be_verbose "   Adding packages."
 
         #bo: adding package
-        _echo_if_be_verbose "     Addiing package >>git<<."
+        _echo_if_be_verbose "     Adding package >>git<<."
         echo "git" >> ${PATH_TO_THE_PACKAGES_FILE}
 
         if [[ ${USE_DKMS} -eq 1 ]];
