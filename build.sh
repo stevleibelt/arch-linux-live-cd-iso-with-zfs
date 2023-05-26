@@ -169,8 +169,8 @@ function add_packages_and_repository ()
         _echo_if_be_verbose "   Adding packages."
 
         #bo: adding package
-        _echo_if_be_verbose "     Addiing package >>git<<."
-        echo "git" >> ${PATH_TO_THE_PACKAGES_FILE}
+        _echo_if_be_verbose "     Adding package >>git<<."
+        echo "git" >> "${PATH_TO_THE_PACKAGES_FILE}"
 
         if [[ ${USE_DKMS} -eq 1 ]];
         then
@@ -179,14 +179,29 @@ function add_packages_and_repository ()
             sed -i -e "s/^linux$/${KERNEL}/" "${PATH_TO_THE_PACKAGES_FILE}"
           fi
           _echo_if_be_verbose "     Adding package >>${KERNEL}-headers<<."
-          echo "${KERNEL}-headers" >> ${PATH_TO_THE_PACKAGES_FILE}
-          _echo_if_be_verbose "     Adding package >>zfs-dkms<<."
-          echo "zfs-dkms" >> ${PATH_TO_THE_PACKAGES_FILE}
+          echo "${KERNEL}-headers" >> "${PATH_TO_THE_PACKAGES_FILE}"
+
+          if [[ ${USE_GIT_PACKAGE} -eq 0 ]];
+          then
+            _echo_if_be_verbose "     Adding package >>zfs-dkms<<."
+            echo "zfs-dkms" >> "${PATH_TO_THE_PACKAGES_FILE}"
+          else
+            _echo_if_be_verbose "     Adding package >>zfs-dkms-git<<."
+            echo "zfs-dkms-git" >> "${PATH_TO_THE_PACKAGES_FILE}"
+          fi
         else
-          _echo_if_be_verbose "     Adding package >>zfs-${KERNEL}<<."
-          echo "zfs-${KERNEL}" >> ${PATH_TO_THE_PACKAGES_FILE}
-          _echo_if_be_verbose "     Adding package >>zfs-utils<<."
-          echo "zfs-utils" >> ${PATH_TO_THE_PACKAGES_FILE}
+          if [[ ${USE_GIT_PACKAGE} -eq 0 ]];
+          then
+            _echo_if_be_verbose "     Adding package >>zfs-${KERNEL}<<."
+            echo "zfs-${KERNEL}" >> "${PATH_TO_THE_PACKAGES_FILE}"
+            _echo_if_be_verbose "     Adding package >>zfs-utils<<."
+            echo "zfs-utils" >> "${PATH_TO_THE_PACKAGES_FILE}"
+          else
+            _echo_if_be_verbose "     Adding package >>zfs-${KERNEL}-git<<."
+            echo "zfs-${KERNEL}-git" >> "${PATH_TO_THE_PACKAGES_FILE}"
+            _echo_if_be_verbose "     Adding package >>zfs-utils-git<<."
+            echo "zfs-utils-git" >> "${PATH_TO_THE_PACKAGES_FILE}"
+          fi
         fi
         #eo: adding package
         echo ":: Finished adding packages and repository"
@@ -199,11 +214,11 @@ function ask_for_more ()
   then
     echo ":: Do you want to run the iso for testing? [y|N]"
 
-    read RUN_ISO
+    read -r RUN_ISO
 
     if [[ ${RUN_ISO} == "y" ]];
     then
-      bash "${PATH_TO_THIS_SCRIPT}/run_iso.sh" ${ISO_FILE_PATH}
+      bash "${PATH_TO_THIS_SCRIPT}/run_iso.sh" "${ISO_FILE_PATH}"
     fi
   fi
 
@@ -211,7 +226,7 @@ function ask_for_more ()
   then
     echo ":: Do you want to dump the iso on a device? [y|N]"
 
-    read DUMP_ISO
+    read -r DUMP_ISO
 
     if [[ ${DUMP_ISO} == "y" ]];
     then
@@ -854,6 +869,7 @@ function _main ()
     KERNEL='linux'
     REPO_INDEX="last"
     SHOW_HELP=0
+    USE_GIT_PACKAGE=0
     USE_DKMS=0
     USE_OTHER_REPO_INDEX=0
     USED_CONFIGURATION_FILE=0
@@ -873,6 +889,10 @@ function _main ()
                 ;;
             "-f" | "--force" )
                 IS_FORCED=1
+                shift 1
+                ;;
+            "-g" | "--git-package" )
+                USE_GIT_PACKAGE=1
                 shift 1
                 ;;
             "-h" | "--help" )
@@ -910,7 +930,12 @@ function _main ()
     #eo: user input
 
     #begin of variables declaration
-    BUILD_FILE_NAME="archlinux-archzfs-${KERNEL}"
+    if [[ ${USE_GIT_PACKAGE} -eq 0 ]];
+    then
+      BUILD_FILE_NAME="archlinux-archzfs-${KERNEL}"
+    else
+      BUILD_FILE_NAME="archlinux-archzfs-${KERNEL}-git"
+    fi
 
     PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
     PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
@@ -927,7 +952,7 @@ function _main ()
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-d|--dry-run] [-f|--force] [-h|--help] [-k|--kernel <string: linux-lts>] [-r|--repo-index [<string: last|week|month|yyyy/mm/dd>]] [-u|--use-dkms] [-v|--verbose]"
+        echo "   ${0} [-d|--dry-run] [-f|--force] [-g|--git-package] [-h|--help] [-k|--kernel <string: linux-lts>] [-r|--repo-index [<string: last|week|month|yyyy/mm/dd>]] [-u|--use-dkms] [-v|--verbose]"
 
         exit 0
     fi
@@ -949,6 +974,7 @@ function _main ()
         echo "   PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE >>${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}<<."
         echo "   REPO_INDEX >>${REPO_INDEX}<<."
         echo "   SHOW_HELP >>${SHOW_HELP}<<."
+        echo "   USE_GIT_PACKAGE >>${USE_GIT_PACKAGE}<<."
         echo "   USE_DKMS >>${USE_DKMS}<<."
         echo "   USE_OTHER_REPO_INDEX >>${USE_OTHER_REPO_INDEX}<<."
         echo "   USED_CONFIGURATION_FILE >>${USED_CONFIGURATION_FILE}<<."
