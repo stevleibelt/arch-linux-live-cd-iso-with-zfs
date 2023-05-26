@@ -10,7 +10,7 @@ on:
   push:
 
 jobs:
-  iso:
+  iso_lts_dkms:
     if: ${{ github.event.pull_request.merged == true ||
          github.event_name == 'schedule' ||
          github.event_name == 'workflow_dispatch' ||
@@ -34,12 +34,13 @@ jobs:
           pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
       - name: Prepare configuration
         run: |
-          echo -e "local ASK_TO_DUMP_ISO=0
-          local ASK_TO_RUN_ISO=0
-          local ASK_TO_UPLOAD_ISO=0
-          local IS_FORCED=1
-          local USE_DKMS=1" > configuration/build.sh
-      - name: Build iso
+          echo -e 'ASK_TO_DUMP_ISO=0
+          ASK_TO_RUN_ISO=0
+          ASK_TO_UPLOAD_ISO=0
+          IS_FORCED=1
+          KERNEL="linux-lts"
+          USE_DKMS=1' > configuration/build.sh
+      - name: Build lts dkms iso
         run: |
           chmod +x ./*.sh
           ls
@@ -47,7 +48,7 @@ jobs:
       - name: Upload a release
         uses: softprops/action-gh-release@v1
         with:
-          name: archlinux-archzfs-linux-${{ env.timestamp }}
+          name: archlinux-archzfs-linux-lts-dkms-${{ env.timestamp }}
           tag_name: ${{ env.timestamp }}
           prerelease: ${{ github.event_name != 'schedule' }}
           files: |
