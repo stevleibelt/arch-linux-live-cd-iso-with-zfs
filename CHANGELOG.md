@@ -38,9 +38,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-* Added build option `USE_GIT_PACKAGE`
-
 ### Changed
+
+* Change default git workflow job to `linux-lts-dkms`
+
+## [2.10.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.10.0) - 20230526
+
+### Added
+
+* Added build option to use git package for `zfs-dkms-git` or `zfs-linux-git`
+  * Either use `USE_GIT_PACKAGE` in the configuration file
+  * Or use `build.sh -g`
 
 ## [2.9.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.9.0) - 20230523
 
