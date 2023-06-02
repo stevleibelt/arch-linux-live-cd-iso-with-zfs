@@ -38,6 +38,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+* Add git workflow jobs
+  * `linux_lts_no_dkms`
+  * `linux_no_lts_dkms`
+  * `linux_no_lts_no_dkms`
+
 ### Changed
 
 * Change default git workflow job to `linux-lts-dkms`
