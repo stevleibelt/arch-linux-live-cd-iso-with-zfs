@@ -74,7 +74,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed in 2.9.0
 
 * Changed number of available iso file check from "greater 0" to "equal 1"
-* Changed place where `last_build_date.txt` is created, moved from [upload_iso.sh](upload_iso.sh) to [build.sh][build.sh]
+* Changed place where `last_build_date.txt` is created, moved from [upload_iso.sh](upload_iso.sh) to [build.sh](build.sh)
 * Updated [upload_iso.sh](upload_iso.sh) to meet the [shellcheck](https://www.shellcheck.net/)
 * Updated workflow and added step that creates `configuration/build.sh`
 
