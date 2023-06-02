@@ -1,8 +1,8 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/)
+The format is based on [Keep a changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Open
@@ -11,29 +11,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Add support for [remove packages](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/)
 * Add usage for `kernel.archzfs.com`
-   * [Link](https://end.re/blog/ebp036_archzfs-repo-for-kernels/)
-   * [Source](https://github.com/archzfs/archzfs/issues/467#issuecomment-1332029677)
+  * [Link](https://end.re/blog/ebp036_archzfs-repo-for-kernels/)
+  * [Source](https://github.com/archzfs/archzfs/issues/467#issuecomment-1332029677)
 * Add flag `-c|--cleanup` for `build.sh`
 * Add an arch installer like:
-   * [archinstall](https://github.com/archlinux/archinstall)
-   * [anarchy installer](https://anarchyinstaller.gitlab.io/)
-   * [alci](https://alci.online/)
+  * [archinstall](https://github.com/archlinux/archinstall)
+  * [anarchy installer](https://anarchyinstaller.gitlab.io/)
+  * [alci](https://alci.online/)
 
 ### To Change
 
 * Apply [shellcheck](https://github.com/koalaman/shellcheck) to all scripts
 * Manipulate `dynamic_dat/releng/profiledef.sh` before running the iso build process
-   * [issue/9](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/9)
-   * [official profiledef.sh documentation](https://gitlab.archlinux.org/archlinux/archiso/-/blob/master/docs/README.profile.rst)
-   * [example of an manipulated file](https://github.com/HougeLangley/archzfs-iso/blob/master/profiledef.sh)
-   * Things to change
-      * `iso_name`
-      * `iso_label`
-      * `iso_publisher`
-      * `iso_application`
-      * `file_permissions`
-         * own git repros in user home should have 775
-* Recheck github actions using things like [this](https://github.com/ossf/education/pull/36/files) as an example
+  * [issue/9](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/9)
+  * [official profiledef.sh documentation](https://gitlab.archlinux.org/archlinux/archiso/-/blob/master/docs/README.profile.rst)
+  * [example of an manipulated file](https://github.com/HougeLangley/archzfs-iso/blob/master/profiledef.sh)
+  * Things to change
+    * `iso_name`
+    * `iso_label`
+    * `iso_publisher`
+    * `iso_application`
+    * `file_permissions`
+      * own git repros in user home should have 775
+* Recheck GitHub actions using things like [this](https://github.com/ossf/education/pull/36/files) as an example
 * Validate if we can implement the "use older kernel" feature from [here](https://github.com/eoli3n/archiso-zfs/blob/master/init) to prevent failing builds when the archzfs package is not up to date to the latest linux kernel
 
 ## Unreleased
@@ -41,9 +41,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 * Add git workflow jobs
-   * `linux_lts_no_dkms`
-   * `linux_no_lts_dkms`
-   * `linux_no_lts_no_dkms`
+  * `linux_lts_no_dkms`
+  * `linux_no_lts_dkms`
+  * `linux_no_lts_no_dkms`
 
 ### Changed
 
@@ -54,8 +54,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added in 2.10.0
 
 * Added build option to use git package for `zfs-dkms-git` or `zfs-linux-git`
-   * Either use `USE_GIT_PACKAGE` in the configuration file
-   * Or use `build.sh -g`
+  * Either use `USE_GIT_PACKAGE` in the configuration file
+  * Or use `build.sh -g`
 
 ## [2.9.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.9.0) - 20230523
 
@@ -63,12 +63,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Added automatically change of `iso_name` in profiledef.sh
 * Added support for `linux-lts` as done [here](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/), see [here](https://wiki.archlinux.org/title/Archiso#Kernel)
-   * Usage: `build.sh -k 'linux-lts'` or `echo KERNEL='linux-lts' > configuration/build.sh`
+  * Usage: `build.sh -k 'linux-lts'` or `echo KERNEL='linux-lts' > configuration/build.sh`
 * Added check if dkms build failed in the `mkarchiso` call by grep'ing the logs - Workaround for [issue/18](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/18)
 * Added logging to [build.sh](build.sh) into file `build.sh.log`
 * Added `set -e` on [build.sh](build.sh)
 * Added [arch-linux-cd-zfs-setup](https://github.com/stevleibelt/arch-linux-live-cd-zfs-setup) to the image path `root/software/arch-linux-live-cd-zfs-setup` - Mostly for debugging and the case when neither zfs-dkms nor zfs-linux is compatible with the current/latest linux kernel [e.g. see [here](https://github.com/archzfs/archzfs/issues/486)]
-* Added [scorecard](https://github.com/marketplace/actions/ossf-scorecard-action) github action
+* Added [scorecard](https://github.com/marketplace/actions/ossf-scorecard-action) GitHub action
 * Added explicit and dedicated function `_remove_file_path_or_exit`
 
 ### Changed in 2.9.0
@@ -125,7 +125,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Added `-d`, `-h` and `-v` to `upload_iso.sh`
 * Implemented code from [pull request/6](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/6) with an additional flag "-r|--repo-index <string: last|week|month|yyyy/mm/dd>"
-   * If you just provide `-r`, `week` is used
+  * If you just provide `-r`, `week` is used
 * Added [configuration file](configuration/build.sh.dist) for build.sh
 * Added `-d|--dry-run` in `build.sh`
 
@@ -140,7 +140,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Added if `[[ ${?} -ne 0 ]];` for each fitting command call
 * Added [dump_iso.sh](dump_iso.sh) to dd a created iso
 * Added check if build was successful
-   * The next steps where only executed if build was successful
+  * The next steps where only executed if build was successful
 * Added output of flags when verbosity is enabled
 * Added way more output if run in verbose mode
 * Added addtional check in the step after bulding the iso to validate that an iso was build
@@ -150,7 +150,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed in 2.4.0
 
 * Fixed an issue if script is not calld as root
-   * Previous to this fix, all arguments where lost (like `-f`)
+  * Previous to this fix, all arguments where lost (like `-f`)
 * Centralized code by creating `_create_directory_of_exit` an `_remove_path_or_exit`
 
 ## [2.3.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.3.0) - released at 20220328
@@ -167,8 +167,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * added the `auto_elevate_if_not_called_from_root` from [build.sh](build.sh) in [run_iso.sh](run_iso.sh)
 * added [upload_iso.sh](upload_iso.sh)
-   * if not available, it creates a local configuration file in [configuration](configuration)
-   * if user says yes, this is executed after a successful [build.sh](build.sh)
+  * if not available, it creates a local configuration file in [configuration](configuration)
+  * if user says yes, this is executed after a successful [build.sh](build.sh)
 * created [archzfs.stevleibelt.de](https://archzfs.leibelt.de/)
 
 ### Changed in 2.2.0
@@ -198,7 +198,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed in 2.0.0
 
 * major rework of internal code - adapted to archiso changes
-   * all code is now running into dedicated functions
+  * all code is now running into dedicated functions
 * aligned output
 * moveing the existing iso to $somewhere
 * fixed issue with not enough access when generating the checksum files
