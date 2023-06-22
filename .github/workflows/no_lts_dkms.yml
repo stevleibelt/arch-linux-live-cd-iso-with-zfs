@@ -1,0 +1,55 @@
+---
+name: Build ArchLinux zfs iso
+on:
+  schedule:  # arch relases are published first day of the month
+    - cron: '50 21 1 * *'
+  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
+  push:
+
+jobs:
+  no_lts_dkms_iso:
+    if: ${{ github.event.pull_request.merged == true ||
+         github.event_name == 'schedule' ||
+         github.event_name == 'workflow_dispatch' ||
+         github.event.repository.default_branch }}
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+      options: --privileged
+    steps:
+      - name: Set timestamp tag
+        id: timetag
+        run: echo "timestamp=$(date +'%Y%m%d')" >> "$GITHUB_ENV"
+      - name: Check out codebase
+        uses: actions/checkout@v3
+      - name: Install requirements
+        run: |
+          pacman -Sy
+          pacman -S --noconfirm archlinux-keyring archiso git
+          pacman-key --init
+          pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
+          pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
+      - name: Prepare configuration
+        run: |
+          echo -e 'ASK_TO_DUMP_ISO=0
+          ASK_TO_RUN_ISO=0
+          ASK_TO_UPLOAD_ISO=0
+          IS_FORCED=1
+          KERNEL="linux"
+          USE_DKMS=1' > configuration/build.sh
+      - name: Build dkms iso
+        run: |
+          chmod +x ./*.sh
+          ls
+          bash ./build.sh --verbose
+      - name: Upload a release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: archlinux-archzfs-linux-dkms-${{ env.timestamp }}
+          tag_name: ${{ env.timestamp }}
+          prerelease: ${{ github.event_name != 'schedule' }}
+          files: |
+            dynamic_data/out/*

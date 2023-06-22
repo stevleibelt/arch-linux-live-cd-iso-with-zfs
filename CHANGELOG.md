@@ -40,10 +40,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-* Add git workflow jobs
-  * `linux_lts_no_dkms`
-  * `linux_no_lts_dkms`
-  * `linux_no_lts_no_dkms`
+* Added dedicated iso building workflows for
+  * `lts_dkms`
+  * `lts_no_dkms`
+  * `no_lts_dkms`
+  * `no_lts_no_dkms`
 
 ### Changed
 
