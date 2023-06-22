@@ -1,5 +1,5 @@
 ---
-name: Build ArchLinux zfs iso
+name: Build ArchLinux zfs iso with LTS-Kernel and DKMS Package
 on:
   schedule:  # arch relases are published first day of the month
     - cron: '50 23 1 * *'
