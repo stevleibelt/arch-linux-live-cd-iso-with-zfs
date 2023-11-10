@@ -40,11 +40,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+### Changed
+
+## [2.11.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.11.0) - 20231111
+
+### Added
+
 * Added dedicated iso building workflows for
   * `lts_dkms`
   * `lts_no_dkms`
   * `no_lts_dkms`
   * `no_lts_no_dkms`
+* Added step to download latest zfsbootmenu.EFI file
+* Added script `replace_zfsbootmenu.sh` to ease up updating a system to the latest zfsbootmenu
 
 ### Changed
 
