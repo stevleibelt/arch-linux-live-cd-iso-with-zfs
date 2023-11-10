@@ -65,6 +65,14 @@ function add_files ()
       git clone https://github.com/archlinux-downgrade/downgrade "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade<< failed."
 
+      _echo_if_be_verbose "   Adding directory >>zfsbootmenu<< with latest EFI file "
+      # ref: https://docs.zfsbootmenu.org/en/v2.2.x/guides/general/portable.html
+      curl --create-dirs --output software/zfsbootmenu/vmlinuz.EFI -LJO https://get.zfsbootmenu.org/efi
+      exit_if_last_exit_code_is_not_zero ${?} "Creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/zfsbootmenu<< or download of latest portable ZFSBootMenu failed."
+      cp "${PATH_TO_THIS_SCRIPT}/source/replace_zfsbootmenu.sh" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/zfsbootmenu/"
+      exit_if_last_exit_code_is_not_zero ${?} "Copy of >>${PATH_TO_THIS_SCRIPT}/source/replace_zfsbootmenu.sh<< to >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/zfsbootmenu/<< failed."
+
+
       _echo_if_be_verbose "   Adding repository >>general_howtos<< "
       git clone https://github.com/stevleibelt/general_howtos "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos<< failed."
