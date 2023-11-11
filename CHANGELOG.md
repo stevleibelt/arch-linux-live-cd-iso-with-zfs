@@ -42,6 +42,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+## [2.11.1](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.11.1) - 20231111
+
+### Changed
+
+* Fix invalid broken ZFSBootMenu EFI (Portable) downloadpath
+
 ## [2.11.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.11.0) - 20231111
 
 ### Added
