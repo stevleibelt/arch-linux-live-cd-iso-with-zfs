@@ -42,6 +42,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+* Changed default values for [replace_zfsbootmenu.sh](source/replace_zfsbootmenu.sh)
+  * Default path for old ZBM is now `/mnt/efi...`
+  * Default path for new ZBM is now basepath of the called script
+
 ## [2.11.1](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.11.1) - 20231111
 
 ### Changed

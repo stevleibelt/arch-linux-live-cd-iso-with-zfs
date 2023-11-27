@@ -52,16 +52,18 @@ function _usage ()
 
 function _main ()
 {
+  local BASEPATH_OF_THIS_SCRIPT
   local BE_VERBOSE
   local CURRENT_DATE
   local PATH_TO_NEW_ZBM
   local PATH_TO_OLD_ZBM
   local SHOW_USAGE
 
+  BASEPATH_OF_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
   BE_VERBOSE=0
   CURRENT_DATE=$(date +'%Y%m%d')
-  PATH_TO_NEW_ZBM=""
-  PATH_TO_OLD_ZBM="/efi/EFI/ZBM/vmlinuz.EFI"
+  PATH_TO_NEW_ZBM="${BASEPATH_OF_THIS_SCRIPT}/vmlinuz.EFI"
+  PATH_TO_OLD_ZBM="/mnt/efi/EFI/ZBM/vmlinuz.EFI"
   SHOW_USAGE=0
 
   OPTARG=""
