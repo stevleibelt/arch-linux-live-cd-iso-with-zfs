@@ -76,6 +76,10 @@ function add_files ()
       _echo_if_be_verbose "   Adding repository >>general_howtos<< "
       git clone https://github.com/stevleibelt/general_howtos "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos<< failed."
+
+      _echo_if_be_verbose "   Adding repository >>bulk_hdd_testing<< "
+      git clone https://github.com/ezonakiusagi/bht "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/bulk_hdd_testing"
+      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/bulk_hdd_testing<< failed."
     fi
 
     _echo_if_be_verbose ":: Finished adding files"

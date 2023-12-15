@@ -40,6 +40,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+* Added content of repository >>https://github.com/ezonakiusagi/bht<< below `software`
+
 ### Changed
 
 * Changed default values for [replace_zfsbootmenu.sh](source/replace_zfsbootmenu.sh)
