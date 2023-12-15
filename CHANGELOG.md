@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 * Added content of repository >>https://github.com/ezonakiusagi/bht<< below `software`
+* Added packages mailx, ksh and nmon
 
 ### Changed
 

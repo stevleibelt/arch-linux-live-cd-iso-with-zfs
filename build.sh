@@ -183,6 +183,12 @@ function add_packages_and_repository ()
         #bo: adding package
         _echo_if_be_verbose "     Adding package >>git<<."
         echo "git" >> "${PATH_TO_THE_PACKAGES_FILE}"
+        _echo_if_be_verbose "     Adding package >>mailx<<."
+        echo "mailx" >> "${PATH_TO_THE_PACKAGES_FILE}"
+        _echo_if_be_verbose "     Adding package >>ksh<<."
+        echo "ksh" >> "${PATH_TO_THE_PACKAGES_FILE}"
+        _echo_if_be_verbose "     Adding package >>nmon<<."
+        echo "nmon" >> "${PATH_TO_THE_PACKAGES_FILE}"
 
         if [[ ${USE_DKMS} -eq 1 ]];
         then
