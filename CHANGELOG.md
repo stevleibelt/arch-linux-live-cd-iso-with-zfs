@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Added content of repository >>https://github.com/ezonakiusagi/bht<< below `software`
 * Added packages mailx, ksh and nmon
+* Added script `start_sshd.sh`
 
 ### Changed
 
