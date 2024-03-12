@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### To Add
 
+* Add support for running GitHub-Actions [locally](https://www.freecodecamp.org/news/how-to-run-github-actions-locally/)
 * Add support for [remove packages](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/)
 * Add usage for `kernel.archzfs.com`
   * [Link](https://end.re/blog/ebp036_archzfs-repo-for-kernels/)
