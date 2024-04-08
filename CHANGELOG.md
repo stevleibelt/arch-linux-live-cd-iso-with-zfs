@@ -39,13 +39,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
-### Added
+### Added in unreleased
 
 * Added content of repository >>https://github.com/ezonakiusagi/bht<< below `software`
 * Added packages mailx, ksh and nmon
 * Added script `start_sshd.sh`
 
-### Changed
+### Changed in unreleased
 
 * Changed default values for [replace_zfsbootmenu.sh](source/replace_zfsbootmenu.sh)
   * Default path for old ZBM is now `/mnt/efi...`
@@ -53,13 +53,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.11.1](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.11.1) - 20231111
 
-### Changed
+### Changed in 2.11.1
 
 * Fix invalid broken ZFSBootMenu EFI (Portable) downloadpath
 
 ## [2.11.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.11.0) - 20231111
 
-### Added
+### Added in 2.11.0
 
 * Added dedicated iso building workflows for
   * `lts_dkms`
@@ -69,7 +69,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Added step to download latest zfsbootmenu.EFI file
 * Added script `replace_zfsbootmenu.sh` to ease up updating a system to the latest zfsbootmenu
 
-### Changed
+### Changed in 2.11.0
 
 * Change default git workflow job to `linux-lts-dkms`
 
