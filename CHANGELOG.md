@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added in unreleased
 
 * Added content of repository [bht](https://github.com/ezonakiusagi/bht) below `software`
+* Added links to openssf and badge
 * Added packages mailx, ksh and nmon
 * Added script `start_sshd.sh`
 

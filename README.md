@@ -12,6 +12,8 @@ All needed packages where installed automatically. The build script will output 
 
 At the end, you only need to dd the iso to your favorit usb drive, use [venotoy](https://www.ventoy.net) or burn it on an optical disk.
 
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/badge)](https://securityscorecards.dev/viewer/?uri=github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs)
+
 ## Live enviroment
 
 This iso comes with some batteries included.
@@ -59,6 +61,14 @@ This iso comes with some batteries included.
 ./upload_iso.sh [<string: path to the iso>]
 ```
 
+### Run super-linter locally
+
+```bash
+# ref: https://github.com/super-linter/super-linter#run-using-a-container-runtime-engine
+#   assuming that . is the path to the local code base
+docker run -e LOG_LEVEL=DEBUG -e RUN_LOCAL=true -v .:/tmp/lint ghcr.io/super-linter/super-linter:latest
+```
+
 ## Possible issues
 
 Following issues are not reproducable on all my machines.
@@ -77,6 +87,7 @@ Following issues are not reproducable on all my machines.
 * [archiso project page](https://git.archlinux.org/archiso.git)
 * [Install UEFI and BIOS compatible Arch Linx with encrypted ZFS and ZFSBootMenu by Kayvlim](https://wiki.archlinux.org/title/User:Kayvlim/Install_UEFI_and_BIOS_compatible_Arch_Linux_with_Encrypted_ZFS_and_ZFSBootMenu#Swap) - 20221108
 * [pacman wiki page](https://wiki.archlinux.org/index.php/Pacman)
+* [OpenSSF Scorecard Report](https://securityscorecards.dev/viewer/?uri=github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs) - 20240408
 * [Ubuntu server zfsbootmenu](https://github.com/Sithuk/ubuntu-server-zfsbootmenu) - 20221108
 
 ## Contributers
