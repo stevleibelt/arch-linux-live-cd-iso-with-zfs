@@ -83,6 +83,7 @@ Following issues are not reproducable on all my machines.
 ## Links
 
 * [Another archiso build script by Maurice Zhou](https://gitlab.com/m_zhou/archiso)
+* [archzfs archive containing each package ever build.](http://archzfs.com/archive_archzfs/) - 20240410
 * [archiso documentation](https://git.archlinux.org/archiso.git/tree/docs)
 * [archiso project page](https://git.archlinux.org/archiso.git)
 * [Install UEFI and BIOS compatible Arch Linx with encrypted ZFS and ZFSBootMenu by Kayvlim](https://wiki.archlinux.org/title/User:Kayvlim/Install_UEFI_and_BIOS_compatible_Arch_Linux_with_Encrypted_ZFS_and_ZFSBootMenu#Swap) - 20221108
