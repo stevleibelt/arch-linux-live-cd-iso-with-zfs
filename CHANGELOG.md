@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Added packages mailx, ksh and nmon
 * Added [SECURITY.md](SECURITY.md)
 * Added script `start_sshd.sh`
+* Added support for `-l|--lts` as kernel in [upload_iso.sh](upload_iso.sh)
 
 ### Changed in unreleased
 
