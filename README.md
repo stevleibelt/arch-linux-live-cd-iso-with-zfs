@@ -33,6 +33,16 @@ This iso comes with some batteries included.
 
 ## Howto
 
+### Initial setup
+
+```bash
+# ref: https://github.com/archzfs/archzfs/wiki#using-the-archzfs-repository
+sudo pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
+sudo pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
+```
+
+### Regular buildings
+
 ```bash
 ####
 #build an iso
