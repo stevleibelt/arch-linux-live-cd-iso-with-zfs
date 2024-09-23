@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   * Default path for old ZBM is now `/mnt/efi...`
   * Default path for new ZBM is now basepath of the called script
 * Moved from build image `archlinux:latest` to `archlinux/archlinux:latest` to fix issues like [archinstal#2443](https://github.com/archlinux/archinstall/issues/2443)
+* Moved archzfs mirrorlist to dedicated file `/etc/pacman.d/archzfs`
 
 ## [2.11.1](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.11.1) - 20231111
 
