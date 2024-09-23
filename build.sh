@@ -107,12 +107,14 @@ function add_packages_and_repository ()
     local REPO_INDEX_OR_EMPTY_STRING
     local PATH_TO_THE_PACKAGES_FILE
     local PATH_TO_THE_PACMAN_CONF_FILE
+    local PATH_TO_THE_PACMAN_D_ARCHZFS_FILE
 
     PATH_TO_THE_ARCHLIVE=${1:-""}
     REPO_INDEX_OR_EMPTY_STRING=${2:-""}
 
     PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
     PATH_TO_THE_PACMAN_CONF_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.conf"
+    PATH_TO_THE_PACMAN_D_ARCHZFS_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.d/archzfs"
     #eo: variable
 
     #bo: argument validation
@@ -177,14 +179,18 @@ function add_packages_and_repository ()
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
-        _echo_if_be_verbose "   Adding archzfs repositories to PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
+        _echo_if_be_verbose "   Creating archzfs mirrorlist file >>${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}<<."
 
         #bo: adding repository
+        echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}
+        echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}
+        echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}
+
+        _echo_if_be_verbose "   Adding archzfs repositories to PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
+
         echo "" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
         echo "[archzfs]" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
-        echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
-        echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
-        echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
+        echo "Include = /etc/pacman.d/archzfs" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
         #eo: adding repository
 
         _echo_if_be_verbose "   Adding packages."

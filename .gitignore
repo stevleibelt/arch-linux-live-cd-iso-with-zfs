@@ -1,3 +1,4 @@
 build.sh.log
 configuration/*.sh
 dynamic_data/*
+software/
