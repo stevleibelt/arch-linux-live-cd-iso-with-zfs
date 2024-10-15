@@ -238,12 +238,17 @@ function _initialize_archzfs ()
     pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
     pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
 
-    #adding repository
-    cat >> /etc/pacman.conf <<"DELIM"
-[archzfs]
+    #creating mirrorlist
+    cat >> /etc/pacman.d/archzfs <<"DELIM"
 Server = http://archzfs.com/archzfs/x86_64
 Server = http://mirror.sum7.eu/archlinux/archzfs/archzfs/x86_64
 Server = https://mirror.biocrafting.net/archlinux/archzfs/archzfs/x86_64
+DELIM
+
+    #adding repository
+    cat >> /etc/pacman.conf <<"DELIM"
+[archzfs]
+Include = /etc/pacman.d/archzfs
 DELIM
 
     #updating packages
@@ -689,34 +694,6 @@ DELIM
 
         _echo_if_be_verbose "   Chroot and configure system"
         arch-chroot /mnt /bin/bash -xe <<DELIM
-  ### Reinit keyring
-  # As keyring is initialized at boot, and copied to the install dir with pacstrap, and ntp is running
-  # Time changed after keyring initialization, it leads to malfunction
-  # Keyring needs to be reinitialised properly to be able to sign archzfs key.
-  rm -Rf /etc/pacman.d/gnupg
-  pacman-key --init
-  pacman-key --populate archlinux
-  pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
-  pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
-  pacman -S archlinux-keyring --noconfirm
-  cat >> /etc/pacman.conf <<"EOSF"
-||||||| 6049dc2
-    _echo_if_be_verbose ":: Chroot and configure system"
-    arch-chroot /mnt /bin/bash -xe <<DELIM
-  ### Reinit keyring
-  # As keyring is initialized at boot, and copied to the install dir with pacstrap, and ntp is running
-  # Time changed after keyring initialization, it leads to malfunction
-  # Keyring needs to be reinitialised properly to be able to sign archzfs key.
-  rm -Rf /etc/pacman.d/gnupg
-  pacman-key --init
-  pacman-key --populate archlinux
-  pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
-  pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
-  pacman -S archlinux-keyring --noconfirm
-  cat >> /etc/pacman.conf <<"EOSF"
-=======
-    _echo_if_be_verbose ":: Chroot and configure system"
-    arch-chroot /mnt /bin/bash -xe <<DELIM
 ### Reinit keyring
 # As keyring is initialized at boot, and copied to the install dir with pacstrap, and ntp is running
 # Time changed after keyring initialization, it leads to malfunction
@@ -729,12 +706,15 @@ pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
 pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
 pacman -S archlinux-keyring --noconfirm
 
-cat >> /etc/pacman.conf <<"EOSF"
->>>>>>> b4746763ae94d6b9bf73864bae34181e15a6f2b3
-[archzfs]
+cat >> /etc/pacman.d/archzfs <<"EOSF"
 Server = http://archzfs.com/archzfs/x86_64
 Server = http://mirror.sum7.eu/archlinux/archzfs/archzfs/x86_64
 Server = https://mirror.biocrafting.net/archlinux/archzfs/archzfs/x86_64
+EOSF
+
+cat >> /etc/pacman.conf <<"EOSF"
+[archzfs]
+Include = /etc/pacman.d/archzfs
 EOSF
   pacman -Syu --noconfirm zfs-utils
 

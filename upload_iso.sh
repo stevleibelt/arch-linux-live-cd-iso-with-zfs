@@ -79,12 +79,8 @@ function _main ()
     local PATH_TO_THE_LOCAL_CONFIGURATION
 
 
-    PATH_TO_THE_ISO=${1:-""}
     PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
 
-    PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/last_build_date.txt"
-    PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso"
-    PATH_TO_THE_ISO_SHA512="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso.sha512sum"
     PATH_TO_THE_LOCAL_CONFIGURATION="${PATH_TO_THIS_SCRIPT}/configuration/upload_iso.sh"
     #eo: variables
 
@@ -93,13 +89,14 @@ function _main ()
     local ALL_ARGUMENTS_TO_PASS
     local BE_VERBOSE
     local IS_DRY_RUN
+    local IS_LTS_KERNEL
     local SHOW_HELP
 
     ALL_ARGUMENTS_TO_PASS="${@}"
     BE_VERBOSE=0
     IS_DRY_RUN=0
+    IS_LTS_KERNEL=0
     SHOW_HELP=0
-
 
     while true;
     do
@@ -112,6 +109,9 @@ function _main ()
                 SHOW_HELP=1
                 shift 1
                 ;;
+            "-l" | "--lts" )
+                IS_LTS_KERNEL=1
+                shift 1
             "-v" | "--verbose" )
                 BE_VERBOSE=1
                 shift 1
@@ -133,12 +133,24 @@ function _main ()
     fi
     #bo: help
 
+    if [[ ${IS_LTS_KERNEL} -eq 1 ]];
+    then
+      PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/last_build_date_lts.txt"
+      PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux-lts.iso"
+      PATH_TO_THE_ISO_SHA512="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux-lts.iso.sha512sum"
+    else
+      PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/last_build_date.txt"
+      PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso"
+      PATH_TO_THE_ISO_SHA512="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso.sha512sum"
+    fi
+
     #bo: output used flags
     if [[ ${BE_VERBOSE} -eq 1 ]];
     then
         echo ":: Outputting status of the flags."
         echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
         echo "   IS_DRY_RUN >>${IS_DRY_RUN}<<."
+        echo "   IS_LTS_KERNEL >>${IS_LTS_KERNEL}<<."
         echo "   SHOW_HELP >>${SHOW_HELP}<<."
         echo ""
     fi

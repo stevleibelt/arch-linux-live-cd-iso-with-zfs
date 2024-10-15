@@ -72,6 +72,12 @@ function add_files ()
       cp "${PATH_TO_THIS_SCRIPT}/source/replace_zfsbootmenu.sh" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/zfsbootmenu/"
       exit_if_last_exit_code_is_not_zero ${?} "Copy of >>${PATH_TO_THIS_SCRIPT}/source/replace_zfsbootmenu.sh<< to >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/zfsbootmenu/<< failed."
 
+      _echo_if_be_verbose "   Adding repository >>archinstall<< "
+      git clone https://github.com/archlinux/archinstall "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall"
+      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall<< failed."
+      cp "${PATH_TO_THIS_SCRIPT}/source/start_archinstall.sh" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall/"
+      exit_if_last_exit_code_is_not_zero ${?} "Copy of >>${PATH_TO_THIS_SCRIPT}/source/start_archinstall.sh<< to >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall/<< failed."
+
       _echo_if_be_verbose "   Adding repository >>general_howtos<< "
       git clone https://github.com/stevleibelt/general_howtos "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos<< failed."
@@ -101,12 +107,14 @@ function add_packages_and_repository ()
     local REPO_INDEX_OR_EMPTY_STRING
     local PATH_TO_THE_PACKAGES_FILE
     local PATH_TO_THE_PACMAN_CONF_FILE
+    local PATH_TO_THE_PACMAN_D_ARCHZFS_FILE
 
     PATH_TO_THE_ARCHLIVE=${1:-""}
     REPO_INDEX_OR_EMPTY_STRING=${2:-""}
 
     PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
     PATH_TO_THE_PACMAN_CONF_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.conf"
+    PATH_TO_THE_PACMAN_D_ARCHZFS_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.d/archzfs"
     #eo: variable
 
     #bo: argument validation
@@ -171,14 +179,18 @@ function add_packages_and_repository ()
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
-        _echo_if_be_verbose "   Adding archzfs repositories to PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
+        _echo_if_be_verbose "   Creating archzfs mirrorlist file >>${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}<<."
 
         #bo: adding repository
+        echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}
+        echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}
+        echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}
+
+        _echo_if_be_verbose "   Adding archzfs repositories to PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
+
         echo "" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
         echo "[archzfs]" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
-        echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
-        echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
-        echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
+        echo "Include = /etc/pacman.d/archzfs" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
         #eo: adding repository
 
         _echo_if_be_verbose "   Adding packages."

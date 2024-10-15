@@ -18,8 +18,7 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 
 This iso comes with some batteries included.
 
-* Git
-* Vim
+* [archinstall](https://github.com/archlinux/archinstall) in `/root/software/archinstall` including a `start_archinstall.sh`
 * [arch-linux-configuration](https://github.com/stevleibelt/arch-linux-configuration) in `/root/software/arch-linux-configuration`
   * This repository has a [recover](https://github.com/stevleibelt/arch-linux-configuration/tree/master/scripts/zfs/recover) section to ease up fixing broken installations
 * [downgrade](https://github.com/pbrisbin/downgrade) to the image in the path `/root/software/downgrade`
@@ -29,8 +28,20 @@ This iso comes with some batteries included.
   * This repository has a [unix](https://github.com/stevleibelt/General_Howtos/tree/master/operation_system/unix) knowledge section inside
   * This repository has a [zfs](https://github.com/stevleibelt/General_Howtos/tree/master/filesystem/zfs) knowledge section inside
   * And much more knowledge
+* Git
+* Vim
 
 ## Howto
+
+### Initial setup
+
+```bash
+# ref: https://github.com/archzfs/archzfs/wiki#using-the-archzfs-repository
+sudo pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
+sudo pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
+```
+
+### Regular buildings
 
 ```bash
 ####
