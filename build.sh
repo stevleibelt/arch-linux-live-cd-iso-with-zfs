@@ -280,6 +280,7 @@ function build_archiso ()
     _echo_if_be_verbose ":: Starting bulding archiso"
 
     #bo: variable
+    local ISO_FILE_NAME
     local ISO_FILE_PATH
     local NUMBER_OF_ISO_FILES_AVAILABLE
     local PATH_TO_THE_PROFILE_DIRECTORY
@@ -340,6 +341,8 @@ function build_archiso ()
       if grep -q 'Bad return status for module build on kernel' build.sh.log;
       then
         echo ":: Build error detected."
+        echo "   Removing invalid iso file"
+        # @todo sl90fyqo
         echo "   Dumping detected lines from file >>build.sh.log<<"
         echo ""
         cat build.sh.log | grep 'Bad return status for module build on kernel'
@@ -353,7 +356,12 @@ function build_archiso ()
     #begin of renaming and hash generation
     cd ${PATH_TO_THE_OUTPUT_DIRECTORY}
 
-    NUMBER_OF_ISO_FILES_AVAILABLE=$(find -iname "*.iso" -type f | wc -l)
+    ISO_FILE_NAME=$(basename "${ISO_FILE_PATH}")
+    ISO_FILE_NAME=${ISO_FILE_NAME:0:-4} # remove >>.iso<< from file name
+    # We are searching for a file like archlinux-archzfs-linux-lts-2024.04.08-x86_64.iso
+    #   we have a ISO_FILE_NAME like archlinux-archzfs-linux-lts.iso
+    # Searching for -20 should be safe enough for any future release years
+    NUMBER_OF_ISO_FILES_AVAILABLE=$(find -iname "${ISO_FILE_NAME}-20*.iso" -type f | wc -l)
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
@@ -361,9 +369,9 @@ function build_archiso ()
         then
             chmod -R 765 *
 
-            _echo_if_be_verbose " Moving >>archlinux-*.iso<< to >>${ISO_FILE_PATH}<<."
+            _echo_if_be_verbose " Moving >>${ISO_FILE_NAME}-*.iso<< to >>${ISO_FILE_PATH}<<."
 
-            mv archlinux-*.iso ${ISO_FILE_PATH}
+            mv ${ISO_FILE_NAME}-*.iso ${ISO_FILE_PATH}
             sha512sum ${ISO_FILE_PATH} > ${SHA512_FILE_PATH}
             #end of renaming and hash generation
 
@@ -380,7 +388,7 @@ function build_archiso ()
         else
             echo ":: Invalid amount of iso files found."
             echo "   Current path >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
-            echo "   Number of found >>\*.iso<< files >>${NUMBER_OF_ISO_FILES_AVAILABLE}<<. Should be exact one iso file available."
+            echo "   Number of found >>${ISO_FILE_NAME}-20\*.iso<< files >>${NUMBER_OF_ISO_FILES_AVAILABLE}<<. Should be exact one iso file available."
 
             exit 3
         fi
@@ -475,51 +483,6 @@ function cleanup_build_path ()
 
     _echo_if_be_verbose ":: Finished cleanup build path"
 }
-
-####
-# @param <string: latest_build_date_file_path>
-# @param <string: arch_iso_file_path>
-####
-function _create_latest_build_date ()
-{
-  local ARCH_ISO_FILE_PATH
-  local CREATION_DATE_TIME
-  local LATEST_BUILD_DATE_FILE_PATH
-
-  ARCH_ISO_FILE_PATH="${2}"
-  CREATION_DATE_TIME=""
-  LATEST_BUILD_DATE_FILE_PATH="${1}"
-
-  if [[ ! -f "${ARCH_ISO_FILE_PATH}" ]];
-  then
-    echo ":: Error!"
-    echo "   Invalid arch iso file path provided"
-    echo "   >>${ARCH_ISO_FILE_PATH}<< is not a file"
-    echo ""
-
-    exit 20
-  fi
-
-  if [[ -f "${LATEST_BUILD_DATE_FILE_PATH}" ]];
-  then
-    rm "${LATEST_BUILD_DATE_FILE_PATH}"
-  fi
-
-  _echo_if_be_verbose "   Creating file >>${LATEST_BUILD_DATE_FILE_PATH}<<"
-
-  #add date
-  CREATION_DATE_TIME=$(stat -c '%w' "${ARCH_ISO_FILE_PATH}" | cut -d ' ' -f 1)
-  _echo_if_be_verbose "       Detected creation date >>${CREATION_DATE_TIME}<<"
-
-  #add time
-  CREATION_DATE_TIME=$(echo -n "${CREATION_DATE_TIME}T"; stat -c '%w' "${ARCH_ISO_FILE_PATH}" | cut -d ' ' -f 2 | cut -d '.' -f 1)
-  _echo_if_be_verbose "       Detected creation date time >>${CREATION_DATE_TIME}<<"
-
-  touch "${LATEST_BUILD_DATE_FILE_PATH}"
-
-  echo "${CREATION_DATE_TIME}" > "${LATEST_BUILD_DATE_FILE_PATH}"
-}
-
 
 ####
 # @param <int: last_exit_code>
@@ -1085,9 +1048,6 @@ function _main ()
 
     if [[ ${BUILD_WAS_SUCCESSFUL} -eq 0 ]];
     then
-      
-      _create_latest_build_date "${PATH_TO_THE_LATEST_BUILD_DATE}" "${ISO_FILE_PATH}"
-
       ask_for_more
     fi
 
