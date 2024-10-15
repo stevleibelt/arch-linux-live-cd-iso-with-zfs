@@ -326,7 +326,12 @@ function build_archiso ()
     #begin of building
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
-      mkarchiso -v -w ${PATH_TO_THE_WORK_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
+      if [[ ${BE_VERBOSE} -gt 0 ]];
+      then
+        mkarchiso -v -w ${PATH_TO_THE_WORK_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
+      else
+        mkarchiso -w ${PATH_TO_THE_WORK_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
+      fi
 
       exit_if_last_exit_code_is_not_zero ${?} "Execution of >>mkarchiso<< failed."
 
