@@ -112,6 +112,7 @@ function _main ()
             "-l" | "--lts" )
                 IS_LTS_KERNEL=1
                 shift 1
+                ;;
             "-v" | "--verbose" )
                 BE_VERBOSE=1
                 shift 1
@@ -127,7 +128,7 @@ function _main ()
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-d|--dry-run] [-h|--help] [-v|--verbose]"
+        echo "   ${0} [-d|--dry-run] [-h|--help] [-l|--lts] [-v|--verbose]"
 
         exit 0
     fi
