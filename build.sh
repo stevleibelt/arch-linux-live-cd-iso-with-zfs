@@ -114,7 +114,8 @@ function add_packages_and_repository ()
 
     PATH_TO_THE_PACKAGES_FILE="${PATH_TO_THE_ARCHLIVE}/packages.x86_64"
     PATH_TO_THE_PACMAN_CONF_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.conf"
-    PATH_TO_THE_PACMAN_D_ARCHZFS_FILE="${PATH_TO_THE_ARCHLIVE}/pacman.d/archzfs"
+    PATH_TO_THE_PACMAN_D_DIRECTORY="${PATH_TO_THE_ARCHLIVE}/pacman.d"
+    PATH_TO_THE_PACMAN_D_ARCHZFS_FILE="${PATH_TO_THE_PACMAN_D_DIRECTORY}/archzfs"
     #eo: variable
 
     #bo: argument validation
@@ -151,12 +152,28 @@ function add_packages_and_repository ()
     else
         _echo_if_be_verbose "   PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
     fi
+
+    if [[ ! -d "${PATH_TO_THE_PACMAN_D_DIRECTORY}" ]];
+    then
+        _echo_if_be_verbose "   Creating >>${PATH_TO_THE_PACMAN_D_DIRECTORY}<<."
+        /usr/bin/mkdir "${PATH_TO_THE_PACMAN_D_DIRECTORY}"
+    fi
+
+
+    if [[ -f "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}" ]];
+    then
+        _echo_if_be_verbose "   Truncating >>${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}<<."
+        /usr/bin/truncate -s 0 "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
+    else
+        _echo_if_be_verbose "   Creating >>${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}<<."
+        /usr/bin/touch "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
+    fi
     #eo: environment check
 
     #bo: repo index
     if [[ "${#REPO_INDEX_OR_EMPTY_STRING}" -gt 0 ]];
     then
-        _echo_if_be_verbose "   Adapted repo index to >>${REPO_INDEX_OR_EMPTY_STRING}<< in file >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
+        _echo_if_be_verbose "   Adapted repo index to >>${REPO_INDEX_OR_EMPTY_STRING}<< in file >>${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}<<."
 
         #@see: https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/pull/6/files
         # archzfs repo often lags behind core a week or so, causing zfs kmod/kernel version mismatch and build failure
@@ -182,15 +199,15 @@ function add_packages_and_repository ()
         _echo_if_be_verbose "   Creating archzfs mirrorlist file >>${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}<<."
 
         #bo: adding repository
-        echo "Server = http://archzfs.com/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}
-        echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}
-        echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}
+        echo "Server = http://archzfs.com/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
+        echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
+        echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
 
         _echo_if_be_verbose "   Adding archzfs repositories to PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
 
         echo "" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
         echo "[archzfs]" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
-        echo "Include = /etc/pacman.d/archzfs" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
+        echo "Include = ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
         #eo: adding repository
 
         _echo_if_be_verbose "   Adding packages."
@@ -824,7 +841,6 @@ function _main ()
     local ISO_FILE_PATH
     local PATH_TO_THIS_SCRIPT
     local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
-    local PATH_TO_THE_LATEST_BUILD_DATE
     local PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE
     local PATH_TO_THE_OUTPUT_DIRECTORY
     local PATH_TO_THE_PROFILE_DIRECTORY
@@ -944,7 +960,6 @@ function _main ()
     PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
 
     ISO_FILE_PATH="${PATH_TO_THE_OUTPUT_DIRECTORY}/${BUILD_FILE_NAME}.iso"
-    PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THE_OUTPUT_DIRECTORY}/last_build_date.txt"
 
     SHA512_FILE_PATH="${ISO_FILE_PATH}.sha512sum"
     #end of variables declaration
