@@ -841,7 +841,8 @@ function _main ()
     local ISO_FILE_PATH
     local PATH_TO_THIS_SCRIPT
     local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
-    local PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE
+    local PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE
+    local PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE
     local PATH_TO_THE_OUTPUT_DIRECTORY
     local PATH_TO_THE_PROFILE_DIRECTORY
     local PATH_TO_THE_SOURCE_DATA_DIRECTORY
@@ -857,7 +858,8 @@ function _main ()
     CURRENT_WORKING_DIRECTORY=$(pwd)
     PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
 
-    PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE="${PATH_TO_THIS_SCRIPT}/configuration/build.sh"
+    PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE="${PATH_TO_THIS_SCRIPT}/.env.dist"
+    PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE="${PATH_TO_THIS_SCRIPT}/.env"
     #begin of main variables declaration
 
     #bo: user input
@@ -874,7 +876,6 @@ function _main ()
     local SHOW_HELP
     local USE_DKMS
     local USE_OTHER_REPO_INDEX
-    local USED_CONFIGURATION_FILE
 
     ALL_ARGUMENTS_TO_PASS="${@}"
     ASK_TO_DUMP_ISO=1
@@ -889,13 +890,16 @@ function _main ()
     USE_GIT_PACKAGE=0
     USE_DKMS=0
     USE_OTHER_REPO_INDEX=0
-    USED_CONFIGURATION_FILE=0
 
-    if [[ -f "${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}" ]];
+    #bo: load environment files
+    set -a
+    source "${PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE}"
+    if [[ -f "${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}" ]];
     then
-        . "${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}"
-        USED_CONFIGURATION_FILE=1
+      source "${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}"
     fi
+    set +a
+    #eo: load environment files
 
     while true;
     do
@@ -987,13 +991,13 @@ function _main ()
         echo "   IS_DRY_RUN >>${IS_DRY_RUN}<<."
         echo "   IS_FORCED >>${IS_FORCED}<<."
         echo "   KERNEL >>${KERNEL}<<."
-        echo "   PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE >>${PATH_TO_THE_OPTIONAL_CONFIGURATION_FILE}<<."
+        echo "   PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE >>${PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE}<<."
+        echo "   PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE >>${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}<<."
         echo "   REPO_INDEX >>${REPO_INDEX}<<."
         echo "   SHOW_HELP >>${SHOW_HELP}<<."
         echo "   USE_GIT_PACKAGE >>${USE_GIT_PACKAGE}<<."
         echo "   USE_DKMS >>${USE_DKMS}<<."
         echo "   USE_OTHER_REPO_INDEX >>${USE_OTHER_REPO_INDEX}<<."
-        echo "   USED_CONFIGURATION_FILE >>${USED_CONFIGURATION_FILE}<<."
         echo ""
     fi
 

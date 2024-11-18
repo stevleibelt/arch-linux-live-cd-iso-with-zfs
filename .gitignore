@@ -1,5 +1,5 @@
+.env
 build.sh.log
-configuration/*.sh
 dynamic_data/*
 last_build_date.txt
 last_build_date_lts.txt

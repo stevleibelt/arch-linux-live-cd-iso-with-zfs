@@ -1,8 +1,0 @@
-#!/bin/bash
-####
-# configuration file for upload.sh that defines following variables
-####
-# BE_VERBOSE=0
-# PATH_TO_SSH_KEY_FILE="~/.ssh/example_key"
-# SCP_HOST_PATH="foo@bar.org:/my/path/"
-

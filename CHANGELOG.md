@@ -53,6 +53,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Changed default values for [replace_zfsbootmenu.sh](source/replace_zfsbootmenu.sh)
   * Default path for old ZBM is now `/mnt/efi...`
   * Default path for new ZBM is now basepath of the called script
+* Changed configuration file place (breaking change)
+  * Instead of different configuration files below `configuration`, there is now a unified `.env` file and a `.env.dist`
 * Moved from build image `archlinux:latest` to `archlinux/archlinux:latest` to fix issues like [archinstal#2443](https://github.com/archlinux/archinstall/issues/2443)
 * Moved archzfs mirrorlist to dedicated file `/etc/pacman.d/archzfs`
 

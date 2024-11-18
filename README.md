@@ -84,7 +84,7 @@ docker run -e LOG_LEVEL=DEBUG -e RUN_LOCAL=true -v .:/tmp/lint ghcr.io/super-lin
 
 Following issues are not reproducable on all my machines.
 
-### error: target not found: ipw2100-fw
+### Error: target not found: ipw2100-fw
 
 * This error happens when calling `build.sh`
 * [This](https://gitlab.archlinux.org/archlinux/archiso/-/commit/4d64a58a905403b3abfca5077dcd924ef7901ba7) commit seams to be the reason
@@ -93,14 +93,15 @@ Following issues are not reproducable on all my machines.
 
 ## Links
 
-* [Another archiso build script by Maurice Zhou](https://gitlab.com/m_zhou/archiso)
-* [archzfs archive containing each package ever build.](http://archzfs.com/archive_archzfs/) - 20240410
-* [archiso documentation](https://git.archlinux.org/archiso.git/tree/docs)
-* [archiso project page](https://git.archlinux.org/archiso.git)
-* [Install UEFI and BIOS compatible Arch Linx with encrypted ZFS and ZFSBootMenu by Kayvlim](https://wiki.archlinux.org/title/User:Kayvlim/Install_UEFI_and_BIOS_compatible_Arch_Linux_with_Encrypted_ZFS_and_ZFSBootMenu#Swap) - 20221108
-* [pacman wiki page](https://wiki.archlinux.org/index.php/Pacman)
-* [OpenSSF Scorecard Report](https://securityscorecards.dev/viewer/?uri=github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs) - 20240408
-* [Ubuntu server zfsbootmenu](https://github.com/Sithuk/ubuntu-server-zfsbootmenu) - 20221108
+* [Another archiso build script by Maurice Zhou: gitlab.com](https://gitlab.com/m_zhou/archiso)
+* [archiso documentation: archlinux.org](https://git.archlinux.org/archiso.git/tree/docs)
+* [archiso project page: archlinux.org](https://git.archlinux.org/archiso.git)
+* [archlinux-lts-zfs: github.com](https://github.com/r-maerz/archlinux-lts-zfs) - 20241118
+* [archzfs archive containing each package ever build: archzfs.com](http://archzfs.com/archive_archzfs/) - 20240410
+* [Install UEFI and BIOS compatible Arch Linx with encrypted ZFS and ZFSBootMenu by Kayvlim: archlinux.org](https://wiki.archlinux.org/title/User:Kayvlim/Install_UEFI_and_BIOS_compatible_Arch_Linux_with_Encrypted_ZFS_and_ZFSBootMenu#Swap) - 20221108
+* [pacman wiki page: archlinux.org](https://wiki.archlinux.org/index.php/Pacman)
+* [OpenSSF Scorecard Report: securityscorecards.dev](https://securityscorecards.dev/viewer/?uri=github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs) - 20240408
+* [Ubuntu server zfsbootmenu: github.com](https://github.com/Sithuk/ubuntu-server-zfsbootmenu) - 20221108
 
 ## Contributers
 
