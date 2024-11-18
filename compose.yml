@@ -1,0 +1,6 @@
+services:
+
+  archlinux-container:
+    image: archlinux:latest
+    volumes:
+      - .:/app

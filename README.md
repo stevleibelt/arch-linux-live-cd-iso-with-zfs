@@ -74,6 +74,18 @@ sudo pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
 ./upload_iso.sh [<string: path to the iso>]
 ```
 
+#### Via docker
+
+```bash
+# Work in progress, see: https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/22
+# run build
+docker compose run --rm archlinux-container /app/build.sh
+
+# debug
+#   login and cd /app
+docker compose run --rm archlinux-container bash
+```
+
 ### Run super-linter locally
 
 ```bash
