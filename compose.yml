@@ -1,6 +1,15 @@
 services:
 
   archlinux-container:
+    cap_add:
+      - DAC_OVERRIDE
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_MODULE
+    devices:
+      - /dev/loop-control:/dev/loop-control
     image: archlinux:latest
+    # Replace privileged it with cap_add or devices section
+    #privileged: true  # Needed to build since mkarchiso is doing a chroot
     volumes:
       - .:/app

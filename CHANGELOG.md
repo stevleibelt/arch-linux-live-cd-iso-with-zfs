@@ -41,23 +41,34 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added in unreleased
 
+### Changed in unreleased
+
+## [3.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/3.0.0) - tba
+
+### Added in 3.0.0
+
 * Added content of repository [bht](https://github.com/ezonakiusagi/bht) below `software`
+* Added `compose.yml` to be able to build iso inside a privileged docker container 
 * Added links to openssf and badge
 * Added packages mailx, ksh and nmon
 * Added [SECURITY.md](SECURITY.md)
 * Added script `create_efibootmgr_entry.sh` to ease up fixing lost `ZFSBootMenu` entries
 * Added script `start_sshd.sh`
+* Added section in `.env` to add or to remove packages
 * Added support for `-l|--lts` as kernel in [upload_iso.sh](upload_iso.sh)
 
-### Changed in unreleased
+### Changed in 3.0.0
 
 * Changed default values for [replace_zfsbootmenu.sh](source/replace_zfsbootmenu.sh)
   * Default path for old ZBM is now `/mnt/efi...`
   * Default path for new ZBM is now basepath of the called script
-* Changed configuration file place (breaking change)
-  * Instead of different configuration files below `configuration`, there is now a unified `.env` file and a `.env.dist`
 * Moved from build image `archlinux:latest` to `archlinux/archlinux:latest` to fix issues like [archinstal#2443](https://github.com/archlinux/archinstall/issues/2443)
 * Moved archzfs mirrorlist to dedicated file `/etc/pacman.d/archzfs`
+
+### Breaking Changes in 3.0.0
+
+* Instead of different configuration files below `<project_root>/configuration/`, there is now a unified `.env` file and a `.env.dist`
+  * Migration should work by executing `cat configuration/*.sh > .env`
 
 ## [2.11.1](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.11.1) - 20231111
 

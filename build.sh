@@ -60,15 +60,15 @@ function add_files ()
       exit_if_last_exit_code_is_not_zero ${?} "Creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software<< failed."
 
       _echo_if_be_verbose "   Adding repository >>arch-linux-configuration<< "
-      git clone https://github.com/stevleibelt/arch-linux-configuration "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration"
+      git clone https://github.com/stevleibelt/arch-linux-configuration "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration<< failed."
 
       _echo_if_be_verbose "   Adding repository >>arch-linux-live-cd-zfs-setup<< "
-      git clone https://github.com/stevleibelt/arch-linux-live-cd-zfs-setup "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup"
+      git clone https://github.com/stevleibelt/arch-linux-live-cd-zfs-setup "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup<< failed."
 
       _echo_if_be_verbose "   Adding repository >>downgrade<< "
-      git clone https://github.com/archlinux-downgrade/downgrade "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade"
+      git clone https://github.com/archlinux-downgrade/downgrade "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade<< failed."
 
       _echo_if_be_verbose "   Adding directory >>zfsbootmenu<< with latest EFI file "
@@ -79,18 +79,18 @@ function add_files ()
       exit_if_last_exit_code_is_not_zero ${?} "Copy of >>${PATH_TO_THIS_SCRIPT}/source/replace_zfsbootmenu.sh<< to >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/zfsbootmenu/<< failed."
 
       _echo_if_be_verbose "   Adding repository >>archinstall<< "
-      git clone https://github.com/archlinux/archinstall "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall"
+      git clone https://github.com/archlinux/archinstall "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall<< failed."
       cp "${PATH_TO_THIS_SCRIPT}/source/start_archinstall.sh" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall/"
       exit_if_last_exit_code_is_not_zero ${?} "Copy of >>${PATH_TO_THIS_SCRIPT}/source/start_archinstall.sh<< to >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall/<< failed."
 
-      _echo_if_be_verbose "   Adding repository >>general_howtos<< "
-      git clone https://github.com/stevleibelt/general_howtos "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos"
-      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos<< failed."
-
       _echo_if_be_verbose "   Adding repository >>bulk_hdd_testing<< "
-      git clone https://github.com/ezonakiusagi/bht "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/bulk_hdd_testing"
+      git clone https://github.com/ezonakiusagi/bht "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/bulk_hdd_testing/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/bulk_hdd_testing<< failed."
+
+      _echo_if_be_verbose "   Adding repository >>general_howtos<< "
+      git clone https://github.com/stevleibelt/general_howtos "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos/"
+      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos<< failed."
 
       _echo_if_be_verbose "   Adding script >>create_efibootmgr_entry.sh<< "
       cp "${PATH_TO_THIS_SCRIPT}/source/create_efibootmgr_entry.sh" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/"
@@ -180,6 +180,19 @@ function add_packages_and_repository ()
     fi
     #eo: environment check
 
+    #bo: add archzfs key
+    if ! pacman-key --list-keys | grep -q "DDF7DB817396A49B2A2723F7403BD972F75D9D76";
+    then
+      _echo_if_be_verbose ":: Adding archzfs keys to keyring"
+
+      pacman-key --init
+      pacman-key --recv-keys DDF7DB817396A49B2A2723F7403BD972F75D9D76
+      pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
+
+      pacman -Sy
+    fi
+    #eo: add archzfs key
+
     #bo: repo index
     if [[ "${#REPO_INDEX_OR_EMPTY_STRING}" -gt 0 ]];
     then
@@ -206,6 +219,10 @@ function add_packages_and_repository ()
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
+      local PACKAGE_NAME
+      local PACKAGE_TO_REMOVE_ARRAY
+      local PACKAGE_TO_ADD_ARRAY
+
         _echo_if_be_verbose "   Creating archzfs mirrorlist file >>${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}<<."
 
         #bo: adding repository
@@ -220,17 +237,26 @@ function add_packages_and_repository ()
         echo "Include = ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
         #eo: adding repository
 
-        _echo_if_be_verbose "   Adding packages."
+        #bo: removing package
+        IFS=',' read -r -a PACKAGE_TO_REMOVE_ARRAY <<< "${PACKAGES_TO_REMOVE}"
+
+        for PACKAGE_NAME in "${PACKAGE_TO_REMOVE_ARRAY[@]}";
+        do
+          _echo_if_be_verbose "     Removing package >>${PACKAGE_NAME}<<."
+          sed -i "/${PACKAGE_NAME}/d" "${PATH_TO_THE_PACKAGES_FILE}"
+        done;
+        #eo: removing package
 
         #bo: adding package
-        _echo_if_be_verbose "     Adding package >>git<<."
-        echo "git" >> "${PATH_TO_THE_PACKAGES_FILE}"
-        _echo_if_be_verbose "     Adding package >>mailx<<."
-        echo "mailx" >> "${PATH_TO_THE_PACKAGES_FILE}"
-        _echo_if_be_verbose "     Adding package >>ksh<<."
-        echo "ksh" >> "${PATH_TO_THE_PACKAGES_FILE}"
-        _echo_if_be_verbose "     Adding package >>nmon<<."
-        echo "nmon" >> "${PATH_TO_THE_PACKAGES_FILE}"
+        _echo_if_be_verbose "   Adding packages."
+
+        IFS=',' read -r -a PACKAGE_TO_ADD_ARRAY <<< "${PACKAGES_TO_ADD}"
+
+        for PACKAGE_NAME in "${PACKAGE_TO_ADD_ARRAY[@]}";
+        do
+          _echo_if_be_verbose "     Adding package >>${PACKAGE_NAME}<<."
+          echo "${PACKAGE_NAME}" >> "${PATH_TO_THE_PACKAGES_FILE}"
+        done
 
         if [[ ${USE_DKMS} -eq 1 ]];
         then
