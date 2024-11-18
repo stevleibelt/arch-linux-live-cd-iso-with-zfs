@@ -45,6 +45,12 @@ function add_files ()
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
+      if ! command -v git &> /dev/null;
+      then
+        _echo_if_be_verbose ":: No git found, installing it"
+        pacman -S --noconfirm git
+      fi
+
       _echo_if_be_verbose "   Creating directory >>document<<"
       /usr/bin/mkdir "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document"
       exit_if_last_exit_code_is_not_zero ${?} "Creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document<< failed."
@@ -517,6 +523,32 @@ function cleanup_build_path ()
     _echo_if_be_verbose ":: Finished cleanup build path"
 }
 
+function dump_runtime_environment_variables ()
+{
+  echo ":: Dumping runtime environment variables."
+  echo "   ASK_TO_RUN_ISO >>${ASK_TO_RUN_ISO}<<."
+  echo "   ASK_TO_DUMP_ISO >>${ASK_TO_DUMP_ISO}<<."
+  echo "   ASK_TO_UPLOAD_ISO >>${ASK_TO_DUMP_ISO}<<."
+  echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
+  echo "   BUILD_FILE_NAME >>${BUILD_FILE_NAME}<<."
+  echo "   IS_DRY_RUN >>${IS_DRY_RUN}<<."
+  echo "   IS_FORCED >>${IS_FORCED}<<."
+  echo "   ISO_FILE_PATH >>${ISO_FILE_PATH}<<."
+  echo "   KERNEL >>${KERNEL}<<."
+  echo "   PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE >>${PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE}<<."
+  echo "   PATH_TO_THE_DYNAMIC_DATA_DIRECTORY >>${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}<<."
+  echo "   PATH_TO_THE_PROFILE_DIRECTORY >>${PATH_TO_THE_PROFILE_DIRECTORY}<<."
+  echo "   PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE >>${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}<<."
+  echo "   PATH_TO_THE_SOURCE_DATA_DIRECTORY >>${PATH_TO_THE_SOURCE_DATA_DIRECTORY}<<."
+  echo "   REPO_INDEX >>${REPO_INDEX}<<."
+  echo "   SHOW_HELP >>${SHOW_HELP}<<."
+  echo "   SHA512_FILE_PATH >>${SHA512_FILE_PATH}<<."
+  echo "   USE_GIT_PACKAGE >>${USE_GIT_PACKAGE}<<."
+  echo "   USE_DKMS >>${USE_DKMS}<<."
+  echo "   USE_OTHER_REPO_INDEX >>${USE_OTHER_REPO_INDEX}<<."
+  echo ""
+}
+
 ####
 # @param <int: last_exit_code>
 # [@param <string: error_message>]
@@ -540,6 +572,8 @@ function exit_if_last_exit_code_is_not_zero ()
     echo "   >>${ERROR_MESSAGE}<<."
 
     exit ${LAST_EXIT_CODE}
+
+    dump_runtime_environment_variables
   fi
 }
 
@@ -671,6 +705,30 @@ function setup_environment ()
     _exit_if_string_is_empty "PATH_TO_THE_OUTPUT_DIRECTORY" "${PATH_TO_THE_OUTPUT_DIRECTORY}"
     #eo: argument validation
 
+    #bo: ensure package cache is up to date
+    if [[ ${IS_DRY_RUN} -ne 1 ]];
+    then
+      _echo_if_be_verbose ":: Updating package cache"
+      pacman -Sy
+    fi
+    #eo: ensure package cache is up to date
+
+    #begin of check if archiso is installed
+    if [[ ! -d ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} ]];
+    then
+        _echo_if_be_verbose "   No archiso package installed."
+        _echo_if_be_verbose "   Provided path is not a directory >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<."
+        _echo_if_be_verbose "   We are going to install it now ..."
+
+        if [[ ${IS_DRY_RUN} -ne 1 ]];
+        then
+          _echo_if_be_verbose ":: Archiso not installed, installing it."
+          pacman -S --noconfirm archiso
+        fi
+    else
+        _echo_if_be_verbose "   >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<< exists."
+    fi
+    #end of check if archiso is installed
 
     #bo: user input validation
     if [[ ! -d ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} ]];
@@ -691,22 +749,6 @@ function setup_environment ()
         _echo_if_be_verbose "   >>${PATH_TO_THE_OUTPUT_DIRECTORY}<< exists."
     fi
     #eo: user input validation
-
-    #begin of check if archiso is installed
-    if [[ ! -d ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY} ]];
-    then
-        _echo_if_be_verbose "   No archiso package installed."
-        _echo_if_be_verbose "   Provided path is not a directory >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<<."
-        _echo_if_be_verbose "   We are going to install it now ..."
-
-        if [[ ${IS_DRY_RUN} -ne 1 ]];
-        then
-            pacman -Syyu archiso
-        fi
-    else
-        _echo_if_be_verbose "   >>${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY}<< exists."
-    fi
-    #end of check if archiso is installed
 
     #begin of dynamic data directory exists
     PROFILE_NAME=$(basename ${PATH_TO_THE_SOURCE_PROFILE_DIRECTORY})
@@ -991,28 +1033,7 @@ function _main ()
 
     if [[ ${BE_VERBOSE} -eq 1 ]];
     then
-        echo ":: Outputting status of the flags."
-        echo "   ASK_TO_RUN_ISO >>${ASK_TO_RUN_ISO}<<."
-        echo "   ASK_TO_DUMP_ISO >>${ASK_TO_DUMP_ISO}<<."
-        echo "   ASK_TO_UPLOAD_ISO >>${ASK_TO_DUMP_ISO}<<."
-        echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
-        echo "   BUILD_FILE_NAME >>${BUILD_FILE_NAME}<<."
-        echo "   IS_DRY_RUN >>${IS_DRY_RUN}<<."
-        echo "   IS_FORCED >>${IS_FORCED}<<."
-        echo "   ISO_FILE_PATH >>${ISO_FILE_PATH}<<."
-        echo "   KERNEL >>${KERNEL}<<."
-        echo "   PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE >>${PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE}<<."
-        echo "   PATH_TO_THE_DYNAMIC_DATA_DIRECTORY >>${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}<<."
-        echo "   PATH_TO_THE_PROFILE_DIRECTORY >>${PATH_TO_THE_PROFILE_DIRECTORY}<<."
-        echo "   PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE >>${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}<<."
-        echo "   PATH_TO_THE_SOURCE_DATA_DIRECTORY >>${PATH_TO_THE_SOURCE_DATA_DIRECTORY}<<."
-        echo "   REPO_INDEX >>${REPO_INDEX}<<."
-        echo "   SHOW_HELP >>${SHOW_HELP}<<."
-        echo "   SHA512_FILE_PATH >>${SHA512_FILE_PATH}<<."
-        echo "   USE_GIT_PACKAGE >>${USE_GIT_PACKAGE}<<."
-        echo "   USE_DKMS >>${USE_DKMS}<<."
-        echo "   USE_OTHER_REPO_INDEX >>${USE_OTHER_REPO_INDEX}<<."
-        echo ""
+      dump_runtime_environment_variables
     fi
 
     auto_elevate_if_not_called_from_root "${ALL_ARGUMENTS_TO_PASS}"
