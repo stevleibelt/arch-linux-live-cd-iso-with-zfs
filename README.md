@@ -45,6 +45,14 @@ sudo pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
 
 ```bash
 ####
+# Tired of repeating the same flags again and again?
+#
+# optional configuration file is supported and saves your keystrokes
+# cp .env.dist.dist .env
+# adapt file .env
+####
+
+####
 #build an iso
 ####
 #flags
@@ -56,12 +64,6 @@ sudo pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
 #       @see: https://archive.archlinux.org/repos/
 #   -u|--use-dkms
 #   -v|--verbose
-####
-# tired of repeating the same flags again and again?
-#
-# optional configuration file is supported and saves your keystrokes
-# cp configuration/build.sh.dist configuration/build.sh
-# adapt file configuration/build.sh
 ####
 ./build.sh
 
@@ -96,7 +98,7 @@ Following issues are not reproducable on all my machines.
 * [Another archiso build script by Maurice Zhou: gitlab.com](https://gitlab.com/m_zhou/archiso)
 * [archiso documentation: archlinux.org](https://git.archlinux.org/archiso.git/tree/docs)
 * [archiso project page: archlinux.org](https://git.archlinux.org/archiso.git)
-* [archlinux-lts-zfs: github.com](https://github.com/r-maerz/archlinux-lts-zfs) - 20241118
+* [archlinux-lts-zfs build by r-maerz: github.com](https://github.com/r-maerz/archlinux-lts-zfs) - 20241118
 * [archzfs archive containing each package ever build: archzfs.com](http://archzfs.com/archive_archzfs/) - 20240410
 * [Install UEFI and BIOS compatible Arch Linx with encrypted ZFS and ZFSBootMenu by Kayvlim: archlinux.org](https://wiki.archlinux.org/title/User:Kayvlim/Install_UEFI_and_BIOS_compatible_Arch_Linux_with_Encrypted_ZFS_and_ZFSBootMenu#Swap) - 20221108
 * [pacman wiki page: archlinux.org](https://wiki.archlinux.org/index.php/Pacman)
