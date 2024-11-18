@@ -86,6 +86,10 @@ function add_files ()
       git clone https://github.com/ezonakiusagi/bht "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/bulk_hdd_testing"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/bulk_hdd_testing<< failed."
 
+      _echo_if_be_verbose "   Adding script >>create_efibootmgr_entry.sh<< "
+      cp "${PATH_TO_THIS_SCRIPT}/source/create_efibootmgr_entry.sh" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/"
+      exit_if_last_exit_code_is_not_zero ${?} "Copy of >>${PATH_TO_THIS_SCRIPT}/source/create_efibootmgr_entry.sh<< to >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/<< failed."
+
       _echo_if_be_verbose "   Adding script >>start_sshd.sh<< "
       cp "${PATH_TO_THIS_SCRIPT}/source/start_sshd.sh" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/"
       exit_if_last_exit_code_is_not_zero ${?} "Copy of >>${PATH_TO_THIS_SCRIPT}/source/start_sshd.sh<< to >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/<< failed."
@@ -769,10 +773,10 @@ function _remove_path_or_exit ()
 
     PATH_TO_REMOVE="${1}"
 
-    _echo_if_be_verbose "   Removing path >>${PATH_TO_REMOVE}<<."
-
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
+      _echo_if_be_verbose "   Try to remove path >>${PATH_TO_REMOVE}<<."
+
       if [[ -d "${PATH_TO_REMOVE}" ]];
       then
         /usr/bin/rm -fr ${PATH_TO_REMOVE}
@@ -781,6 +785,8 @@ function _remove_path_or_exit ()
       else
         _echo_if_be_verbose "   Path >>${PATH_TO_REMOVE}<< could not be removed because it does not exist."
       fi
+    else
+      _echo_if_be_verbose "   Would try to remove path >>${PATH_TO_REMOVE}<<."
     fi
 }
 
@@ -793,10 +799,9 @@ function _remove_file_path_or_exit ()
 
     FILE_PATH_TO_REMOVE="${1}"
 
-    _echo_if_be_verbose "   Removing path >>${FILE_PATH_TO_REMOVE}<<."
-
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
+      _echo_if_be_verbose "   Try to remove path >>${PATH_TO_REMOVE}<<."
       if [[ -f "${FILE_PATH_TO_REMOVE}" ]];
       then
         /usr/bin/rm -f ${FILE_PATH_TO_REMOVE}
@@ -805,6 +810,8 @@ function _remove_file_path_or_exit ()
       else
         _echo_if_be_verbose "   Path >>${FILE_PATH_TO_REMOVE}<< could not be removed because it does not exist."
       fi
+    else
+      _echo_if_be_verbose "   Would try to remove path >>${PATH_TO_REMOVE}<<."
     fi
 }
 
@@ -894,11 +901,13 @@ function _main ()
     #bo: load environment files
     set -a
     source "${PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE}"
+    set +a
     if [[ -f "${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}" ]];
     then
+      set -a
       source "${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}"
+      set +a
     fi
-    set +a
     #eo: load environment files
 
     while true;
@@ -960,6 +969,7 @@ function _main ()
 
     PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
     PATH_TO_THE_SOURCE_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/source"
+
     PATH_TO_THE_PROFILE_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/releng"
     PATH_TO_THE_OUTPUT_DIRECTORY="${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/out"
 
@@ -978,7 +988,6 @@ function _main ()
     fi
 
     #we are calling this here to display the help as soon as possible without the need to call sudo
-    auto_elevate_if_not_called_from_root "${ALL_ARGUMENTS_TO_PASS}"
 
     if [[ ${BE_VERBOSE} -eq 1 ]];
     then
@@ -990,16 +999,23 @@ function _main ()
         echo "   BUILD_FILE_NAME >>${BUILD_FILE_NAME}<<."
         echo "   IS_DRY_RUN >>${IS_DRY_RUN}<<."
         echo "   IS_FORCED >>${IS_FORCED}<<."
+        echo "   ISO_FILE_PATH >>${ISO_FILE_PATH}<<."
         echo "   KERNEL >>${KERNEL}<<."
         echo "   PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE >>${PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE}<<."
+        echo "   PATH_TO_THE_DYNAMIC_DATA_DIRECTORY >>${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}<<."
+        echo "   PATH_TO_THE_PROFILE_DIRECTORY >>${PATH_TO_THE_PROFILE_DIRECTORY}<<."
         echo "   PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE >>${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}<<."
+        echo "   PATH_TO_THE_SOURCE_DATA_DIRECTORY >>${PATH_TO_THE_SOURCE_DATA_DIRECTORY}<<."
         echo "   REPO_INDEX >>${REPO_INDEX}<<."
         echo "   SHOW_HELP >>${SHOW_HELP}<<."
+        echo "   SHA512_FILE_PATH >>${SHA512_FILE_PATH}<<."
         echo "   USE_GIT_PACKAGE >>${USE_GIT_PACKAGE}<<."
         echo "   USE_DKMS >>${USE_DKMS}<<."
         echo "   USE_OTHER_REPO_INDEX >>${USE_OTHER_REPO_INDEX}<<."
         echo ""
     fi
+
+    auto_elevate_if_not_called_from_root "${ALL_ARGUMENTS_TO_PASS}"
 
     cd "${PATH_TO_THIS_SCRIPT}" || echo "Could not change into directory >>${PATH_TO_THIS_SCRIPT}<<"
 

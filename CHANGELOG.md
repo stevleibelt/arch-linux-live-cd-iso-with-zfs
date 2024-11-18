@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Added links to openssf and badge
 * Added packages mailx, ksh and nmon
 * Added [SECURITY.md](SECURITY.md)
+* Added script `create_efibootmgr_entry.sh` to ease up fixing lost `ZFSBootMenu` entries
 * Added script `start_sshd.sh`
 * Added support for `-l|--lts` as kernel in [upload_iso.sh](upload_iso.sh)
 
