@@ -1059,6 +1059,8 @@ function _main ()
 
     if [[ ${BE_VERBOSE} -eq 1 ]];
     then
+      GIT_CURL_VERBOSE=1
+      GIT_TRACE=1
       dump_runtime_environment_variables
     fi
 
