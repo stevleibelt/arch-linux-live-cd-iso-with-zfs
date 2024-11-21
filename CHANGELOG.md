@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed in unreleased
 
+* Update build section
+
 ## [3.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/3.0.0) - 20241118
 
 ### Added in 3.0.0

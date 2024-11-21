@@ -33,7 +33,22 @@ This iso comes with some batteries included.
 
 ## Howto
 
-### Initial setup
+### Build by using docker
+
+```bash
+# run a build
+docker compose run --rm archlinux-container /app/build.sh
+
+# to debug the container
+#   login and cd /app
+docker compose run --rm archlinux-container bash
+```
+
+### Build by using your host
+
+#### Initial setup
+
+This must be done once.
 
 ```bash
 # ref: https://github.com/archzfs/archzfs/wiki#using-the-archzfs-repository
@@ -41,7 +56,7 @@ sudo pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
 sudo pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
 ```
 
-### Regular buildings
+#### List of available scripts
 
 ```bash
 ####
@@ -72,18 +87,6 @@ sudo pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
 
 #upload the iso
 ./upload_iso.sh [<string: path to the iso>]
-```
-
-#### Via docker
-
-```bash
-# Work in progress, see: https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/22
-# run build
-docker compose run --rm archlinux-container /app/build.sh
-
-# debug
-#   login and cd /app
-docker compose run --rm archlinux-container bash
 ```
 
 ### Run super-linter locally
