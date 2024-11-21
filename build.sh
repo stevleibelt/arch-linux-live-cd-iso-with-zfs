@@ -17,6 +17,34 @@ set -o history -o histexpand
 exec &> >(tee "build.sh.log")
 
 ####
+# @param <string: PATH_TO_THE_ARCHLIVE_ROOT>
+####
+function remove_files ()
+{
+    _echo_if_be_verbose ":: Starting removing files"
+
+    #bo: variable
+    local PATH_TO_THE_ARCHLIVE_ROOT
+
+    PATH_TO_THE_ARCHLIVE_ROOT=${1:-""}
+
+    if [[ ! -d ${PATH_TO_THE_ARCHLIVE_ROOT} ]];
+    then
+      echo "   Invalid path to the archlive provided >>${PATH_TO_THE_ARCHLIVE_ROOT}<< is not a directory."
+
+      exit 1
+    else
+      _echo_if_be_verbose "   PATH_TO_THE_ARCHLIVE_ROOT >>${PATH_TO_THE_ARCHLIVE_ROOT}<<."
+    fi
+    #bo: variable
+
+    rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT}/var/lib/pacman/local/*"
+    rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT}/var/lib/pacman/sync/*"
+    rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT}/var/log/*.log"
+
+    _echo_if_be_verbose ":: Finished removing files"
+}
+####
 # @param <string: PATH_TO_THE_ARCHLIVE_ROOT_USER> - this is not >>/<< but >>/root<<
 ####
 function add_files ()
@@ -62,14 +90,17 @@ function add_files ()
       _echo_if_be_verbose "   Adding repository >>arch-linux-configuration<< "
       git clone https://github.com/stevleibelt/arch-linux-configuration "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration<< failed."
+      rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration/.git"
 
       _echo_if_be_verbose "   Adding repository >>arch-linux-live-cd-zfs-setup<< "
       git clone https://github.com/stevleibelt/arch-linux-live-cd-zfs-setup "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup<< failed."
+      rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup/.git"
 
       _echo_if_be_verbose "   Adding repository >>downgrade<< "
       git clone https://github.com/archlinux-downgrade/downgrade "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade<< failed."
+      rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade/.git"
 
       _echo_if_be_verbose "   Adding directory >>zfsbootmenu<< with latest EFI file "
       # ref: https://docs.zfsbootmenu.org/en/v2.2.x/guides/general/portable.html
@@ -81,16 +112,19 @@ function add_files ()
       _echo_if_be_verbose "   Adding repository >>archinstall<< "
       git clone https://github.com/archlinux/archinstall "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall<< failed."
+      rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall/.git"
       cp "${PATH_TO_THIS_SCRIPT}/source/start_archinstall.sh" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall/"
       exit_if_last_exit_code_is_not_zero ${?} "Copy of >>${PATH_TO_THIS_SCRIPT}/source/start_archinstall.sh<< to >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall/<< failed."
 
       _echo_if_be_verbose "   Adding repository >>bulk_hdd_testing<< "
       git clone https://github.com/ezonakiusagi/bht "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/bulk_hdd_testing/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/bulk_hdd_testing<< failed."
+      rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/bulk_hdd_testing/.git"
 
       _echo_if_be_verbose "   Adding repository >>general_howtos<< "
       git clone https://github.com/stevleibelt/general_howtos "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos<< failed."
+      rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document/general_howtos/.git"
 
       _echo_if_be_verbose "   Adding script >>create_efibootmgr_entry.sh<< "
       cp "${PATH_TO_THIS_SCRIPT}/source/create_efibootmgr_entry.sh" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/"
@@ -1079,7 +1113,6 @@ function _main ()
         add_packages_and_repository "${PATH_TO_THE_PROFILE_DIRECTORY}" "${REPO_INDEX}"
     fi
 
-    #@todo
     add_files "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/root"
 
     if [[ ${KERNEL} != 'linux' ]];
@@ -1137,6 +1170,8 @@ function _main ()
     PATH_TO_PROFILEDEF="${PATH_TO_THE_PROFILE_DIRECTORY}/profiledef.sh"
     sed -i "s/iso_name=\"archlinux\"/iso_name=\"${BUILD_FILE_NAME}\"/" "${PATH_TO_PROFILEDEF}"
     # eo: profiledef adaptation
+    
+    remove_files "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs"
 
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" "${PATH_TO_THE_OUTPUT_DIRECTORY}" "${PATH_TO_THE_PROFILE_DIRECTORY}" "${ISO_FILE_PATH}" "${SHA512_FILE_PATH}"
 

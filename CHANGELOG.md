@@ -15,13 +15,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   * [Link](https://end.re/blog/ebp036_archzfs-repo-for-kernels/)
   * [Source](https://github.com/archzfs/archzfs/issues/467#issuecomment-1332029677)
 * Add flag `-c|--cleanup` for `build.sh`
-* Add an arch installer like:
-  * [archinstall](https://github.com/archlinux/archinstall)
-  * [anarchy installer](https://anarchyinstaller.gitlab.io/)
-  * [alci](https://alci.online/)
 
 ### To Change
 
+* Reduce the iso size since this is way about 2 GiB while the official image has a size of 1.1 GiB by checking:
+  * Compare installed packages (mount/start official iso and run `pacman -Qq` and do the same on our build)
+  * Check if we can remove HOOKS in `airootfs/etc/mkinitcpio.conf`
+  * Check if official image also has that high amount of firmware
+  * Check if lts image contains non-lts kernel by mistake
+  * Check `releng/packages.x86_64` if we really need all in there
 * Apply [shellcheck](https://github.com/koalaman/shellcheck) to all scripts
 * Manipulate `dynamic_dat/releng/profiledef.sh` before running the iso build process
   * [issue/9](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/9)
@@ -40,6 +42,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## Unreleased
 
 ### Added in unreleased
+
+* Add removal of `.git` directories for all "batteries included" scripts
+* Add cleanup section in build process to reduce iso size
 
 ### Changed in unreleased
 
