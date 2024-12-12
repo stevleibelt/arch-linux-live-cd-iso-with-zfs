@@ -944,6 +944,15 @@ function _exit_if_string_is_empty ()
 #####
 function _main ()
 {
+  if docker info > /dev/null 2>&1;
+  then
+    PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+    cd "${PATH_TO_THIS_SCRIPT}" || exit 11
+    _echo_if_be_verbose "Starting build in dedicated docker container"
+    docker compose run --rm archlinux-container /app/build.sh "${@}"
+    exit_if_last_exit_code_is_not_zero ${?} "Could not start docker container with: docker compose run --rm archlinux-container /app/build.sh" "${@}"
+    cd - || exit 12
+  else
     local BUILD_FILE_NAME
     local BUILD_WAS_SUCCESSFUL
     local CURRENT_WORKING_DIRECTORY
@@ -1184,6 +1193,7 @@ function _main ()
 
     cd "${CURRENT_WORKING_DIRECTORY}"
     #eo: code
+  fi
 }
 
 ####

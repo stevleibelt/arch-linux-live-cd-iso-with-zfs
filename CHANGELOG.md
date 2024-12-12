@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Add removal of `.git` directories for all "batteries included" scripts
 * Add cleanup section in build process to reduce iso size
+* Add automatic usage of docker compose in `build.sh` if docker is available
 
 ### Changed in unreleased
 
