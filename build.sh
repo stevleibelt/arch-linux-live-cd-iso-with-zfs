@@ -460,7 +460,7 @@ function build_archiso ()
     # We are searching for a file like archlinux-archzfs-linux-lts-2024.04.08-x86_64.iso
     #   we have a ISO_FILE_NAME like archlinux-archzfs-linux-lts.iso
     # Searching for -20 should be safe enough for any future release years
-    NUMBER_OF_ISO_FILES_AVAILABLE=$(find -iname "${ISO_FILE_NAME}-20*.iso" -type f | wc -l)
+    NUMBER_OF_ISO_FILES_AVAILABLE=$(find ${PATH_TO_THE_OUTPUT_DIRECTORY} -iname "${ISO_FILE_NAME}-20*.iso" -type f | wc -l)
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
@@ -468,9 +468,17 @@ function build_archiso ()
         then
             chmod -R 765 *
 
-            _echo_if_be_verbose " Moving >>${ISO_FILE_NAME}-*.iso<< to >>${ISO_FILE_PATH}<<."
+            _echo_if_be_verbose " Moving >>${PATH_TO_THE_OUTPUT_DIRECTORY}/${ISO_FILE_NAME}-20*.iso<< to >>${ISO_FILE_PATH}<<."
 
-            mv ${ISO_FILE_NAME}-*.iso ${ISO_FILE_PATH}
+            mv ${PATH_TO_THE_OUTPUT_DIRECTORY}/${ISO_FILE_NAME}-20*.iso ${ISO_FILE_PATH}
+            if [[ ! -f ${ISO_FILE_PATH} ]];
+            then
+              echo ":: No output build file found"
+              echo "   ${ISO_FILE_PATH} does not exist"
+
+              exit 4
+            fi
+
             sha512sum ${ISO_FILE_PATH} > ${SHA512_FILE_PATH}
             #end of renaming and hash generation
 
