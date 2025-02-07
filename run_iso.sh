@@ -13,7 +13,7 @@ function _main ()
   local PATH_TO_THE_ISO="${1:-${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso}"
   local WHO_AM_I=$(whoami)
 
-  if [[ ${WHO_AM_I} == "roo" ]];
+  if [[ ${WHO_AM_I} == "root" ]];
   then
     local SUDO_COMMAND_PREFIX=""
   else
