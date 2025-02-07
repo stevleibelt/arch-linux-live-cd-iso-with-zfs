@@ -85,29 +85,31 @@ function _main ()
     PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE="${PATH_TO_THIS_SCRIPT}/.env"
     #eo: variables
 
-    #bo: load environment files
-    set -a
-    source "${PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE}"
-    if [[ -f "${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}" ]];
-    then
-      source "${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}"
-    fi
-    set +a
-    #eo: load environment files
-
     #bo: user input
     #we are storing all arguments for the case if the script needs to be re-executed as root/system user
     local ALL_ARGUMENTS_TO_PASS
     local BE_VERBOSE
     local IS_DRY_RUN
-    local IS_LTS_KERNEL
+    local KERNEL
     local SHOW_HELP
 
     ALL_ARGUMENTS_TO_PASS="${@}"
     BE_VERBOSE=0
     IS_DRY_RUN=0
-    IS_LTS_KERNEL=0
+    KERNEL="linux"
     SHOW_HELP=0
+
+    #bo: load environment files
+    set -a
+    source "${PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE}"
+    set +a
+    if [[ -f "${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}" ]];
+    then
+      set -a
+      source "${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}"
+      set +a
+    fi
+    #eo: load environment files
 
     while true;
     do
@@ -120,9 +122,9 @@ function _main ()
                 SHOW_HELP=1
                 shift 1
                 ;;
-            "-l" | "--lts" )
-                IS_LTS_KERNEL=1
-                shift 1
+            "-k" | "--kernel" )
+                KERNEL="${2:linux}"
+                shift 2
                 ;;
             "-v" | "--verbose" )
                 BE_VERBOSE=1
@@ -139,22 +141,15 @@ function _main ()
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-d|--dry-run] [-h|--help] [-l|--lts] [-v|--verbose]"
+        echo "   ${0} [-d|--dry-run] [-h|--help] [-k|--kernel <string: kernel>] [-v|--verbose]"
 
         exit 0
     fi
     #bo: help
 
-    if [[ ${IS_LTS_KERNEL} -eq 1 ]];
-    then
-      PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/last_build_date_lts.txt"
-      PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux-lts.iso"
-      PATH_TO_THE_ISO_SHA512="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux-lts.iso.sha512sum"
-    else
-      PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/last_build_date.txt"
-      PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso"
-      PATH_TO_THE_ISO_SHA512="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-linux.iso.sha512sum"
-    fi
+    PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/last_build_date_${KERNEL}.txt"
+    PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-${KERNEL}.iso"
+    PATH_TO_THE_ISO_SHA512="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-${KERNEL}.iso.sha512sum"
 
     #bo: output used flags
     if [[ ${BE_VERBOSE} -eq 1 ]];
@@ -162,7 +157,7 @@ function _main ()
         echo ":: Outputting status of the flags."
         echo "   BE_VERBOSE >>${BE_VERBOSE}<<."
         echo "   IS_DRY_RUN >>${IS_DRY_RUN}<<."
-        echo "   IS_LTS_KERNEL >>${IS_LTS_KERNEL}<<."
+        echo "   KERNEL >>${KERNEL}<<."
         echo "   SHOW_HELP >>${SHOW_HELP}<<."
         echo ""
     fi
