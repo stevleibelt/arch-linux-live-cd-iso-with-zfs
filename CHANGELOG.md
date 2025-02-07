@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+Changelogs can easily created with the following commands.
+```bash
+# List all tags created by creation date
+git tag --sort=-creatordate
+
+TAG_CREATED_FROM="<string: major.minor.bugfix>"
+git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
+```
+
 ## Open
 
 ### To Add
@@ -43,13 +52,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added in unreleased
 
-* Add removal of `.git` directories for all "batteries included" scripts
-* Add cleanup section in build process to reduce iso size
-* Add automatic usage of docker compose in `build.sh` if docker is available
-
 ### Changed in unreleased
 
-* Update build section
+## [3.1.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/3.1.0) - 20250207
+
+### Added in 3.1.0
+
+* Added automatic use docker if available in [build.sh](build.sh)
+* Added cleanup section in build process to reduce iso size
+* Added removal of `.git` directories for all "batteries included" scripts
+* Added usage of .env to [upload_iso](upload_iso.sh)
+
+### Changed in 3.1.0
+
+* Updated build section
+* Fixed invalid user
+* Fixed issue that `linux-20*.iso` was not renamed correctly
 
 ## [3.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/3.0.0) - 20241118
 
