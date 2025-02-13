@@ -961,10 +961,10 @@ function _main ()
     exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: docker pull archlinux:latest"
 
     _echo_if_be_verbose "Removing dangling containers and images"
-    docker container prune --filter "name=archlinux"
-    exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: docker container prune --filter \"name=archlinux\""
-    docker image prune --filter "reference=archlinux"
-    exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: docker image prune --filter \"reference=archlinux\""
+    docker container prune --filter "label=name=archlinux"
+    exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: docker container prune --filter \"label=name=archlinux\""
+    docker image prune --filter "label=reference=archlinux"
+    exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: docker image prune --filter \"label=reference=archlinux\""
 
     _echo_if_be_verbose "Starting build in dedicated docker container"
     docker compose run --rm archlinux-container /app/build.sh "${@}"
