@@ -956,6 +956,16 @@ function _main ()
   then
     PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
     cd "${PATH_TO_THIS_SCRIPT}" || exit 11
+    _echo_if_be_verbose "Pulling latest archlinux docker container"
+    docker pull archlinux:latest
+    exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: docker pull archlinux:latest"
+
+    _echo_if_be_verbose "Removing dangling containers and images"
+    docker container prune --filter "name=archlinux"
+    exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: docker container prune --filter \"name=archlinux\""
+    docker image prune --filter "reference=archlinux"
+    exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: docker image prune --filter \"reference=archlinux\""
+
     _echo_if_be_verbose "Starting build in dedicated docker container"
     docker compose run --rm archlinux-container /app/build.sh "${@}"
     exit_if_last_exit_code_is_not_zero ${?} "Could not start docker container with: docker compose run --rm archlinux-container /app/build.sh" "${@}"
@@ -1202,28 +1212,6 @@ function _main ()
     cd "${CURRENT_WORKING_DIRECTORY}"
     #eo: code
   fi
-}
-
-####
-# @param <string: VARIABLE_NAME>
-# @param <string: VARIABLE_VALUE>
-####
-function _exit_if_string_is_empty ()
-{
-    local VARIABLE_NAME
-    local VARIABLE_VALUE
-
-    VARIABLE_NAME="${1}"
-    VARIABLE_VALUE="${2}"
-
-    if [[ ${#VARIABLE_VALUE} -lt 1 ]];
-    then
-        echo "   Empty >>${VARIABLE_NAME}<< provided."
-
-        exit 1
-    else
-        _echo_if_be_verbose "   Valid >>${VARIABLE_NAME}<< provided, value has a string length of >>${#VARIABLE_VALUE}<<."
-    fi
 }
 
 _main "${@}"
