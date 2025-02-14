@@ -952,8 +952,12 @@ function _exit_if_string_is_empty ()
 #####
 function _main ()
 {
+  local PATH_TO_THIS_SCRIPT
+  local DATE_TWO_WEEKS_AGO
+
   if docker info > /dev/null 2>&1;
   then
+    DATE_TWO_WEEKS_AGO=$(date --date='-14 day' +%Y-%m-%d)
     PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
     cd "${PATH_TO_THIS_SCRIPT}" || exit 11
     _echo_if_be_verbose "Pulling latest archlinux docker container"
@@ -961,9 +965,9 @@ function _main ()
     exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: docker pull archlinux:latest"
 
     _echo_if_be_verbose "Removing dangling containers and images"
-    docker container prune --filter "label=name=archlinux"
+    docker container prune --filter "label=name=archlinux" --filter "until=${DATE_TWO_WEEKS_AGO}"
     exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: docker container prune --filter \"label=name=archlinux\""
-    docker image prune --filter "label=reference=archlinux"
+    docker image prune --filter "label=reference=archlinux" --filter "until=${DATE_TWO_WEEKS_AGO}"
     exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: docker image prune --filter \"label=reference=archlinux\""
 
     _echo_if_be_verbose "Starting build in dedicated docker container"
@@ -975,7 +979,6 @@ function _main ()
     local BUILD_WAS_SUCCESSFUL
     local CURRENT_WORKING_DIRECTORY
     local ISO_FILE_PATH
-    local PATH_TO_THIS_SCRIPT
     local PATH_TO_THE_DYNAMIC_DATA_DIRECTORY
     local PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE
     local PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE
