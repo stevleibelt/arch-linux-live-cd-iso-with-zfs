@@ -1042,7 +1042,7 @@ function _main ()
     while true;
     do
         case "${1}" in
-            "-d" | "--dry_run" )
+            "-d" | "--dry-run" )
                 IS_DRY_RUN=1
                 shift 1
                 ;;
