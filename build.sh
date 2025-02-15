@@ -992,8 +992,9 @@ function _main ()
     _echo_if_be_verbose "Starting build in dedicated podman container"
     local ROOT_COMMAND_PREFIX
     if [[ ${UID} -ne 0 ]];
+    then
       ROOT_COMMAND_PREFIX="sudo "
-    elif
+    else
       ROOT_COMMAND_PREFIX=""
     fi
     # we have to call it as root since we run the container with priviliged capabilities
