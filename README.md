@@ -44,6 +44,18 @@ docker compose run --rm archlinux-container /app/build.sh
 docker compose run --rm archlinux-container bash
 ```
 
+### Build by using podman
+
+```bash
+# run a build
+# we need to run podman with privilige rights
+sudo podman compose run --rm archlinux-container /app/build.sh
+
+# to debug the container
+#   login and cd /app
+sudo podman compose run --rm archlinux-container bash
+```
+
 ### Build by using your host
 
 #### Initial setup
