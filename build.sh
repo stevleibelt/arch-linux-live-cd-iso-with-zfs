@@ -993,7 +993,7 @@ function _main ()
     local ROOT_COMMAND_PREFIX
     if [[ ${UID} -ne 0 ]];
       ROOT_COMMAND_PREFIX="sudo "
-    else
+    elif
       ROOT_COMMAND_PREFIX=""
     fi
     # we have to call it as root since we run the container with priviliged capabilities
