@@ -974,6 +974,32 @@ function _main ()
     docker compose run --rm archlinux-container /app/build.sh "${@}"
     exit_if_last_exit_code_is_not_zero ${?} "Could not start docker container with: docker compose run --rm archlinux-container /app/build.sh" "${@}"
     cd - || exit 12
+  elif podman info > /dev/null 2>&1;
+  then
+    DATE_TWO_WEEKS_AGO=$(date --date='-14 day' +%Y-%m-%d)
+    PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+    cd "${PATH_TO_THIS_SCRIPT}" || exit 11
+    _echo_if_be_verbose "Pulling latest archlinux podman container"
+    podman pull archlinux:latest
+    exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: podman pull archlinux:latest"
+
+    _echo_if_be_verbose "Removing dangling containers and images"
+    podman container prune --filter "label=name=archlinux" --filter "until=${DATE_TWO_WEEKS_AGO}"
+    exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: podman container prune --filter \"label=name=archlinux\""
+    podman image prune --filter "label=reference=archlinux" --filter "until=${DATE_TWO_WEEKS_AGO}"
+    exit_if_last_exit_code_is_not_zero ${?} "Could not execute following command: podman image prune --filter \"label=reference=archlinux\""
+
+    _echo_if_be_verbose "Starting build in dedicated podman container"
+    local ROOT_COMMAND_PREFIX
+    if [[ ${UID} -ne 0 ]];
+      ROOT_COMMAND_PREFIX="sudo "
+    else
+      ROOT_COMMAND_PREFIX=""
+    fi
+    # we have to call it as root since we run the container with priviliged capabilities
+    ${ROOT_COMMAND_PREFIX} podman compose run --rm archlinux-container /app/build.sh "${@}"
+    exit_if_last_exit_code_is_not_zero ${?} "Could not start podman container with: ${ROOT_COMMAND_PREFIX} podman compose run --rm archlinux-container /app/build.sh" "${@}"
+    cd - || exit 12
   else
     local BUILD_FILE_NAME
     local BUILD_WAS_SUCCESSFUL
