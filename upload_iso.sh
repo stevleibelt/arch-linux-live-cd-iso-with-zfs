@@ -44,7 +44,7 @@ function _create_latest_build_date ()
   _echo_if_be_verbose "   Creating file >>${LATEST_BUILD_DATE_FILE_PATH}<<"
 
   #add date
-  CREATION_DATE_TIME=$(stat -c '%w' "${ARCH_ISO_FILE_PATH}" | cut -d ' ' -f 1)
+  CREATION_DATE_TIME=$(stat -c '>%w' "${ARCH_ISO_FILE_PATH}" | cut -d ' ' -f 1)
   _echo_if_be_verbose "       Detected creation date >>${CREATION_DATE_TIME}<<"
 
   #add time
@@ -72,12 +72,11 @@ function _main ()
     #bo: variables
     local PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE
     local PATH_TO_THE_ISO
-    local PATH_TO_THIS_SCRIPT
-    local PATH_TO_THE_ISO
     local PATH_TO_THE_ISO_SHA512
     local PATH_TO_THE_LATEST_BUILD_DATE
     local PATH_TO_THE_LOCAL_CONFIGURATION
     local PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE
+    local PATH_TO_THIS_SCRIPT
 
     PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
 
@@ -85,7 +84,6 @@ function _main ()
     PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE="${PATH_TO_THIS_SCRIPT}/.env"
     #eo: variables
 
-    #bo: user input
     #we are storing all arguments for the case if the script needs to be re-executed as root/system user
     local ALL_ARGUMENTS_TO_PASS
     local BE_VERBOSE
@@ -111,6 +109,7 @@ function _main ()
     fi
     #eo: load environment files
 
+    #bo: user input
     while true;
     do
         case "${1}" in
@@ -141,7 +140,7 @@ function _main ()
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-d|--dry-run] [-h|--help] [-k|--kernel <string: kernel>] [-v|--verbose]"
+       echo "   ${0} [-d|--dry-run] [-h|--help] [-k|--kernel <string: kernel=${KERNEL}] [-v|--verbose]"
 
         exit 0
     fi
