@@ -52,7 +52,12 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 
 ### Added in unreleased
 
+* Added arguments to [run the iso](run_iso.sh) script, check out `run_iso.sh`
+* Added environment variable `ISO_BOOT_TYPE` to prevent question about "uefi or bios" when try to [run the iso](run_iso.sh)
+* Added `last_build_date*.txt` to [gitignore](.gitignore)
+
 ### Changed in unreleased
+
 
 ## [3.1.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/3.1.0) - 20250207
 
