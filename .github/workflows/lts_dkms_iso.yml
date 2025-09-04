@@ -24,7 +24,7 @@ jobs:
         id: timetag
         run: echo "timestamp=$(date +'%Y%m%d')" >> "$GITHUB_ENV"
       - name: Check out codebase
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install requirements
         run: |
           pacman -Sy
