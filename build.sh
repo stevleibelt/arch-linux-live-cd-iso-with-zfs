@@ -162,6 +162,7 @@ function add_packages_and_repository ()
     local PATH_TO_THE_PACKAGES_FILE
     local PATH_TO_THE_PACMAN_CONF_FILE
     local PATH_TO_THE_PACMAN_D_ARCHZFS_FILE
+    local ZFS_REPOSITORY_KEY
 
     PATH_TO_THE_ARCHLIVE=${1:-""}
     REPO_INDEX_OR_EMPTY_STRING=${2:-""}
@@ -225,13 +226,22 @@ function add_packages_and_repository ()
     #eo: environment check
 
     #bo: add archzfs key
-    if ! pacman-key --list-keys | grep -q "DDF7DB817396A49B2A2723F7403BD972F75D9D76";
+    if [[ ${ZFS_SERVERS} == "experimental" ]];
+    then
+      # ref: https://github.com/archzfs/archzfs/releases/tag/experimental
+      ZFS_REPOSITORY_KEY="3A9917BF0DED5C13F69AC68FABEC0A1208037BE9"
+    else
+      # default
+      ZFS_REPOSITORY_KEY="DDF7DB817396A49B2A2723F7403BD972F75D9D76"
+    fi
+
+    if ! pacman-key --list-keys | grep -q "${ZFS_REPOSITORY_KEY}";
     then
       _echo_if_be_verbose ":: Adding archzfs keys to keyring"
 
       pacman-key --init
-      pacman-key --recv-keys DDF7DB817396A49B2A2723F7403BD972F75D9D76
-      pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
+      pacman-key --recv-keys ${ZFS_REPOSITORY_KEY}
+      pacman-key --lsign-key ${ZFS_REPOSITORY_KEY}
 
       pacman -Sy
     fi
@@ -270,9 +280,14 @@ function add_packages_and_repository ()
       _echo_if_be_verbose "   Creating archzfs mirrorlist file >>${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}<<."
 
       #bo: adding repository
-      echo "Server = http://archzfs.com/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
-      echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
-      echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
+      if [[ "${ZFS_SERVERS}" == "experimental" ]];
+      then
+        echo "Server = https://github.com/archzfs/archzfs/releases/download/experimental" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
+      else
+        echo "Server = http://archzfs.com/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
+        echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
+        echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
+      fi
 
       _echo_if_be_verbose "   Adding archzfs repositories to PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
 
@@ -1056,6 +1071,7 @@ function _main ()
     local SHOW_HELP
     local USE_DKMS
     local USE_OTHER_REPO_INDEX
+    local ZFS_SERVERS
 
     ALL_ARGUMENTS_TO_PASS="${@}"
     ASK_TO_DUMP_ISO=1
@@ -1070,6 +1086,7 @@ function _main ()
     USE_GIT_PACKAGE=0
     USE_DKMS=0
     USE_OTHER_REPO_INDEX=0
+    ZFS_SERVERS="default"
 
     #bo: load environment files
     set -a
@@ -1125,6 +1142,18 @@ function _main ()
                 BE_VERBOSE=1
                 shift 1
                 ;;
+            "-z" | "--zfs-servers" )
+              if [[ -n ${2} ]];
+              then
+                if [[ "${2}" == "default" || "${2}" == "experimental" ]];
+                then
+                  ZFS_SERVERS="${2}"
+                fi
+                shift 2
+              else
+                shift 1
+              fi
+              ;;
             * )
                 break
                 ;;
@@ -1135,7 +1164,7 @@ function _main ()
     if [[ ${SHOW_HELP} -eq 1 ]];
     then
         echo ":: Usage"
-        echo "   ${0} [-d|--dry-run] [-f|--force] [-g|--git-package] [-h|--help] [-k|--kernel <string: linux-lts>] [-r|--repo-index [<string: last|week|month|yyyy/mm/dd>]] [-u|--use-dkms] [-v|--verbose]"
+        echo "   ${0} [-d|--dry-run] [-f|--force] [-g|--git-package] [-h|--help] [-k|--kernel <string: linux-lts>] [-r|--repo-index [<string: last|week|month|yyyy/mm/dd>]] [-u|--use-dkms] [-v|--verbose] [-z|--zfs-servers [<string: default|experimental>]]"
 
         exit 0
     fi

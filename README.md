@@ -91,6 +91,7 @@ sudo pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
 #       @see: https://archive.archlinux.org/repos/
 #   -u|--use-dkms
 #   -v|--verbose
+#   -z|--zfs-servers [<string: experimental|default>]
 ####
 ./build.sh
 
