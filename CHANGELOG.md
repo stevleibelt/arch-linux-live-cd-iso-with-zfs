@@ -55,6 +55,7 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 * Added arguments to [run the iso](run_iso.sh) script, check out `run_iso.sh`
 * Added environment variable `ISO_BOOT_TYPE` to prevent question about "uefi or bios" when try to [run the iso](run_iso.sh)
 * Added `last_build_date*.txt` to [gitignore](.gitignore)
+* Added `-z|--zfs-servers` as option to switch to experimental archzfs repository
 
 ### Changed in unreleased
 
