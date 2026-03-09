@@ -107,7 +107,7 @@ sudo pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
 ```bash
 # ref: https://github.com/super-linter/super-linter#run-using-a-container-runtime-engine
 #   assuming that . is the path to the local code base
-docker run -e LOG_LEVEL=DEBUG -e RUN_LOCAL=true -v .:/tmp/lint ghcr.io/super-linter/super-linter:latest
+docker run --rm -e LOG_LEVEL=DEBUG -e RUN_LOCAL=true -v .:/tmp/lint ghcr.io/super-linter/super-linter:latest
 ```
 
 ## Possible issues
