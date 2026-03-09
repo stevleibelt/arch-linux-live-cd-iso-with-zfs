@@ -61,6 +61,7 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 ### Changed in unreleased
 
 * Merged `ZFS_SERVER='default|experimental'`, only experimental has openzfs >= 2.4.0
+   * Remove experimental build workflows
 * Remove `dump_iso.sh`
 
 ## [3.2.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/3.2.0) - 20251104
