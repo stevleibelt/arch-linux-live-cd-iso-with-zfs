@@ -57,12 +57,14 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 * Added environment variable `ISO_BOOT_TYPE` (prevents "uefi ..." in [run the iso](run_iso.sh))
 * Added `last_build_date*.txt` to [gitignore](.gitignore)
 * Added `-z|--zfs-servers` as option to switch to experimental archzfs repository
+* Added [ossf scorecard-action](https://github.com/ossf/scorecard-action)
 
 ### Changed in unreleased
 
 * Merged `ZFS_SERVER='default|experimental'`, only experimental has openzfs >= 2.4.0
-   * Remove experimental build workflows
-* Remove `dump_iso.sh`
+   * Removed experimental build workflows
+* Removed `dump_iso.sh`
+* Removed workflow `scorecard.yml`
 
 ## [3.2.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/3.2.0) - 20251104
 
