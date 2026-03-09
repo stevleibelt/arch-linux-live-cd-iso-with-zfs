@@ -59,6 +59,8 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 
 ### Changed in unreleased
 
+* Merged `ZFS_SERVER='default'` and `ZFS_SERVER='experimental'` since only experimental deliveres openzfs >= 2.4.0
+
 ## [3.2.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/3.2.0) - 20251104
 
 ### Added in 3.2.0

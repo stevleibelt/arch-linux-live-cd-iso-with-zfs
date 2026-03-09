@@ -226,13 +226,14 @@ function add_packages_and_repository ()
     #eo: environment check
 
     #bo: add archzfs key
+    # Just there to be able to have the configuration option for an upcoming switch
     if [[ ${ZFS_SERVERS} == "experimental" ]];
     then
       # ref: https://github.com/archzfs/archzfs/releases/tag/experimental
       ZFS_REPOSITORY_KEY="3A9917BF0DED5C13F69AC68FABEC0A1208037BE9"
     else
       # default
-      ZFS_REPOSITORY_KEY="DDF7DB817396A49B2A2723F7403BD972F75D9D76"
+      ZFS_REPOSITORY_KEY="3A9917BF0DED5C13F69AC68FABEC0A1208037BE9"
     fi
 
     if ! pacman-key --list-keys | grep -q "${ZFS_REPOSITORY_KEY}";
@@ -280,13 +281,12 @@ function add_packages_and_repository ()
       _echo_if_be_verbose "   Creating archzfs mirrorlist file >>${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}<<."
 
       #bo: adding repository
+      # Just there to be able to have the configuration option for an upcoming switch
       if [[ "${ZFS_SERVERS}" == "experimental" ]];
       then
         echo "Server = https://github.com/archzfs/archzfs/releases/download/experimental" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
       else
-        echo "Server = http://archzfs.com/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
-        echo "Server = http://mirror.sum7.eu/archlinux/archzfs/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
-        echo "Server = https://mirror.biocrafting.net/archlinux/archzfs/\$repo/\$arch" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
+        echo "Server = https://github.com/archzfs/archzfs/releases/download/experimental" >> "${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}"
       fi
 
       _echo_if_be_verbose "   Adding archzfs repositories to PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
