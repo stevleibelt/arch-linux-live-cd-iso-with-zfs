@@ -22,30 +22,30 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 * Add support for running GitHub-Actions [locally](https://www.freecodecamp.org/news/how-to-run-github-actions-locally/)
 * Add support for [remove packages](https://wiki.archlinux.org/title/User:LenHuppe/ZFS_on_Archiso/)
 * Add usage for `kernel.archzfs.com`
-   * [Link](https://end.re/blog/ebp036_archzfs-repo-for-kernels/)
-   * [Source](https://github.com/archzfs/archzfs/issues/467#issuecomment-1332029677)
+  * [Link](https://end.re/blog/ebp036_archzfs-repo-for-kernels/)
+  * [Source](https://github.com/archzfs/archzfs/issues/467#issuecomment-1332029677)
 * Add flag `-c|--cleanup` for `build.sh`
 
 ### To Change
 
 * Reduce the iso size (lts greater 2 GiB, while image arount 1.1 GiB):
-   * Compare installed packages (mount/start official iso and run `pacman -Qq`)
-   * Check if we can remove HOOKS in `airootfs/etc/mkinitcpio.conf`
-   * Check if official image also has that high amount of firmware
-   * Check if lts image contains non-lts kernel by mistake
-   * Check `releng/packages.x86_64` if we really need all in there
+  * Compare installed packages (mount/start official iso and run `pacman -Qq`)
+  * Check if we can remove HOOKS in `airootfs/etc/mkinitcpio.conf`
+  * Check if official image also has that high amount of firmware
+  * Check if lts image contains non-lts kernel by mistake
+  * Check `releng/packages.x86_64` if we really need all in there
 * Apply [shellcheck](https://github.com/koalaman/shellcheck) to all scripts
 * Manipulate `dynamic_dat/releng/profiledef.sh` before running the iso build process
-   * [issue/9](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/9)
-   * [official profiledef.sh documentation](https://gitlab.archlinux.org/archlinux/archiso/-/blob/master/docs/README.profile.rst)
-   * [example of an manipulated file](https://github.com/HougeLangley/archzfs-iso/blob/master/profiledef.sh)
-   * Things to change
-      * `iso_name`
-      * `iso_label`
-      * `iso_publisher`
-      * `iso_application`
-      * `file_permissions`
-         * own git repros in user home should have 775
+  * [issue/9](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/9)
+  * [official profiledef.sh documentation](https://gitlab.archlinux.org/archlinux/archiso/-/blob/master/docs/README.profile.rst)
+  * [example of an manipulated file](https://github.com/HougeLangley/archzfs-iso/blob/master/profiledef.sh)
+  * Things to change
+    * `iso_name`
+    * `iso_label`
+    * `iso_publisher`
+    * `iso_application`
+    * `file_permissions`
+      * own git repros in user home should have 775
 * Recheck GitHub actions, [see](https://github.com/ossf/education/pull/36/files)
 * Validate if we can implement the "use older kernel" feature from [here](https://github.com/eoli3n/archiso-zfs/blob/master/init)
 
@@ -62,7 +62,7 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 ### Changed in unreleased
 
 * Merged `ZFS_SERVER='default|experimental'`, only experimental has openzfs >= 2.4.0
-   * Removed experimental build workflows
+  * Removed experimental build workflows
 * Removed `dump_iso.sh`
 * Removed workflow `scorecard.yml`
 
@@ -120,15 +120,15 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 ### Changed in 3.0.0
 
 * Changed default values for [replace_zfsbootmenu.sh](source/replace_zfsbootmenu.sh)
-   * Default path for old ZBM is now `/mnt/efi...`
-   * Default path for new ZBM is now basepath of the called script
+  * Default path for old ZBM is now `/mnt/efi...`
+  * Default path for new ZBM is now basepath of the called script
 * Moved to `archlinux/archlinux:latest` fixing [archinstal#2443](https://github.com/archlinux/archinstall/issues/2443)
 * Moved archzfs mirrorlist to dedicated file `/etc/pacman.d/archzfs`
 
 ### Breaking Changes in 3.0.0
 
 * Merged multiple configuration files to `.env`
-    * Migration works by executing `cat configuration/*.sh > .env`
+   * Migration works by executing `cat configuration/*.sh > .env`
 
 ## [2.11.1](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.11.1) - 20231111
 
@@ -141,10 +141,10 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 ### Added in 2.11.0
 
 * Added dedicated iso building workflows for
-   * `lts_dkms`
-   * `lts_no_dkms`
-   * `no_lts_dkms`
-   * `no_lts_no_dkms`
+  * `lts_dkms`
+  * `lts_no_dkms`
+  * `no_lts_dkms`
+  * `no_lts_no_dkms`
 * Added step to download latest zfsbootmenu.EFI file
 * Added script `replace_zfsbootmenu.sh` to update zfsbootmenu
 
@@ -157,8 +157,8 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 ### Added in 2.10.0
 
 * Added build option to use git package for `zfs-dkms-git` or `zfs-linux-git`
-   * Either use `USE_GIT_PACKAGE` in the configuration file
-   * Or use `build.sh -g`
+  * Either use `USE_GIT_PACKAGE` in the configuration file
+  * Or use `build.sh -g`
 
 ## [2.9.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.9.0) - 20230523
 
