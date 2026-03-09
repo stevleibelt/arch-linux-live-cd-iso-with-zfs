@@ -74,7 +74,6 @@ function _main ()
     local PATH_TO_THE_ISO
     local PATH_TO_THE_ISO_SHA512
     local PATH_TO_THE_LATEST_BUILD_DATE
-    local PATH_TO_THE_LOCAL_CONFIGURATION
     local PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE
     local PATH_TO_THIS_SCRIPT
 
@@ -85,13 +84,11 @@ function _main ()
     #eo: variables
 
     #we are storing all arguments for the case if the script needs to be re-executed as root/system user
-    local ALL_ARGUMENTS_TO_PASS
     local BE_VERBOSE
     local IS_DRY_RUN
     local KERNEL
     local SHOW_HELP
 
-    ALL_ARGUMENTS_TO_PASS="${@}"
     BE_VERBOSE=0
     IS_DRY_RUN=0
     KERNEL="linux"

@@ -64,7 +64,7 @@ function _main ()
   if [[ ${SHOW_HELP} -eq 1 ]];
   then
       echo ":: Usage"
-      echo "   ${0} [-b|--boot-type <string: boot_type="${ISO_BOOT_TYPE}"] [-k|--kernel <string: kernel=${KERNEL}]"
+      echo "   ${0} [-b|--boot-type <string: boot_type=\"${ISO_BOOT_TYPE}\"] [-k|--kernel <string: kernel=${KERNEL}]"
 
       exit 0
   fi
