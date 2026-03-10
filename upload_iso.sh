@@ -77,7 +77,7 @@ function _main ()
     local PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE
     local PATH_TO_THIS_SCRIPT
 
-    PATH_TO_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+    PATH_TO_THIS_SCRIPT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
     PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE="${PATH_TO_THIS_SCRIPT}/.env.dist"
     PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE="${PATH_TO_THIS_SCRIPT}/.env"
@@ -96,11 +96,13 @@ function _main ()
 
     #bo: load environment files
     set -a
+    # shellcheck source=/dev/null
     source "${PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE}"
     set +a
     if [[ -f "${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}" ]];
     then
       set -a
+      # shellcheck source=/dev/null
       source "${PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE}"
       set +a
     fi

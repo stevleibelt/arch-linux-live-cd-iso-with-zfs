@@ -22,7 +22,10 @@ function _exit_if_last_exit_code_is_not_zero ()
   local LAST_EXIT_CODE
 
   ERROR_MESSAGE="${2:-'Something went wrong'}"
-  LAST_COMMAND="${@:2}"
+  # fc:     Process the command history list
+  # -n:     Suppress command numbers when listing with -l.
+  # -l -1:  List the commands with start of -1 (last)
+  LAST_COMMAND=$(fc -n -l -1 | trim)
   LAST_EXIT_CODE="${1:-1}"
 
   if [[ ${LAST_EXIT_CODE} -ne 0 ]];
@@ -59,7 +62,7 @@ function _main ()
   local PATH_TO_OLD_ZBM
   local SHOW_USAGE
 
-  BASEPATH_OF_THIS_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+  BASEPATH_OF_THIS_SCRIPT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
   BE_VERBOSE=0
   CURRENT_DATE=$(date +'%Y%m%d')
   PATH_TO_NEW_ZBM="${BASEPATH_OF_THIS_SCRIPT}/vmlinuz.EFI"

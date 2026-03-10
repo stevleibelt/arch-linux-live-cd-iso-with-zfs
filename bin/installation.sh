@@ -18,6 +18,7 @@
 #bo: configuration
 function _run_configuration ()
 {
+    local DEVICE_LIST
     local DEVICE_PATH
     local HOSTNAME_PATH
     local LANGUAGE_PATH
@@ -27,6 +28,7 @@ function _run_configuration ()
     local ZPOOLDATASET_PATH
     local ZPOOLNAME_PATH
 
+    DEVICE_LIST=$(ls /dev/disk/by-id/*-part*)
     DEVICE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/device"
     HOSTNAME_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/hostname"
     LANGUAGE_PATH="${PATH_TO_THE_CONFIGURATION_DIRECTORY}/language"
@@ -67,7 +69,7 @@ function _run_configuration ()
     #ask user what device he want to use, remove all entries with "-part" to prevent listing partitions
     echo ":: Please select a device where we want to install it."
 
-    select USER_SELECTED_ENTRY in $(ls /dev/disk/by-id/ | grep -v "\-part");
+    select USER_SELECTED_ENTRY in ${DEVICE_LIST};
     do
         USER_SELECTED_DEVICE="/dev/disk/by-id/${USER_SELECTED_ENTRY}"
         #store the selection
@@ -81,7 +83,7 @@ function _run_configuration ()
 
     ZPOOL_NAME="rpool"
 
-    if echo ${REPLY} | grep -iq '^y$';
+    if echo "${REPLY}" | grep -iq '^y$';
     then
         local RANDOM_STRING
 
@@ -209,7 +211,7 @@ function _prepare_environment ()
     #bo: time
     TIMEZONE=$(_get_from_configuration "timezone")
     _echo_if_be_verbose "   Setting timezone >>${TIMEZONE}<<."
-    timedatectl set-timezone ${REPLY}
+    timedatectl set-timezone "${REPLY}"
 
     timedatectl set-ntp true
     #eo: time
@@ -277,7 +279,7 @@ function _wipe_device ()
 
     _ask "Do you want to wipe the device >>${DEVICE_PATH}<<? (y|N)"
 
-    if echo ${REPLY} | grep -iq '^y$';
+    if echo "${REPLY}" | grep -iq '^y$';
     then
         _echo_if_be_verbose ":: dd >>${DEVICE_PATH}<<.."
         dd if=/dev/zero of="${DEVICE_PATH}" bs=512 count=1
@@ -450,7 +452,7 @@ function _confirm_every_step ()
 {
     if [[ ${CONFIRM_EVERY_STEP} -eq 1 ]];
     then
-        read -p "Press enter to continue"
+        read -r -p "Press enter to continue"
     fi
 }
 
@@ -813,8 +815,8 @@ DELIM
 
         _echo_if_be_verbose "   Configure zfs-mount-generator"
         mkdir -p /mnt/etc/zfs/zfs-list.cache
-        touch /mnt/etc/zfs/zfs-list.cache/${ZPOOL_NAME}
-        zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand | sed 's/\/mnt//' > /mnt/etc/zfs/zfs-list.cache/${ZPOOL_NAME}
+        touch "/mnt/etc/zfs/zfs-list.cache/${ZPOOL_NAME}"
+        zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand | sed 's/\/mnt//' > "/mnt/etc/zfs/zfs-list.cache/${ZPOOL_NAME}"
         systemctl enable zfs-zed.service --root=/mnt
 
         _confirm_every_step

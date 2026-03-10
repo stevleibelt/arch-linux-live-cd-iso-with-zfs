@@ -260,13 +260,16 @@ function add_packages_and_repository ()
         then
 	          _echo_if_be_verbose "   Adding entry of >>Server = https://archive.archlinux.org/repos/${REPO_INDEX_OR_EMPTY_STRING}/\$repo/os/\$arch<< to:"
             _echo_if_be_verbose "       [core]"
-            sed -i -e 's|\[core\]|\[core\]\nServer = https://archive.archlinux.org/repos/'${REPO_INDEX_OR_EMPTY_STRING}'/\$repo/os/\$arch/|g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
+            # shellcheck disable=SC2016
+            sed -i -e 's|\[core\]|\[core\]\nServer = https://archive.archlinux.org/repos/'"${REPO_INDEX_OR_EMPTY_STRING}"'/\$repo/os/\$arch/|g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
 
             _echo_if_be_verbose "       [extra]"
-            sed -i -e 's|\[extra\]|\[extra\]\nServer = https://archive.archlinux.org/repos/'${REPO_INDEX_OR_EMPTY_STRING}'/\$repo/os/\$arch/|g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
+            # shellcheck disable=SC2016
+            sed -i -e 's|\[extra\]|\[extra\]\nServer = https://archive.archlinux.org/repos/'"${REPO_INDEX_OR_EMPTY_STRING}"'/\$repo/os/\$arch/|g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
 
             _echo_if_be_verbose "       [community]"
-            sed -i -e 's|\[community\]|\[community\]\nServer = https://archive.archlinux.org/repos/'${REPO_INDEX_OR_EMPTY_STRING}'/\$repo/os/\$arch/|g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
+            # shellcheck disable=SC2016
+            sed -i -e 's|\[community\]|\[community\]\nServer = https://archive.archlinux.org/repos/'"${REPO_INDEX_OR_EMPTY_STRING}"'/\$repo/os/\$arch/|g' "${PATH_TO_THE_PACMAN_CONF_FILE}"
         fi
 
     fi
@@ -291,9 +294,10 @@ function add_packages_and_repository ()
 
       _echo_if_be_verbose "   Adding archzfs repositories to PATH_TO_THE_PACMAN_CONF_FILE >>${PATH_TO_THE_PACMAN_CONF_FILE}<<."
 
-      echo "" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
-      echo "[archzfs]" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
-      echo "Include = ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}" >> ${PATH_TO_THE_PACMAN_CONF_FILE}
+      cat >> "${PATH_TO_THE_PACMAN_CONF_FILE}" <<DELIM
+[archzfs]
+Include = ${PATH_TO_THE_PACMAN_D_ARCHZFS_FILE}
+DELIM
       #eo: adding repository
 
       #bo: removing package
@@ -376,7 +380,7 @@ function ask_for_more ()
 
     if [[ ${DUMP_ISO} == "y" ]];
     then
-      bash "${PATH_TO_THIS_SCRIPT}/dump_iso.sh" ${ISO_FILE_PATH}
+      bash "${PATH_TO_THIS_SCRIPT}/dump_iso.sh" "${ISO_FILE_PATH}"
     fi
   fi
 
@@ -384,11 +388,11 @@ function ask_for_more ()
   then
     echo ":: Do you want to upload the iso for testing? [y|N]"
 
-    read RUN_ISO
+    read -r RUN_ISO
 
     if [[ ${RUN_ISO} == "y" ]];
     then
-      bash "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" ${ISO_FILE_PATH}
+      bash "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" "${ISO_FILE_PATH}"
     fi
   fi
 }
@@ -457,9 +461,9 @@ function build_archiso ()
       # -w: set the working directory
       if [[ ${BE_VERBOSE} -gt 0 ]];
       then
-        mkarchiso -v -w ${PATH_TO_THE_WORK_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
+        mkarchiso -v -w "${PATH_TO_THE_WORK_DIRECTORY}" -o "${PATH_TO_THE_OUTPUT_DIRECTORY}" "${PATH_TO_THE_PROFILE_DIRECTORY}"
       else
-        mkarchiso -w ${PATH_TO_THE_WORK_DIRECTORY} -o ${PATH_TO_THE_OUTPUT_DIRECTORY} ${PATH_TO_THE_PROFILE_DIRECTORY}
+        mkarchiso -w "${PATH_TO_THE_WORK_DIRECTORY}" -o "${PATH_TO_THE_OUTPUT_DIRECTORY}" "${PATH_TO_THE_PROFILE_DIRECTORY}"
       fi
 
       exit_if_last_exit_code_is_not_zero ${?} "Execution of >>mkarchiso<< failed."
@@ -482,14 +486,14 @@ function build_archiso ()
     #end of building
 
     #begin of renaming and hash generation
-    cd ${PATH_TO_THE_OUTPUT_DIRECTORY}
+    cd "${PATH_TO_THE_OUTPUT_DIRECTORY}" || { echo "Can not cd to >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"; exit 31 }
 
     ISO_FILE_NAME=$(basename "${ISO_FILE_PATH}")
     ISO_FILE_NAME=${ISO_FILE_NAME:0:-4} # remove >>.iso<< from file name
     # We are searching for a file like archlinux-archzfs-linux-lts-2024.04.08-x86_64.iso
     #   we have a ISO_FILE_NAME like archlinux-archzfs-linux-lts.iso
     # Searching for -20 should be safe enough for any future release years
-    NUMBER_OF_ISO_FILES_AVAILABLE=$(find ${PATH_TO_THE_OUTPUT_DIRECTORY} -iname "${ISO_FILE_NAME}-20*.iso" -type f | wc -l)
+    NUMBER_OF_ISO_FILES_AVAILABLE=$(find "${PATH_TO_THE_OUTPUT_DIRECTORY}" -iname "${ISO_FILE_NAME}-20*.iso" -type f | wc -l)
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
     then
