@@ -28,7 +28,7 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 
 ### To Change
 
-* Reduce the iso size (lts greater 2 GiB, while image arount 1.1 GiB):
+* Reduce the iso size (lts greater 2 GiB, while image around 1.1 GiB):
   * Compare installed packages (mount/start official iso and run `pacman -Qq`)
   * Check if we can remove HOOKS in `airootfs/etc/mkinitcpio.conf`
   * Check if official image also has that high amount of firmware
@@ -71,7 +71,7 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 ### Added in 3.2.0
 
 * Add cleanup for all archlinux based images or containers filtered by label
-* Add cleanup of document and software to prevent git issus
+* Add cleanup of document and software to prevent git issues
 * Add filter for docker prune with until-two-weeks-ago
 * Add `last_build*` to .gitignore
 * Add podman option to readme
@@ -211,7 +211,7 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 
 ### Changed in 2.7.0
 
-* Changed some of the `_echo_if_be_verbose` calls by adding the variable name before outputing its content`
+* Changed `_echo_if_be_verbose` calls by adding the variable name before outputting its content`
 * Added removal of `last_build_date.txt` if exists when `upload_iso.sh` is executed
 * Updated `source/pacman-init.service`
 * Moved from `qemu` to `qemu-full`
@@ -234,7 +234,7 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 
 ### Changed in 2.5.0
 
-* Remove usage of `BE_VERBOSE` in `configuration/upload_iso.sh` since this is superseeded by `-v`
+* Remove usage of `BE_VERBOSE` in `configuration/upload_iso.sh` since this is superseded by `-v`
 
 ## [2.4.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.4.0) - released at 20220330
 
@@ -246,13 +246,13 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
   * The next steps where only executed if build was successful
 * Added output of flags when verbosity is enabled
 * Added way more output if run in verbose mode
-* Added addtional check in the step after bulding the iso to validate that an iso was build
+* Added additional check in the step after building the iso to validate that an iso was build
 * Added doc block to each function
 * Added argument check in each function
 
 ### Changed in 2.4.0
 
-* Fixed an issue if script is not calld as root
+* Fixed an issue if script is not called as root
   * Previous to this fix, all arguments where lost (like `-f`)
 * Centralized code by creating `_create_directory_of_exit` an `_remove_path_or_exit`
 
@@ -284,11 +284,12 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
 ### Added in 2.1.0
 
 * added a [CHANGELOG.md](CHANGELOG.md)
-* added list of contributers
+* added list of contributors
 
 ### Changed in 2.1.0
 
-* replaced current handlig of "exit if not executed from root" with "restart script by using sudo if not executed from root" - thanks to [gardar](https://github.com/gardar)
+* Replaced handling of "exit if not executed from root"
+  * Now "restart script by using sudo if not executed from root" - thanks to [gardar](https://github.com/gardar)
 
 ## [2.0.0](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/tree/2.0.0) - released at 20220207
 

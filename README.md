@@ -14,7 +14,7 @@ At the end, you only need to dd the iso to your favorit usb drive, use [venotoy]
 
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/badge)](https://securityscorecards.dev/viewer/?uri=github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs)
 
-## Live enviroment
+## Live environment
 
 This iso comes with some batteries included.
 
@@ -48,7 +48,7 @@ docker compose run --rm archlinux-container bash
 
 ```bash
 # run a build
-# we need to run podman with privilige rights
+# we need to run podman with privilege rights
 sudo podman compose run --rm archlinux-container /app/build.sh
 
 # to debug the container
@@ -112,14 +112,14 @@ docker run --rm -e LOG_LEVEL=DEBUG -e RUN_LOCAL=true -v .:/tmp/lint ghcr.io/supe
 
 ## Possible issues
 
-Following issues are not reproducable on all my machines.
+Following issues are not reproducible on all my machines.
 
 ### Error: target not found: ipw2100-fw
 
 * This error happens when calling `build.sh`
 * [This](https://gitlab.archlinux.org/archlinux/archiso/-/commit/4d64a58a905403b3abfca5077dcd924ef7901ba7) commit seams to be the reason
-* [This](https://bbs.archlinux.org/viewtopic.php?id=279908) thread contins information
-* [This](https://forum.endeavouros.com/t/missing-aur-packages-ipw2100-fw-ipw2200-fw/32019) is a solution for endevour os
+* [This](https://bbs.archlinux.org/viewtopic.php?id=279908) thread contains information
+* [This](https://forum.endeavouros.com/t/missing-aur-packages-ipw2100-fw-ipw2200-fw/32019) is a solution for endeavour os
 
 ## Links
 
@@ -133,7 +133,7 @@ Following issues are not reproducable on all my machines.
 * [OpenSSF Scorecard Report: securityscorecards.dev](https://securityscorecards.dev/viewer/?uri=github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs) - 20240408
 * [Ubuntu server zfsbootmenu: github.com](https://github.com/Sithuk/ubuntu-server-zfsbootmenu) - 20221108
 
-## Contributers
+## Contributors
 
 In alphabetically order.
 

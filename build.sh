@@ -406,7 +406,7 @@ function ask_for_more ()
 ####
 function build_archiso ()
 {
-    _echo_if_be_verbose ":: Starting bulding archiso"
+    _echo_if_be_verbose ":: Starting building archiso"
 
     #bo: variable
     local ISO_FILE_NAME
@@ -520,11 +520,11 @@ function build_archiso ()
             _echo_if_be_verbose "   PATH_TO_THE_OUTPUT_DIRECTORY >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"
 
             _echo_if_be_verbose "   --------"
-            echo "   Listing directory content, filterd by >>archzfs<<..."
+            echo "   Listing directory content, filtered by >>archzfs<<..."
             ls -halt ${PATH_TO_THE_OUTPUT_DIRECTORY} | grep archzfs
 
             _echo_if_be_verbose "   --------"
-            _echo_if_be_verbose ":: Finished bulding archiso"
+            _echo_if_be_verbose ":: Finished building archiso"
         else
             echo ":: Invalid amount of iso files found."
             echo "   Current path >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<."
@@ -1030,7 +1030,7 @@ function _main ()
     else
       ROOT_COMMAND_PREFIX=""
     fi
-    # we have to call it as root since we run the container with priviliged capabilities
+    # we have to call it as root since we run the container with privileged capabilities
     ${ROOT_COMMAND_PREFIX} podman compose run --rm archlinux-container /app/build.sh "${@}"
     exit_if_last_exit_code_is_not_zero ${?} "Could not start podman container with: ${ROOT_COMMAND_PREFIX} podman compose run --rm archlinux-container /app/build.sh" "${@}"
     cd - || exit 12

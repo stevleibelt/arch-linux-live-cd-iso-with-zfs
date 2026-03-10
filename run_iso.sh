@@ -72,7 +72,7 @@ function _main ()
   fi
   #bo: help
 
-  #bo: environemt check
+  #bo: environment check
   PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-${KERNEL}.iso"
 
   if [[ ! -f "${PATH_TO_THE_ISO}" ]];
@@ -103,7 +103,7 @@ function _main ()
 
     ${SUDO_COMMAND_PREFIX} pacman -S edk2-ovmf
   fi
-  #eo: environemt check
+  #eo: environment check
 
   #bo: core logic
   if [[ ${ISO_BOOT_TYPE} == "uefi" ]];

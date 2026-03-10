@@ -1,10 +1,10 @@
 #!/bin/bash
 ####
 # Automated installation of zfs for your arch linux
-# I am not the smart guy inventing this. I am just someone glueing things togehter.
+# I am not the smart guy inventing this. I am just someone glueing things together.
 ####
 # @todo
-#   Move question into seperate configuration
+#   Move question into separate configuration
 # @see
 #  https://github.com/eoli3n/archiso-zfs
 #  https://github.com/eoli3n/arch-config
@@ -42,7 +42,7 @@ function _run_configuration ()
 
     mkdir "${PATH_TO_THE_CONFIGURATION_DIRECTORY}"
 
-    _ask "Please input your prefered language (default is >>de<<)"
+    _ask "Please input your preferred language (default is >>de<<)"
     if [[ ${#REPLY} -ne 2 ]];
     then
         REPLY="de"
@@ -56,7 +56,7 @@ function _run_configuration ()
     fi
     echo "${REPLY}" > "${LOCAL_PATH}"
 
-    _ask "Please input your prefered timezone (default is >>Europe/Berlin<<)"
+    _ask "Please input your preferred timezone (default is >>Europe/Berlin<<)"
     if [[ ${#REPLY} -eq 0 ]];
     then
         REPLY="Europe/Berlin"
@@ -218,7 +218,7 @@ function _prepare_environment ()
 
     _echo_if_be_verbose ":: Increasing cowspace to half of the RAM."
 
-    #usefull to install more
+    #useful to install more
     mount -o remount,size=50% /run/archiso/cowspace
 }
 
@@ -314,7 +314,7 @@ function _partition_device ()
     _echo_if_be_verbose ":: Informing kernel about partition changes."
     partprobe "${DEVICE_PATH}"
 
-    _echo_if_be_verbose ":: Formating EFI partition."
+    _echo_if_be_verbose ":: Formatting EFI partition."
     sleep 1 #needed to fix a possible issue that partprobe is not done yet
     mkfs.vfat "${EFI_PARTITION}"
 }
@@ -567,7 +567,7 @@ function _main ()
 
     if [[ ${SELECTED_STEP} -eq 0 ]] || [[ ${SELECTED_STEP} -eq ${CURRENT_STEP} ]];
     then
-        _echo_if_be_verbose ":: bo step ${CURRENT_STEP} - preperation"
+        _echo_if_be_verbose ":: bo step ${CURRENT_STEP} - preparation"
 
         _prepare_environment
         _confirm_every_step
@@ -575,7 +575,7 @@ function _main ()
         _initialize_archzfs
         _confirm_every_step
 
-        _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - preperation"
+        _echo_if_be_verbose ":: eo step ${CURRENT_STEP} - preparation"
     fi
 
     #@see https://github.com/eoli3n/archiso-zfs/blob/master/init#L157

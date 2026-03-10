@@ -1,7 +1,7 @@
 ---
 name: Build ArchLinux zfs iso with LTS-Kernel and DKMS Package
 on:
-  schedule:  # arch relases are published first day of the month
+  schedule:  # arch releases are published first day of the month
     - cron: '50 23 1 * *'
   workflow_dispatch:
   pull_request:
