@@ -54,6 +54,7 @@ function remove_files ()
 
     _echo_if_be_verbose ":: Finished removing files"
 }
+
 ####
 # @param <string: PATH_TO_THE_ARCHLIVE_ROOT_USER> - this is not >>/<< but >>/root<<
 ####
@@ -486,7 +487,7 @@ function build_archiso ()
     #end of building
 
     #begin of renaming and hash generation
-    cd "${PATH_TO_THE_OUTPUT_DIRECTORY}" || { echo "Can not cd to >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"; exit 31 }
+    cd "${PATH_TO_THE_OUTPUT_DIRECTORY}" || { echo "Can not cd to >>${PATH_TO_THE_OUTPUT_DIRECTORY}<<"; exit 31; }
 
     ISO_FILE_NAME=$(basename "${ISO_FILE_PATH}")
     ISO_FILE_NAME=${ISO_FILE_NAME:0:-4} # remove >>.iso<< from file name
