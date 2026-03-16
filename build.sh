@@ -644,6 +644,7 @@ function _echo_if_be_verbose ()
     then
         echo "${1}"
     fi
+    echo "${1}" >> "${PATH_TO_THIS_SCRIPT}/last_build.log"
 }
 
 ####
@@ -1234,9 +1235,9 @@ function _main ()
     # ref: /usr/share/doc/archiso/README.profile.rst
     PATH_TO_PROFILEDEF="${PATH_TO_THE_PROFILE_DIRECTORY}/profiledef.sh"
 
-    sed -i "/^iso_name=/c\iso_name=\"${BUILD_FILE_NAME}\"/" "${PATH_TO_PROFILEDEF}"
-    sed -i "/^iso_label=/c\iso_label=\"${ISO_LABEL}\"/" "${PATH_TO_PROFILEDEF}"
-    sed -i "/^iso_publisher=/c\iso_publisher=\"${ISO_PUBLISHER}\"/" "${PATH_TO_PROFILEDEF}"
+    sed -i "/^iso_name=/c\iso_name=\"${BUILD_FILE_NAME}\"" "${PATH_TO_PROFILEDEF}"
+    sed -i "/^iso_label=/c\iso_label=\"${ISO_LABEL}\"" "${PATH_TO_PROFILEDEF}"
+    sed -i "/^iso_publisher=/c\iso_publisher=\"${ISO_PUBLISHER}\"" "${PATH_TO_PROFILEDEF}"
     # eo: profiledef adaptation
     
     remove_files "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs"
