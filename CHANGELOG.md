@@ -33,19 +33,7 @@ git log ${TAG_CREATED_FROM}..HEAD | grep '^   ' | trim
   * Check if we can remove HOOKS in `airootfs/etc/mkinitcpio.conf`
   * Check if official image also has that high amount of firmware
   * Check if lts image contains non-lts kernel by mistake
-  * Check `releng/packages.x86_64` if we really need all in there
 * Apply [shellcheck](https://github.com/koalaman/shellcheck) to all scripts
-* Manipulate `dynamic_dat/releng/profiledef.sh` before running the iso build process
-  * [issue/9](https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/9)
-  * [official profiledef.sh documentation](https://gitlab.archlinux.org/archlinux/archiso/-/blob/master/docs/README.profile.rst)
-  * [example of an manipulated file](https://github.com/HougeLangley/archzfs-iso/blob/master/profiledef.sh)
-  * Things to change
-    * `iso_name`
-    * `iso_label`
-    * `iso_publisher`
-    * `iso_application`
-    * `file_permissions`
-      * own git repros in user home should have 775
 * Recheck GitHub actions, [see](https://github.com/ossf/education/pull/36/files)
 * Validate if we can implement the "use older kernel" feature from [here](https://github.com/eoli3n/archiso-zfs/blob/master/init)
 
