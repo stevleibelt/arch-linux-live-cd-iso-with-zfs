@@ -64,8 +64,8 @@ This must be done once.
 
 ```bash
 # ref: https://github.com/archzfs/archzfs/wiki#using-the-archzfs-repository
-sudo pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
-sudo pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
+sudo pacman-key -r 3A9917BF0DED5C13F69AC68FABEC0A1208037BE9
+sudo pacman-key --lsign-key 3A9917BF0DED5C13F69AC68FABEC0A1208037BE9
 ```
 
 #### List of available scripts

@@ -145,9 +145,9 @@ function _main ()
     fi
     #bo: help
 
-    PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/last_build_date_${KERNEL}.txt"
-    PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-${KERNEL}.iso"
-    PATH_TO_THE_ISO_SHA512="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-${KERNEL}.iso.sha512sum"
+    PATH_TO_THE_LATEST_BUILD_DATE="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/last_build_date_${KERNEL}.txt"
+    PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archzfs-${KERNEL}.iso"
+    PATH_TO_THE_ISO_SHA512="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archzfs-${KERNEL}.iso.sha512sum"
 
     #bo: output used flags
     if [[ ${BE_VERBOSE} -eq 1 ]];

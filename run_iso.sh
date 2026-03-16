@@ -21,6 +21,7 @@ function _main ()
   KERNEL="linux"
   PATH_TO_THIS_SCRIPT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
   WHO_AM_I=$(whoami)
+
   PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE="${PATH_TO_THIS_SCRIPT}/.env.dist"
   PATH_TO_THE_OPTIONAL_ENVIRONMENT_FILE="${PATH_TO_THIS_SCRIPT}/.env"
   # eo: variables
@@ -73,7 +74,7 @@ function _main ()
   #bo: help
 
   #bo: environment check
-  PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archlinux-archzfs-${KERNEL}.iso"
+  PATH_TO_THE_ISO="${PATH_TO_THIS_SCRIPT}/dynamic_data/out/archzfs-${KERNEL}.iso"
 
   if [[ ! -f "${PATH_TO_THE_ISO}" ]];
   then

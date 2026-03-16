@@ -14,7 +14,7 @@
 set -o history -o histexpand
 
 # copy all command output to a log file
-exec &> >(tee "build.sh.log")
+exec &> >(tee "last_build.log")
 
 ####
 # @param <string: PATH_TO_THE_ARCHLIVE_ROOT>
@@ -316,86 +316,38 @@ DELIM
 
       IFS=',' read -r -a PACKAGE_TO_ADD_ARRAY <<< "${PACKAGES_TO_ADD}"
 
+      if [[ ${USE_DKMS} -eq 1 ]];
+      then
+        PACKAGE_TO_ADD_ARRAY+=("${KERNEL}-headers")
+
+        if [[ ${USE_GIT_PACKAGE} -eq 1 ]];
+        then
+          PACKAGE_TO_ADD_ARRAY+=("zfs-dkms-git")
+        else
+          PACKAGE_TO_ADD_ARRAY+=("zfs-dkms")
+        fi
+
+        if [[ ${KERNEL} != 'linux' ]];
+        then
+          sed -i -e "s/^linux$/${KERNEL}/" "${PATH_TO_THE_PACKAGES_FILE}"
+        fi
+      else
+        if [[ ${USE_GIT_PACKAGE} -eq 1 ]];
+        then
+          PACKAGE_TO_ADD_ARRAY+=("zfs-${KERNEL}-git" "zfs-utils-git")
+        else
+          PACKAGE_TO_ADD_ARRAY+=("zfs-${KERNEL}" "zfs-utils")
+        fi
+      fi
+
       for PACKAGE_NAME in "${PACKAGE_TO_ADD_ARRAY[@]}";
       do
         _echo_if_be_verbose "     Adding package >>${PACKAGE_NAME}<<."
         echo "${PACKAGE_NAME}" >> "${PATH_TO_THE_PACKAGES_FILE}"
       done
-
-      if [[ ${USE_DKMS} -eq 1 ]];
-      then
-        if [[ ${KERNEL} != 'linux' ]];
-        then
-          sed -i -e "s/^linux$/${KERNEL}/" "${PATH_TO_THE_PACKAGES_FILE}"
-        fi
-        _echo_if_be_verbose "     Adding package >>${KERNEL}-headers<<."
-        echo "${KERNEL}-headers" >> "${PATH_TO_THE_PACKAGES_FILE}"
-
-        if [[ ${USE_GIT_PACKAGE} -eq 0 ]];
-        then
-          _echo_if_be_verbose "     Adding package >>zfs-dkms<<."
-          echo "zfs-dkms" >> "${PATH_TO_THE_PACKAGES_FILE}"
-        else
-          _echo_if_be_verbose "     Adding package >>zfs-dkms-git<<."
-          echo "zfs-dkms-git" >> "${PATH_TO_THE_PACKAGES_FILE}"
-        fi
-      else
-        if [[ ${USE_GIT_PACKAGE} -eq 0 ]];
-        then
-          _echo_if_be_verbose "     Adding package >>zfs-${KERNEL}<<."
-          # zfs-linux or zfs-linux-lts
-          echo "zfs-${KERNEL}" >> "${PATH_TO_THE_PACKAGES_FILE}"
-          _echo_if_be_verbose "     Adding package >>zfs-utils<<."
-          echo "zfs-utils" >> "${PATH_TO_THE_PACKAGES_FILE}"
-        else
-          _echo_if_be_verbose "     Adding package >>zfs-${KERNEL}-git<<."
-          echo "zfs-${KERNEL}-git" >> "${PATH_TO_THE_PACKAGES_FILE}"
-          _echo_if_be_verbose "     Adding package >>zfs-utils-git<<."
-          echo "zfs-utils-git" >> "${PATH_TO_THE_PACKAGES_FILE}"
-        fi
-      fi
       #eo: adding package
       echo ":: Finished adding packages and repository"
     fi
-}
-
-function ask_for_more ()
-{
-  if [[ ${ASK_TO_RUN_ISO} -eq 1 ]];
-  then
-    echo ":: Do you want to run the iso for testing? [y|N]"
-
-    read -r RUN_ISO
-
-    if [[ ${RUN_ISO} == "y" ]];
-    then
-      bash "${PATH_TO_THIS_SCRIPT}/run_iso.sh" "${ISO_FILE_PATH}"
-    fi
-  fi
-
-  if [[ ${ASK_TO_DUMP_ISO} -eq 1 ]];
-  then
-    echo ":: Do you want to dump the iso on a device? [y|N]"
-
-    read -r DUMP_ISO
-
-    if [[ ${DUMP_ISO} == "y" ]];
-    then
-      bash "${PATH_TO_THIS_SCRIPT}/dump_iso.sh" "${ISO_FILE_PATH}"
-    fi
-  fi
-
-  if [[ ${ASK_TO_UPLOAD_ISO} -eq 1 ]];
-  then
-    echo ":: Do you want to upload the iso for testing? [y|N]"
-
-    read -r RUN_ISO
-
-    if [[ ${RUN_ISO} == "y" ]];
-    then
-      bash "${PATH_TO_THIS_SCRIPT}/upload_iso.sh" "${ISO_FILE_PATH}"
-    fi
-  fi
 }
 
 ####
@@ -635,7 +587,11 @@ function dump_runtime_environment_variables ()
   echo "   BUILD_FILE_NAME >>${BUILD_FILE_NAME}<<."
   echo "   IS_DRY_RUN >>${IS_DRY_RUN}<<."
   echo "   IS_FORCED >>${IS_FORCED}<<."
+  echo "   ISO_APPLICATION >>${ISO_APPLICATION}<<."
+  echo "   ISO_BOOT_TYPE >>${ISO_BOOT_TYPE}<<."
   echo "   ISO_FILE_PATH >>${ISO_FILE_PATH}<<."
+  echo "   ISO_LABEL >>${ISO_LABEL}<<."
+  echo "   ISO_PUBLISHER >>${ISO_PUBLISHER}<<."
   echo "   KERNEL >>${KERNEL}<<."
   echo "   PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE >>${PATH_TO_THE_DISTRIBUTION_ENVIRONMENT_FILE}<<."
   echo "   PATH_TO_THE_DYNAMIC_DATA_DIRECTORY >>${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}<<."
@@ -1085,7 +1041,11 @@ function _main ()
     BE_VERBOSE=0
     IS_DRY_RUN=0
     IS_FORCED=0
-    KERNEL='linux'
+    ISO_APPLICATION="ArchZFS Install/Rescue medium"
+    ISO_BOOT_TYPE="uefi"
+    ISO_LABEL="Archzfs_$(date +%Y%m%d_%H%M)"
+    ISO_PUBLISHER="Archzfs <https://archzfs.leibelt.de>"
+    KERNEL="linux"
     REPO_INDEX="last"
     SHOW_HELP=0
     USE_GIT_PACKAGE=0
@@ -1176,11 +1136,11 @@ function _main ()
     #eo: user input
 
     #begin of variables declaration
-    if [[ ${USE_GIT_PACKAGE} -eq 0 ]];
+    BUILD_FILE_NAME="archzfs-${KERNEL}"
+
+    if [[ ${USE_GIT_PACKAGE} -eq 1 ]];
     then
-      BUILD_FILE_NAME="archlinux-archzfs-${KERNEL}"
-    else
-      BUILD_FILE_NAME="archlinux-archzfs-${KERNEL}-git"
+      BUILD_FILE_NAME="${BUILD_FILE_NAME}-git"
     fi
 
     PATH_TO_THE_DYNAMIC_DATA_DIRECTORY="${PATH_TO_THIS_SCRIPT}/dynamic_data"
@@ -1273,7 +1233,10 @@ function _main ()
 
     # ref: /usr/share/doc/archiso/README.profile.rst
     PATH_TO_PROFILEDEF="${PATH_TO_THE_PROFILE_DIRECTORY}/profiledef.sh"
-    sed -i "s/iso_name=\"archlinux\"/iso_name=\"${BUILD_FILE_NAME}\"/" "${PATH_TO_PROFILEDEF}"
+
+    sed -i "/^iso_name=/c\iso_name=\"${BUILD_FILE_NAME}\"/" "${PATH_TO_PROFILEDEF}"
+    sed -i "/^iso_label=/c\iso_label=\"${ISO_LABEL}\"/" "${PATH_TO_PROFILEDEF}"
+    sed -i "/^iso_publisher=/c\iso_publisher=\"${ISO_PUBLISHER}\"/" "${PATH_TO_PROFILEDEF}"
     # eo: profiledef adaptation
     
     remove_files "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs"
@@ -1281,11 +1244,6 @@ function _main ()
     build_archiso "${PATH_TO_THE_DYNAMIC_DATA_DIRECTORY}/work" "${PATH_TO_THE_OUTPUT_DIRECTORY}" "${PATH_TO_THE_PROFILE_DIRECTORY}" "${ISO_FILE_PATH}" "${SHA512_FILE_PATH}"
 
     BUILD_WAS_SUCCESSFUL="${?}"
-
-    if [[ ${BUILD_WAS_SUCCESSFUL} -eq 0 ]];
-    then
-      ask_for_more
-    fi
 
     cd "${CURRENT_WORKING_DIRECTORY}"
     #eo: code
