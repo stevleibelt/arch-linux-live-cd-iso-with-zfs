@@ -640,11 +640,12 @@ function exit_if_last_exit_code_is_not_zero ()
 ####
 function _echo_if_be_verbose ()
 {
-    if [[ ${BE_VERBOSE} -eq 1 ]];
-    then
-        echo "${1}"
-    fi
+  if [[ ${BE_VERBOSE} -eq 1 ]];
+  then
+    echo "${1}"
+  else
     echo "${1}" >> "${PATH_TO_THIS_SCRIPT}/last_build.log"
+  fi
 }
 
 ####
