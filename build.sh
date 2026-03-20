@@ -447,7 +447,7 @@ function build_archiso ()
 
       # Workaround to indicated build issue
       # ref: https://github.com/stevleibelt/arch-linux-live-cd-iso-with-zfs/issues/18
-      if grep -q 'Bad return status for module build on kernel' build.sh.log;
+      if grep -q 'Bad return status for module build on kernel' latest_build.log;
       then
         echo ":: Build error detected."
         echo "   Removing invalid iso file"
