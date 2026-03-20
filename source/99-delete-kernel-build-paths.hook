@@ -1,0 +1,11 @@
+[Trigger]
+Type = Package
+Operation = Install
+Operation = Remove
+Operation = Package
+Target = *
+
+[Action]
+Description = Removing build directories in /usr/lib/modules...
+When = PostTransaction
+Exec = find /usr/lib/modules/ -maxdepth 2 -type d -name "build" -exec rm -d {} +

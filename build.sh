@@ -21,42 +21,43 @@ exec &> >(tee "last_build.log")
 ####
 function remove_files ()
 {
-    _echo_if_be_verbose ":: Starting removing files"
+  _echo_if_be_verbose ":: Starting removing files"
 
-    #bo: variable
-    local PATH_TO_THE_ARCHLIVE_ROOT
+  #bo: variable
+  local PATH_TO_THE_ARCHLIVE_ROOT
 
-    PATH_TO_THE_ARCHLIVE_ROOT=${1:-""}
+  PATH_TO_THE_ARCHLIVE_ROOT=${1:-""}
 
-    if [[ ! -d ${PATH_TO_THE_ARCHLIVE_ROOT} ]];
-    then
-      echo "   Invalid path to the archlive provided >>${PATH_TO_THE_ARCHLIVE_ROOT}<< is not a directory."
+  if [[ ! -d ${PATH_TO_THE_ARCHLIVE_ROOT} ]];
+  then
+    echo "   Invalid directory path provided PATH_TO_THE_ARCHLIVE_ROOT=${PATH_TO_THE_ARCHLIVE_ROOT}"
 
-      exit 1
-    else
-      _echo_if_be_verbose "   PATH_TO_THE_ARCHLIVE_ROOT >>${PATH_TO_THE_ARCHLIVE_ROOT}<<."
-    fi
-    #bo: variable
+    exit 1
+  else
+    _echo_if_be_verbose "   PATH_TO_THE_ARCHLIVE_ROOT=${PATH_TO_THE_ARCHLIVE_ROOT}"
+  fi
+  #bo: variable
 
-    if [[ -d "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document" ]];
-    then
-      rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document"
-    fi
+  if [[ -d "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document" ]];
+  then
+    rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document"
+  fi
 
-    if [[ ! -d "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software" ]];
-    then
-      rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document"
-    fi
+  if [[ ! -d "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software" ]];
+  then
+    rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document"
+  fi
 
-    rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT}/var/lib/pacman/local/*"
-    rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT}/var/lib/pacman/sync/*"
-    rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT}/var/log/*.log"
+  rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT}/var/lib/pacman/local/*"
+  rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT}/var/lib/pacman/sync/*"
+  rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT}/var/log/*.log"
 
-    _echo_if_be_verbose ":: Finished removing files"
+  _echo_if_be_verbose ":: Finished removing files"
 }
 
 ####
 # @param <string: PATH_TO_THE_ARCHLIVE_ROOT_USER> - this is not >>/<< but >>/root<<
+# @param <string: PATH_TO_THE_PACMAN_D_DIRECTORY>
 ####
 function add_files_and_create_directories ()
 {
@@ -66,20 +67,29 @@ function add_files_and_create_directories ()
     local PATH_TO_THE_ARCHLIVE_ROOT_USER
 
     PATH_TO_THE_ARCHLIVE_ROOT_USER=${1:-""}
+    PATH_TO_THE_PACMAN_D_DIRECTORY=${2:-""}
     #eo: variable
 
     #bo: argument validation
     _exit_if_string_is_empty "PATH_TO_THE_ARCHLIVE_ROOT_USER" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}"
+    _exit_if_string_is_empty "PATH_TO_THE_PACMAN_D_DIRECTORY" "${PATH_TO_THE_PACMAN_D_DIRECTORY}"
     #eo: argument validation
 
     #bo: environment check
     if [[ ! -d ${PATH_TO_THE_ARCHLIVE_ROOT_USER} ]];
     then
-      echo "   Invalid path to the archlive provided >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}<< is not a directory."
+      echo "   Invalid directory path provided PATH_TO_THE_ARCHLIVE_ROOT_USER=${PATH_TO_THE_ARCHLIVE_ROOT_USER}"
 
       exit 1
     else
-      _echo_if_be_verbose "   PATH_TO_THE_ARCHLIVE_ROOT_USER >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}<<."
+      _echo_if_be_verbose "   PATH_TO_THE_ARCHLIVE_ROOT_USER=${PATH_TO_THE_ARCHLIVE_ROOT_USER}"
+    fi
+
+    if [[ ! -d ${PATH_TO_THE_PACMAN_D_DIRECTORY} ]];
+    then
+      echo "   Invalid path provided PATH_TO_THE_PACMAN_D_DIRECTORY: ${PATH_TO_THE_ARCHLIVE_ROOT_USER} is not a directory"
+
+      exit 1
     fi
 
     if [[ ${IS_DRY_RUN} -ne 1 ]];
@@ -90,22 +100,22 @@ function add_files_and_create_directories ()
         pacman -S --noconfirm git
       fi
 
-      _echo_if_be_verbose "   Creating directory >>document<<"
+      _echo_if_be_verbose "   Creating directory: document"
       /usr/bin/mkdir "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document"
-      exit_if_last_exit_code_is_not_zero ${?} "Creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/document<< failed."
+      exit_if_last_exit_code_is_not_zero ${?} "Creation of directory failed: ${PATH_TO_THE_ARCHLIVE_ROOT_USER}"
 
-      _echo_if_be_verbose "   Creating directory >>software<<"
+      _echo_if_be_verbose "   Creating directory: software"
       /usr/bin/mkdir "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software"
-      exit_if_last_exit_code_is_not_zero ${?} "Creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software<< failed."
+      exit_if_last_exit_code_is_not_zero ${?} "Creation of directory failed: ${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software"
 
-      _echo_if_be_verbose "   Adding repository >>arch-linux-configuration<< "
+      _echo_if_be_verbose "   Adding repository: arch-linux-configuration"
       git clone https://github.com/stevleibelt/arch-linux-configuration "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration/"
-      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration<< failed."
+      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of repository failed: ${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration"
       rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-configuration/.git"
 
-      _echo_if_be_verbose "   Adding repository >>arch-linux-live-cd-zfs-setup<< "
+      _echo_if_be_verbose "   Adding repository: arch-linux-live-cd-zfs-setup"
       git clone https://github.com/stevleibelt/arch-linux-live-cd-zfs-setup "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup/"
-      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup<< failed."
+      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of repository failed: ${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup<< failed."
       rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup/.git"
 
       _echo_if_be_verbose "   Adding repository >>downgrade<< "
@@ -144,6 +154,20 @@ function add_files_and_create_directories ()
       _echo_if_be_verbose "   Adding script >>start_sshd.sh<< "
       cp "${PATH_TO_THIS_SCRIPT}/source/start_sshd.sh" "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/"
       exit_if_last_exit_code_is_not_zero ${?} "Copy of >>${PATH_TO_THIS_SCRIPT}/source/start_sshd.sh<< to >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/<< failed."
+
+      if [[ ${KERNEL} != 'linux' ]];
+      then
+        _echo_if_be_verbose "   Adding >>99-delete-non-lts-kernel.hook<< "
+        cp "${PATH_TO_THIS_SCRIPT}/source/99-delete-non-lts-kernel.hook" "${PATH_TO_THE_PACMAN_D_DIRECTORY}/"
+        exit_if_last_exit_code_is_not_zero ${?} "Copy of >>${PATH_TO_THIS_SCRIPT}/source/99-delete-non-lts-kernel.hook<< to >>${PATH_TO_THE_PACMAN_D_DIRECTORY}/<< failed."
+      fi
+
+      if [[ ${USE_DKMS} -eq 1 ]];
+      then
+        _echo_if_be_verbose "   Adding >>99-delete-kernel-build-paths.hook<< "
+        cp "${PATH_TO_THIS_SCRIPT}/source/99-delete-kernel-build-paths.hook" "${PATH_TO_THE_PACMAN_D_DIRECTORY}/"
+        exit_if_last_exit_code_is_not_zero ${?} "Copy of >>${PATH_TO_THIS_SCRIPT}/source/99-delete-kernel-build-paths.hook<< to >>${PATH_TO_THE_PACMAN_D_DIRECTORY}/<< failed."
+      fi
     fi
 
     _echo_if_be_verbose ":: Finished adding files"
@@ -1179,7 +1203,7 @@ function _main ()
         add_packages_and_repository "${PATH_TO_THE_PROFILE_DIRECTORY}" "${REPO_INDEX}"
     fi
 
-    add_files_and_create_directories "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/root"
+    add_files_and_create_directories "${PATH_TO_THE_PROFILE_DIRECTORY}/airootfs/root" "${PATH_TO_THE_PROFILE_DIRECTORY}/pacman.d"
 
     if [[ ${KERNEL} != 'linux' ]];
     then
@@ -1204,6 +1228,8 @@ function _main ()
       sed -i "s/vmlinuz-linux/vmlinuz-${KERNEL}/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/01-archiso-linux.conf
       sed -i "s/initramfs-linux.img/initramfs-${KERNEL}.img/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/01-archiso-linux.conf
       sed -i "s/vmlinuz-linux/vmlinuz-${KERNEL}/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/02-archiso-speech-linux.conf
+      sed -i "s/initramfs-linux.img/initramfs-${KERNEL}.img/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/02-archiso-speech-linux-conf
+      sed -i "s/vmlinuz-linux/vmlinuz-${KERNEL}/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/03-archiso-memtest86+x64.conf
       sed -i "s/initramfs-linux.img/initramfs-${KERNEL}.img/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/03-archiso-memtest86+x64.conf
       # 03-* does not exist
       #sed -i "s/vmlinuz-linux/vmlinuz-${KERNEL}/" "${PATH_TO_EFIBOOT_LOADER_ENTRIES}"/03-archiso-x86_64-ram-linux.conf
