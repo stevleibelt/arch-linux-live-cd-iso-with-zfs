@@ -118,6 +118,11 @@ function add_files_and_create_directories ()
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of repository failed: ${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup<< failed."
       rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/arch-linux-live-cd-zfs-setup/.git"
 
+      _echo_if_be_verbose "   Adding repository: archinstall_zfs"
+      git clone https://github.com/okhsunrog/archinstall_zfs "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall_zfs/"
+      exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of repository failed: ${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall_zfs<< failed."
+      rm -fr "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/archinstall_zfs/.git"
+
       _echo_if_be_verbose "   Adding repository >>downgrade<< "
       git clone https://github.com/archlinux-downgrade/downgrade "${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade/"
       exit_if_last_exit_code_is_not_zero ${?} "Checkout and creation of directory >>${PATH_TO_THE_ARCHLIVE_ROOT_USER}/software/downgrade<< failed."
